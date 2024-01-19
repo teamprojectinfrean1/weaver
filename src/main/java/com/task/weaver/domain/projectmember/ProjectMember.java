@@ -24,7 +24,6 @@ public class ProjectMember extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long projectMemberId;
 
-
     @ManyToOne
     @JoinColumn(name = "project_id")
     private Project project;
