@@ -1,10 +1,12 @@
 package com.task.weaver.domain.story;
 
+import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.comment.Comment;
 import com.task.weaver.domain.storyusertag.StoryUserTag;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -16,7 +18,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class Story {
+@Builder
+public class Story extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "story_id")
