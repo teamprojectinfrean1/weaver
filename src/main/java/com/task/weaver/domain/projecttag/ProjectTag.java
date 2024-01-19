@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -27,4 +29,8 @@ public class ProjectTag extends BaseEntity {
 
     @Column(name = "hex_code", length = 8, nullable = false)
     private String hexCode;
+
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    private Project project;
 }

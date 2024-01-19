@@ -44,12 +44,4 @@ public class Project extends BaseEntity {
     /**TODO: 2024-01-19, 금, 23:36  -JEON
     *  TASK: user 테이블 관계 설정 필요
     */
-
-    @ManyToOne
-    @JoinColumn(name = "project_member_id")
-    private ProjectMember projectMember;
-
-    @ManyToOne
-    @JoinColumn(name = "project_tag_id")
-    private ProjectTag projectTag;
 }
