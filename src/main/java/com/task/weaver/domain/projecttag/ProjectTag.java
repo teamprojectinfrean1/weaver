@@ -22,7 +22,7 @@ public class ProjectTag extends BaseEntity {
     @Id
     @Column(name = "project_tag_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long project_tag_id;
+    private Long projectTagId;
 
     @Column(name = "tag", length = 100, nullable = false)
     private String tag;

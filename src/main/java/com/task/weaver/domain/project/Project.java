@@ -1,8 +1,6 @@
 package com.task.weaver.domain.project;
 
 import com.task.weaver.domain.BaseEntity;
-import com.task.weaver.domain.projectmember.ProjectMember;
-import com.task.weaver.domain.projecttag.ProjectTag;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -18,13 +16,13 @@ public class Project extends BaseEntity {
     @Id
     @Column(name = "project_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long project_id;
+    private Long projectId;
 
     @Column(name = "custom_url", length = 100, nullable = false)
-    private String custom_url;
+    private String customUrl;
 
     @Column(name = "banner_url", length = 300, nullable = false)
-    private String banner_url;
+    private String bannerUrl;
 
     @Column(name = "name", length = 100, nullable = false)
     private String name;
@@ -33,7 +31,7 @@ public class Project extends BaseEntity {
     private String detail;
 
     @Column(name = "due_date", nullable = false)
-    private LocalDateTime due_date;
+    private LocalDateTime dueDate;
 
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
