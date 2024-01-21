@@ -1,8 +1,7 @@
-package com.task.weaver.domain.story;
+package com.task.weaver.domain.story.entity;
 
 import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.comment.Comment;
-import com.task.weaver.domain.storyusertag.StoryUserTag;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

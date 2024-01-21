@@ -1,4 +1,4 @@
-package com.task.weaver.domain.story;
+package com.task.weaver.domain.story.entity;
 
 import com.task.weaver.domain.BaseEntity;
 import jakarta.persistence.*;

@@ -1,7 +1,6 @@
 package com.task.weaver.domain.comment;
 
 import com.task.weaver.domain.BaseEntity;
-import com.task.weaver.domain.story.Story;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
