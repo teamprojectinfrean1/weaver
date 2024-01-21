@@ -29,13 +29,20 @@ public interface StoryService {
     Page<Story> getStories (Long projectId, Long User, Pageable pageable)
             throws NotFoundException, AuthorizationException;
 
-    Story addStory (Story story);
-    Story addStory (Story story, IssueMention issueMention);
-    Story addStory (RequestCreateStory request);
+    Story addStory (Story story)
+            throws AuthorizationException;
+    Story addStory (Story story, IssueMention issueMention)
+            throws AuthorizationException;
+    Story addStory (RequestCreateStory request)
+            throws AuthorizationException;
 
-    void deleteStory (Story story);
-    void deleteStory (Long storyId);
+    void deleteStory (Story story)
+            throws NotFoundException, AuthorizationException;
+    void deleteStory (Long storyId)
+            throws NotFoundException, AuthorizationException;
 
-    Story updateStory (Story originalStory, Story newStory);
-    Story updateStory (Long originalStoryId, Story newStory);
+    Story updateStory (Story originalStory, Story newStory)
+            throws NotFoundException, AuthorizationException;
+    Story updateStory (Long originalStoryId, Story newStory)
+            throws NotFoundException, AuthorizationException;
 }
