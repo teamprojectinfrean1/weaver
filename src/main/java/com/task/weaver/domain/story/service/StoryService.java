@@ -7,6 +7,7 @@ import com.task.weaver.domain.issue.IssueMention;
 import com.task.weaver.domain.project.Project;
 import com.task.weaver.domain.story.dto.request.RequestCreateStory;
 import com.task.weaver.domain.story.entity.Story;
+import com.task.weaver.domain.storyusertag.StoryUserTag;
 import com.task.weaver.domain.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,8 @@ public interface StoryService {
     Page<Story> getStories (Project project, Long userId, Pageable pageable)
             throws NotFoundException, AuthorizationException;
     Page<Story> getStories (Long projectId, Long User, Pageable pageable)
+            throws NotFoundException, AuthorizationException;
+    Page<Story> getStories (StoryUserTag storyUserTag, Pageable pageable)
             throws NotFoundException, AuthorizationException;
 
     Story addStory (Story story)
