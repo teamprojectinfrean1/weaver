@@ -4,14 +4,12 @@ import com.task.weaver.common.exception.AuthorizationException;
 import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.domain.issue.Issue;
 import com.task.weaver.domain.project.Project;
+import com.task.weaver.domain.story.dto.request.RequestCreateStory;
 import com.task.weaver.domain.story.entity.Story;
 import com.task.weaver.domain.user.User;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
-
 public interface StoryService {
-
 
     Story getStory (Long storyId)
             throws NotFoundException, AuthorizationException;
@@ -29,5 +27,7 @@ public interface StoryService {
     Page<Story> getStories (Long projectId, Long User)
             throws NotFoundException, AuthorizationException;
 
+    Story add (Story story);
+    Story add (RequestCreateStory request);
 
 }
