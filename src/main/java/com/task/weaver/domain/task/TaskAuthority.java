@@ -35,4 +35,5 @@ public class TaskAuthority {
     @Column(name = "code", length = 10)
     private String code;
 
+
 }

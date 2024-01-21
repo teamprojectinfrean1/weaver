@@ -2,6 +2,7 @@ package com.task.weaver.domain.task;
 
 import com.task.weaver.domain.project.Project;
 import com.task.weaver.domain.status.StatusTag;
+import com.task.weaver.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,9 +31,9 @@ public class Task {
     @JoinColumn(name = "status_tag_id")
     private StatusTag statusTag;
 
-/*    @ManyToOne
+    @ManyToOne
     @JoinColumn(name = "creator_user_id")
-    private User user;*/
+    private User user;
 
     @Column(name = "taskname", length = 100)
     private String taskName;

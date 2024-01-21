@@ -28,4 +28,5 @@ public class TaskTag {
 
     @Column(name = "hex_code", length = 100)
     private String hexCode;
+
 }
