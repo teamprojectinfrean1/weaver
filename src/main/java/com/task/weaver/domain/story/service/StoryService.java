@@ -8,7 +8,7 @@ import com.task.weaver.domain.project.Project;
 import com.task.weaver.domain.story.dto.request.RequestCreateStory;
 import com.task.weaver.domain.story.entity.Story;
 import com.task.weaver.domain.storyusertag.StoryUserTag;
-import com.task.weaver.domain.user.User;
+import com.task.weaver.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
