@@ -1,6 +1,7 @@
 package com.task.weaver.domain.project;
 
 import com.task.weaver.domain.BaseEntity;
+import com.task.weaver.domain.user.User;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -18,28 +19,28 @@ public class Project extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long projectId;
 
-    @Column(name = "custom_url", length = 100, nullable = false)
+    @Column(name = "custom_url")
     private String customUrl;
 
-    @Column(name = "banner_url", length = 300, nullable = false)
+    @Column(name = "banner_url")
     private String bannerUrl;
 
-    @Column(name = "name", length = 100, nullable = false)
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "detail", nullable = false)
+    @Column(name = "detail")
     private String detail;
 
-    @Column(name = "due_date", nullable = false)
+    @Column(name = "due_date")
     private LocalDateTime dueDate;
 
-    @Column(name = "created", nullable = false)
+    @Column(name = "created")
     private LocalDateTime created;
 
-    @Column(name = "is_public", nullable = false)
+    @Column(name = "is_public")
     private Boolean isPublic;
 
-    /**TODO: 2024-01-19, 금, 23:36  -JEON
-    *  TASK: user 테이블 관계 설정 필요
-    */
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

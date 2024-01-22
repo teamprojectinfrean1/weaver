@@ -24,10 +24,10 @@ public class ProjectTag extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long projectTagId;
 
-    @Column(name = "tag", length = 100, nullable = false)
+    @Column(name = "tag")
     private String tag;
 
-    @Column(name = "hex_code", length = 8, nullable = false)
+    @Column(name = "hex_code")
     private String hexCode;
 
     @ManyToOne
