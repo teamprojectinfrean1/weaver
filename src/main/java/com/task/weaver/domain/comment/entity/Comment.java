@@ -1,4 +1,4 @@
-package com.task.weaver.domain.comment;
+package com.task.weaver.domain.comment.entity;
 
 import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.story.entity.Story;
