@@ -1,7 +1,7 @@
-package com.task.weaver.domain.project;
+package com.task.weaver.domain.project.entity;
 
 import com.task.weaver.domain.BaseEntity;
-import com.task.weaver.domain.user.User;
+import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -40,7 +40,7 @@ public class Project extends BaseEntity {
     @Column(name = "is_public")
     private Boolean isPublic;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 }

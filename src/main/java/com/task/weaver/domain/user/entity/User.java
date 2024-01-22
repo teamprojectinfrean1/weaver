@@ -1,4 +1,4 @@
-package com.task.weaver.domain.user;
+package com.task.weaver.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
