@@ -1,4 +1,4 @@
-package com.task.weaver.domain.issue;
+package com.task.weaver.domain.issue.entity;
 
 import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.*;
