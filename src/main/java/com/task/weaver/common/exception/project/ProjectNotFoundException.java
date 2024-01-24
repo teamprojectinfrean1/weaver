@@ -1,2 +1,10 @@
-package com.task.weaver.common.exception.project;public class ProjectNotFoundException {
+package com.task.weaver.common.exception.project;
+
+import com.task.weaver.common.exception.BusinessException;
+import com.task.weaver.common.exception.ErrorCode;
+
+public class ProjectNotFoundException extends BusinessException {
+    public ProjectNotFoundException(Throwable cause) {
+        super(ErrorCode.PROJECT_NOT_FOUND, cause);
+    }
 }

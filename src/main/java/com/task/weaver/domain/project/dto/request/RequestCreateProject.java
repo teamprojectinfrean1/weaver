@@ -1,21 +1,17 @@
-package com.task.weaver.domain.project.dto;
+package com.task.weaver.domain.project.dto.request;
 
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
-@Data
+@Getter
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public record ProjectDTO(Long projectId,
-                         String customUrl,
-                         String bannerUrl,
-                         String name,
-                         String detail,
-                         LocalDateTime dueDate,
-                         LocalDateTime created,
-                         boolean isPublic) {
+public record RequestCreateProject(Long projectId,
+                                   String customUrl,
+                                   String bannerUrl,
+                                   String name,
+                                   String detail,
+                                   LocalDateTime dueDate,
+                                   LocalDateTime created,
+                                   boolean hasPublic) {
 }
