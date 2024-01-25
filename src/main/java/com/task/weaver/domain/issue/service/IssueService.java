@@ -17,13 +17,13 @@ public interface IssueService {
     Issue getIssue (Long issueId) throws NotFoundException, AuthorizationException;
 
     Page<Issue> getIssues (Long taskId, Pageable pageable) throws NotFoundException, AuthorizationException;
-    Page<Issue> getIssues (Task task, Pageable pageable);
-    Page<Issue> getIssues (Task task, Long userId, Pageable pageable);
-    Page<Issue> getIssues (Task task, User user, Pageable pageable);
-    Page<Issue> getIssues (Long taskId, Long userId, Pageable pageable);
-    Page<Issue> getIssues (Long taskId, User user, Pageable pageable);
-    Page<Issue> getIssues (StatusTag statusTag, Pageable pageable);
-    // Page<Issue> getIssues (IssueMention issueMention, Pageable pageable);
+    Page<Issue> getIssues (Task task, Pageable pageable) throws NotFoundException, AuthorizationException;
+    Page<Issue> getIssues (Task task, Long userId, Pageable pageable) throws NotFoundException, AuthorizationException;
+    Page<Issue> getIssues (Task task, User user, Pageable pageable) throws NotFoundException, AuthorizationException;
+    Page<Issue> getIssues (Long taskId, Long userId, Pageable pageable) throws NotFoundException, AuthorizationException;
+    Page<Issue> getIssues (Long taskId, User user, Pageable pageable) throws NotFoundException, AuthorizationException;
+    Page<Issue> getIssues (StatusTag statusTag, Pageable pageable) throws NotFoundException, AuthorizationException;
+    Page<Issue> getIssues (IssueMention issueMention, Pageable pageable) throws NotFoundException, AuthorizationException;
 
 
     Issue addIssue (Issue issue, Task task, User user) throws AuthorizationException;
