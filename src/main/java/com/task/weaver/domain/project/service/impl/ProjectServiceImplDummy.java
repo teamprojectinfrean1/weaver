@@ -44,6 +44,11 @@ public class ProjectServiceImplDummy implements ProjectService {
 
     @Override
     public void deleteProject(final Long projectId) throws BusinessException {
-
+        Optional<Project> project = projectRepository.findById(projectId);
+        if (project.isPresent()){
+            projectRepository.deleteById(projectId);
+            return;
+        }
+        throw new ProjectNotFoundException(new Throwable(String.valueOf(projectId)));
     }
 }
