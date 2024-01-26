@@ -1,68 +1,87 @@
 package com.task.weaver.domain.user.service.Impl;
 
-import com.task.weaver.domain.project.Project;
+import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.story.entity.Story;
+import com.task.weaver.domain.user.dto.reesponse.ResponseUser;
+import com.task.weaver.domain.user.dto.request.RequestCreateUser;
+import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.user.entity.User;
+import com.task.weaver.domain.user.repository.UserRepository;
 import com.task.weaver.domain.user.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+    private final UserRepository userRepository;
+
     @Override
-    public Optional<User> getUser(Long user_id) {
-        return Optional.empty();
+    public ResponseUser getUser(Long user_id) {
+        User user = userRepository.findById(user_id).get();  //예외추가 필요.
+
+        ResponseUser responseUser = new ResponseUser(user);
+
+        return responseUser;
     }
 
     @Override
-    public Optional<User> getUser(User user) {
-        return Optional.empty();
+    public ResponseUser getUser(String nickname) {
+        User findUser = userRepository.findByNickname(nickname).get();
+        ResponseUser responseUser = new ResponseUser(findUser);
+
+        return responseUser;
     }
 
     @Override
-    public Optional<List<User>> getUsers(Long project_id) {
-        return Optional.empty();
+    public List<ResponseUser> getUsers(Long project_id) {
+        return null;
     }
 
     @Override
-    public Optional<List<User>> getUsers(Project project) {
-        return Optional.empty();
+    public List<ResponseUser> getUsers(Project project) {
+        return null;
     }
 
     @Override
-    public Optional<List<User>> getUsers(User user) {
-        return Optional.empty();
+    public List<ResponseUser> getUsers(User user) {
+        return null;
     }
 
     @Override
-    public Optional<List<User>> getUsers(Story story) {
-        return Optional.empty();
+    public List<ResponseUser> getUsers(Story story) {
+        return null;
     }
 
     @Override
-    public Optional<User> addUser(User user) {
-        return Optional.empty();
+    public ResponseUser addUser(RequestCreateUser requestCreateUser) {
+        User user = requestCreateUser.toEntity();
+        User savedUser = userRepository.save(user);
+
+        ResponseUser responseUser = new ResponseUser(savedUser);
+        return responseUser;
     }
 
     @Override
-    public Optional<List<User>> addUsers() {
-        return Optional.empty();
-    }
+    public ResponseUser updateUser(Long user_id, RequestUpdateUser requestUpdateUser) {
+        User findUser = userRepository.findById(user_id).get();
+        findUser.updateUser(requestUpdateUser);
 
-    @Override
-    public Optional<User> updateUser(Long user_id) {
-        return Optional.empty();
+        ResponseUser responseUser = new ResponseUser(findUser);
+        return responseUser;
     }
 
     @Override
     public void deleteUser(Long user_id) {
-
+        userRepository.deleteById(user_id);
     }
 
     @Override
     public void deleteUser(User user) {
-
+        userRepository.delete(user);
     }
 }
