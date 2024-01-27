@@ -45,4 +45,16 @@ public class Project extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    public void changeName(String name) {
+        this.name = name;
+    }
+
+    public void changeDetail(String detail) {
+        this.detail = detail;
+    }
+
+    public void changePublic() {
+        this.isPublic = !isPublic;
+    }
 }
