@@ -3,6 +3,7 @@ package com.task.weaver.domain.story.entity;
 import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.comment.entity.Comment;
 import com.task.weaver.domain.project.entity.Project;
+import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.user.entity.User;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
@@ -34,6 +35,10 @@ public class Story extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "writer_user_id")
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mention_task_id")
+    private Task mentionTask;
 
 //    @OneToMany(mappedBy = "story")
 //    @Column(name = "comment_list")
