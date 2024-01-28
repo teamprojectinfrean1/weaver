@@ -1,6 +1,6 @@
 package com.task.weaver.domain.user.service.Impl;
 
-import com.task.weaver.domain.project.Project;
+import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.story.entity.Story;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.service.UserService;

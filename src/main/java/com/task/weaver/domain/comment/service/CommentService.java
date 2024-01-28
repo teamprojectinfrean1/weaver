@@ -3,35 +3,27 @@ package com.task.weaver.domain.comment.service;
 import com.task.weaver.common.exception.AuthorizationException;
 import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.domain.comment.dto.request.RequestCreateComment;
+import com.task.weaver.domain.comment.dto.request.RequestUpdateComment;
+import com.task.weaver.domain.comment.dto.response.ResponseComment;
 import com.task.weaver.domain.comment.entity.Comment;
-import com.task.weaver.domain.project.Project;
+import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.story.entity.Story;
-import com.task.weaver.domain.storyusertag.StoryUserTag;
 import com.task.weaver.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface CommentService {
-    Comment getComment(Long id) throws NotFoundException, AuthorizationException;
+    ResponseComment getComment(Long id);
 
-    Page<Comment> getComments (Long projectId, Pageable pageable)
-            throws NotFoundException, AuthorizationException;
-    Page<Comment> getComments (Project project, Pageable pageable)
-            throws NotFoundException, AuthorizationException;
-    Page<Comment> getComments (Project project, Story story, Pageable pageable)
-            throws NotFoundException, AuthorizationException;
-    Comment addComment (String content, Story story, User user)
-            throws AuthorizationException;
-    Comment addComment(RequestCreateComment requestCreateComment)
-            throws AuthorizationException;
+    Page<Comment> getComments (Long projectId, Pageable pageable);
+    Page<Comment> getComments (Project project, Pageable pageable);
+    Page<Comment> getComments (Project project, Story story, Pageable pageable);
+    Comment addComment (String content, Story story, User user);
 
-    void deleteComment (Comment comment)
-            throws NotFoundException, AuthorizationException;
-    void deleteComment (Long commentId)
-            throws NotFoundException, AuthorizationException;
-    Comment updateComment(Comment originalComment, Comment newComment)
-            throws NotFoundException, AuthorizationException;
-    Comment updateComment(Long originalCommentId, Comment newComment)
-            throws NotFoundException, AuthorizationException;
+    void deleteComment (Comment comment);
+    void deleteComment (Long commentId);
 
+    ResponseComment updateComment(Comment originalComment, RequestUpdateComment newComment);
+
+    ResponseComment updateComment(Long originalCommentId, RequestUpdateComment newComment);
 }
