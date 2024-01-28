@@ -1,4 +1,4 @@
-package com.task.weaver.domain.task;
+package com.task.weaver.domain.task.entity;
 
 import com.task.weaver.domain.project.Project;
 import com.task.weaver.domain.user.entity.User;
