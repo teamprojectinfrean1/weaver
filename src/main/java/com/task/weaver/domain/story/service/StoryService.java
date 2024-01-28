@@ -3,12 +3,9 @@ package com.task.weaver.domain.story.service;
 import com.task.weaver.common.exception.AuthorizationException;
 import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.domain.project.entity.Project;
-import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.issue.entity.IssueMention;
 import com.task.weaver.domain.story.dto.request.RequestCreateStory;
 import com.task.weaver.domain.story.entity.Story;
-import com.task.weaver.domain.storyusertag.StoryUserTag;
-import com.task.weaver.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

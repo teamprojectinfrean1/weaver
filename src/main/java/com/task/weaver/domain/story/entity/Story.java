@@ -35,13 +35,13 @@ public class Story extends BaseEntity {
     @JoinColumn(name = "writer_user_id")
     private User user;
 
-    @OneToMany(mappedBy = "story")
-    @Column(name = "comment_list")
-    private List<Comment> commentList;
-
-    @OneToMany(mappedBy = "story")
-    @Column(name = "story_check_table")
-    private List<StoryCheckTable> storyCheckTable;
+//    @OneToMany(mappedBy = "story")
+//    @Column(name = "comment_list")
+//    private List<Comment> commentList;
+//
+//    @OneToMany(mappedBy = "story")
+//    @Column(name = "story_check_table")
+//    private List<StoryCheckTable> storyCheckTable;
 
     @Column(name = "title")
     private String title;
@@ -54,7 +54,6 @@ public class Story extends BaseEntity {
     private LocalDate created;
 
     @Column(name = "due_date")
-    @Nullable
     private LocalDate dueDate;
 
 }

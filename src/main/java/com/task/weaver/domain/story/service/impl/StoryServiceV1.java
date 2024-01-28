@@ -34,7 +34,7 @@ public class StoryServiceV1 implements StoryService {
 
     @Override
     public Story addStory(Story story) throws AuthorizationException {
-        return null;
+        return storyRepository.save(story);
     }
 
     @Override
