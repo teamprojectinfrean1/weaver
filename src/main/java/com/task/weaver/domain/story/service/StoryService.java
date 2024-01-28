@@ -16,21 +16,10 @@ public interface StoryService {
 
     Story getStory (Long storyId)
             throws NotFoundException, AuthorizationException;
-    Story getStory (Issue issue)
-            throws NotFoundException, AuthorizationException;
 
-    Page<Story> getStories (Long projectId, Pageable pageable)
-            throws NotFoundException, AuthorizationException;
     Page<Story> getStories (Project project, Pageable pageable)
             throws NotFoundException, AuthorizationException;
-    Page<Story> getStories (Project project, User user, Pageable pageable)
-            throws NotFoundException, AuthorizationException;
-    Page<Story> getStories (Project project, Long userId, Pageable pageable)
-            throws NotFoundException, AuthorizationException;
-    Page<Story> getStories (Long projectId, Long User, Pageable pageable)
-            throws NotFoundException, AuthorizationException;
-    Page<Story> getStories (StoryUserTag storyUserTag, Pageable pageable)
-            throws NotFoundException, AuthorizationException;
+
 
     Story addStory (Story story)
             throws AuthorizationException;
