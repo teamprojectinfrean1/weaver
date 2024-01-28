@@ -6,3 +6,4 @@ public record RequestCreateTaskAuthority(Long taskAuthorityId,
                                          Long taskId,
                                          String code) {
 }
+
