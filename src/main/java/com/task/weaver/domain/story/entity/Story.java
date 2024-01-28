@@ -3,6 +3,7 @@ package com.task.weaver.domain.story.entity;
 import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.comment.entity.Comment;
 import com.task.weaver.domain.project.entity.Project;
+import com.task.weaver.domain.story.dto.UpdateStory;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.user.entity.User;
 import jakarta.annotation.Nullable;
@@ -61,4 +62,9 @@ public class Story extends BaseEntity {
     @Column(name = "due_date")
     private LocalDate dueDate;
 
+    public void update (UpdateStory updateStory) {
+        title = updateStory.title();
+        body  = updateStory.body();
+        mentionTask = updateStory.mention();
+    }
 }
