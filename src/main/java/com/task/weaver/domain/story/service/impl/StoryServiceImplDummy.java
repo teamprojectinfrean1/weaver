@@ -2,9 +2,9 @@ package com.task.weaver.domain.story.service.impl;
 
 import com.task.weaver.common.exception.AuthorizationException;
 import com.task.weaver.common.exception.NotFoundException;
-import com.task.weaver.domain.issue.Issue;
-import com.task.weaver.domain.issue.IssueMention;
-import com.task.weaver.domain.project.Project;
+import com.task.weaver.domain.project.entity.Project;
+import com.task.weaver.domain.issue.entity.Issue;
+import com.task.weaver.domain.issue.entity.IssueMention;
 import com.task.weaver.domain.story.dto.request.RequestCreateStory;
 import com.task.weaver.domain.story.entity.Story;
 import com.task.weaver.domain.story.service.StoryService;

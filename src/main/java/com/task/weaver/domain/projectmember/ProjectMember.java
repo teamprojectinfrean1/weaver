@@ -1,9 +1,11 @@
 package com.task.weaver.domain.projectmember;
 
 import com.task.weaver.domain.BaseEntity;
-import com.task.weaver.domain.project.Project;
+import com.task.weaver.domain.project.entity.Project;
+import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,11 +26,11 @@ public class ProjectMember extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long projectMemberId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
 
-    /**TODO: 2024-01-19, 금, 23:36  -JEON
-     *  TASK: user 테이블 관계 설정 필요
-     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 }
