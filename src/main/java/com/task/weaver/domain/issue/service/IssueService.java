@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 public interface IssueService {
 
-    Issue getIssue (Long issueId) throws NotFoundException, AuthorizationException;
+    IssueResponse getIssue (Long issueId) throws NotFoundException, AuthorizationException;
 
     Page<Issue> getIssues (Long taskId, Pageable pageable) throws NotFoundException, AuthorizationException;
     Page<Issue> getIssues (Task task, Pageable pageable) throws NotFoundException, AuthorizationException;
