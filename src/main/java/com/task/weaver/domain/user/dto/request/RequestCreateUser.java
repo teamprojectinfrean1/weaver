@@ -17,7 +17,7 @@ public class RequestCreateUser {
 
     public User toEntity(){
         return User.builder()
-                .nickName(nickname)
+                .name(nickname)
                 .mail(mail)
                 .password(password)
                 .build();

@@ -16,7 +16,7 @@ public class ResponseUser {
 
     public ResponseUser(User user){
         this.user_id = user.getUserId();
-        this.nickname = user.getNickName();
+        this.nickname = user.getName();
         this.mail = user.getMail();
     }
 }

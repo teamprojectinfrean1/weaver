@@ -6,11 +6,10 @@ import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.repository.dsl.TaskRepositoryDsl;
 import com.task.weaver.domain.user.entity.User;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.awt.print.Pageable;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 public interface TaskRepository extends JpaRepository<Task, Long>, TaskRepositoryDsl {
     Page<Task> findByProject(Project project, Pageable pageable);

@@ -1,6 +1,7 @@
 package com.task.weaver.domain.story.entity;
 
 import com.task.weaver.domain.BaseEntity;
+import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,12 +21,12 @@ public class StoryCheckTable extends BaseEntity {
     @Column(name = "story_check_id")
     private Long story_check_id;
 
-    /**
-     * Todo: User와 매핑
-     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "story")
+    @JoinColumn(name = "story_id")
     private Story story;
 
     @Column(name = "check_date")

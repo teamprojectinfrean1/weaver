@@ -41,14 +41,6 @@ public class Story extends BaseEntity {
     @JoinColumn(name = "mention_task_id")
     private Task mentionTask;
 
-//    @OneToMany(mappedBy = "story")
-//    @Column(name = "comment_list")
-//    private List<Comment> commentList;
-//
-//    @OneToMany(mappedBy = "story")
-//    @Column(name = "story_check_table")
-//    private List<StoryCheckTable> storyCheckTable;
-
     @Column(name = "title")
     private String title;
 

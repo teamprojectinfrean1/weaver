@@ -9,9 +9,8 @@ import com.task.weaver.domain.issue.entity.IssueMention;
 import com.task.weaver.domain.issue.repository.IssueRepository;
 import com.task.weaver.domain.issue.service.IssueService;
 import com.task.weaver.domain.status.StatusTag;
-import com.task.weaver.domain.task.Task;
+import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.user.entity.User;
-import com.task.weaver.domain.user.repository.UserRepository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,9 +34,15 @@ public class IssueServiceImpl implements IssueService {
 	}
 
 	@Override
-	public Page<Issue> getIssues(Long taskId, Pageable pageable) throws NotFoundException, AuthorizationException {
-		return issueRepository.findAllBytaskId(taskId, pageable);
+	public Page<Issue> getIssues(final Long taskId, final Pageable pageable)
+			throws NotFoundException, AuthorizationException {
+		return null;
 	}
+
+//	@Override
+//	public Page<Issue> getIssues(Long taskId, Pageable pageable) throws NotFoundException, AuthorizationException {
+//		return issueRepository.findAllBytaskId(taskId, pageable);
+//	}
 
 	@Override
 	public Page<Issue> getIssues(Task task, Pageable pageable) throws NotFoundException, AuthorizationException {
