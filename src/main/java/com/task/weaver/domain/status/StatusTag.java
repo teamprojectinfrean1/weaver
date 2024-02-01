@@ -13,11 +13,11 @@ import lombok.NoArgsConstructor;
 @Builder
 public class StatusTag {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "status_tag_id", length = 100)
-    private String statusTagId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "status_tag_id", length = 100)
+	private String statusTagId;
 
-    @Column(name = "hex_code", length = 8)
-    private String hexCode;
+	@Column(name = "hex_code", length = 8)
+	private String hexCode;
 }
