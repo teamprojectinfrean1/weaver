@@ -2,6 +2,7 @@ package com.task.weaver.domain.issue.service;
 
 import com.task.weaver.common.exception.AuthorizationException;
 import com.task.weaver.common.exception.NotFoundException;
+import com.task.weaver.domain.issue.dto.request.IssueRequest;
 import com.task.weaver.domain.issue.dto.response.IssueResponse;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.issue.entity.IssueMention;
@@ -27,6 +28,7 @@ public interface IssueService {
     Page<Issue> getIssues (IssueMention issueMention, Pageable pageable) throws NotFoundException, AuthorizationException;
 
 
+    void addIssue(IssueRequest issueRequest) throws AuthorizationException;
     Issue addIssue (Issue issue, Task task, User user) throws AuthorizationException;
     Issue addIssue (Issue issue, Long taskId, Long userId) throws AuthorizationException;
 

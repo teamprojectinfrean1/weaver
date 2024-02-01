@@ -1,7 +1,10 @@
 package com.task.weaver.domain.issue.service.impl;
 
+import java.util.Optional;
+
 import com.task.weaver.common.exception.AuthorizationException;
 import com.task.weaver.common.exception.NotFoundException;
+import com.task.weaver.domain.issue.dto.request.IssueRequest;
 import com.task.weaver.domain.issue.dto.response.IssueResponse;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.issue.entity.IssueMention;
@@ -32,12 +35,12 @@ public class IssueServiceImpl implements IssueService {
 
 	@Override
 	public Page<Issue> getIssues(Long taskId, Pageable pageable) throws NotFoundException, AuthorizationException {
-		return null;
+		return issueRepository.findAllBytaskId(taskId, pageable);
 	}
 
 	@Override
 	public Page<Issue> getIssues(Task task, Pageable pageable) throws NotFoundException, AuthorizationException {
-		return null;
+		return issueRepository.findAllByTask(task, pageable);
 	}
 
 	@Override
@@ -80,6 +83,11 @@ public class IssueServiceImpl implements IssueService {
 		NotFoundException,
 		AuthorizationException {
 		return null;
+	}
+
+	@Override
+	public void addIssue(IssueRequest issueRequest) throws AuthorizationException {
+		Issue issue = issueRepository.save(Issue.builder().build());
 	}
 
 	@Override

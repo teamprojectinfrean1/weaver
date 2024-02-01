@@ -1,5 +1,6 @@
 package com.task.weaver.domain.issue.entity;
 
+import com.task.weaver.domain.issue.dto.request.IssueRequest;
 import com.task.weaver.domain.status.StatusTag;
 import com.task.weaver.domain.task.Task;
 import com.task.weaver.domain.user.entity.User;
@@ -10,6 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
 
 @Entity
 @AllArgsConstructor
@@ -36,7 +39,7 @@ public class Issue {
     private User user;
 
     @Column(name = "issue_name", length = 100)
-    private String issueName;
+    private Strng issueName;
 
     @Column(name = "issue_type", length = 100)
     private String issueType;
@@ -44,5 +47,10 @@ public class Issue {
     @Column(name = "issue_text")
     private String issueText;
 
-    private LocalDateTime created;
+    @CreatedDate
+    private LocalDateTime createdDate;
+
+    public static Issue from(IssueRequest issueRequest, Task task, User user) {
+        return Issue.builder().task(task).user(user).
+    }
 }
