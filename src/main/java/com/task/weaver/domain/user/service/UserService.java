@@ -2,14 +2,12 @@ package com.task.weaver.domain.user.service;
 
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.story.entity.Story;
-import com.task.weaver.domain.task.Task;
-import com.task.weaver.domain.user.dto.reesponse.ResponseUser;
 import com.task.weaver.domain.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
+import com.task.weaver.domain.user.dto.response.ResponseUser;
 import com.task.weaver.domain.user.entity.User;
-
 import java.util.List;
-import java.util.Optional;
+
 
 public interface UserService {
     ResponseUser getUser(Long user_id);

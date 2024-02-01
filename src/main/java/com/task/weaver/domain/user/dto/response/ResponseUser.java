@@ -1,4 +1,4 @@
-package com.task.weaver.domain.user.dto.reesponse;
+package com.task.weaver.domain.user.dto.response;
 
 import com.task.weaver.domain.user.entity.User;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class ResponseUser {
     private Long user_id;

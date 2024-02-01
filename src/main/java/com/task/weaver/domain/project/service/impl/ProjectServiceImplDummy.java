@@ -23,8 +23,8 @@ public class ProjectServiceImplDummy implements ProjectService {
     private final ProjectRepository projectRepository;
 
     @Override
-    public ResponsePageResult<RequestCreateProject, Project> getProjects(final RequestPageProject requestPageProject,
-                                                                         final Long userId) throws BusinessException {
+    public ResponsePageResult<RequestCreateProject, Project> getProjects(final RequestPageProject requestPageProject)
+            throws BusinessException {
 
         Pageable pageable = requestPageProject.getPageable(Sort.by("projectId").descending());
         Page<Project> result = projectRepository.findAll(pageable);
@@ -49,16 +49,15 @@ public class ProjectServiceImplDummy implements ProjectService {
 
     @Override
     public void updateProject(final RequestCreateProject dto) throws BusinessException {
-        Optional<Project> result = projectRepository.findById(dto.getProjectId());
-
+        Optional<Project> result = projectRepository.findById(dto.projectId());
         if (result.isPresent()) {
             Project entity = result.get();
             entity.changeDetail(dto.detail());
             entity.changeName(dto.name());
-            entity.changePublic();
             projectRepository.save(entity);
+            return;
         }
-        throw new ProjectNotFoundException(new Throwable(String.valueOf(dto.getProjectId())));
+        throw new ProjectNotFoundException(new Throwable(String.valueOf(dto.projectId())));
     }
 
     @Override
@@ -66,6 +65,18 @@ public class ProjectServiceImplDummy implements ProjectService {
         Optional<Project> project = projectRepository.findById(projectId);
         if (project.isPresent()){
             projectRepository.deleteById(projectId);
+            return;
+        }
+        throw new ProjectNotFoundException(new Throwable(String.valueOf(projectId)));
+    }
+
+    @Override
+    public void updateProjectView(Long projectId) {
+        Optional<Project> result = projectRepository.findById(projectId);
+        if (result.isPresent()) {
+            Project project = result.get();
+            project.changePublic();
+            projectRepository.save(project);
             return;
         }
         throw new ProjectNotFoundException(new Throwable(String.valueOf(projectId)));
