@@ -1,6 +1,6 @@
-package com.task.weaver.domain.taskmember;
+package com.task.weaver.domain.taskmember.entity;
 
-import com.task.weaver.domain.task.Task;
+import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

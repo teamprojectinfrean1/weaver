@@ -1,4 +1,4 @@
-package com.task.weaver.domain.task.dto.request;
+package com.task.weaver.domain.task.dto.response;
 
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.status.StatusTag;
@@ -15,8 +15,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RequestCreateTask {
+public class ResponseTask {
 
+    private Long taskId;
     private Project project;
     private StatusTag statusTag;
     private User user;
@@ -24,15 +25,13 @@ public class RequestCreateTask {
     private String detail;
     private LocalDateTime dueDate;
 
-    public Task toEntity() {
-        return Task.builder()
-                .project(project)
-                .statusTag(statusTag)
-                .user(user)
-                .taskName(taskName)
-                .detail(detail)
-                .dueDate(dueDate)
-                .build();
+    public ResponseTask(Task task) {
+        this.taskId = task.getTaskId();
+        this.project = task.getProject();
+        this.statusTag = task.getStatusTag();
+        this.user = task.getUser();
+        this.taskName = task.getTaskName();
+        this.detail = task.getDetail();
+        this.dueDate = task.getDueDate();
     }
-
 }

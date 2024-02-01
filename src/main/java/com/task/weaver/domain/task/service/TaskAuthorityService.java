@@ -6,6 +6,10 @@ import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.domain.project.entity.Project;
 
 import com.task.weaver.domain.task.dto.request.RequestCreateTaskAuthority;
+import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
+import com.task.weaver.domain.task.dto.request.RequestUpdateTaskAuthority;
+import com.task.weaver.domain.task.dto.response.ResponseTask;
+import com.task.weaver.domain.task.dto.response.ResponseTaskAuthority;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.entity.TaskAuthority;
 import com.task.weaver.domain.taskmember.entity.TaskManager;
@@ -16,9 +20,9 @@ import java.awt.print.Pageable;
 
 public interface TaskAuthorityService {
 
-    TaskAuthority getTaskAuthority(Long taskAuthorityId)
+    ResponseTaskAuthority getTaskAuthority(Long taskAuthorityId)
             throws NotFoundException, AuthorizationException;
-    TaskAuthority getTaskAuthority(Project project, Task task, TaskManager taskManager)
+    ResponseTaskAuthority getTaskAuthority(Project project, Task task, TaskManager taskManager)
             throws NotFoundException, AuthorizationException;
 
     Page<TaskAuthority> getTaskAuthorities(Task task, Pageable pageable)
@@ -26,10 +30,10 @@ public interface TaskAuthorityService {
     Page<TaskAuthority> getTaskAuthorities(User user, Pageable pageable)
             throws NotFoundException, AuthorizationException;
 
-    TaskAuthority addTaskAuthority(Task task, TaskManager taskManager, String code)
+    TaskAuthority addTaskAuthority(TaskAuthority taskAuthority)
             throws AuthorizationException;
-    TaskAuthority addTaskAuthority(RequestCreateTaskAuthority request)
-            throws AuthorizationException;
+
+    ResponseTaskAuthority addTaskAuthority(RequestCreateTaskAuthority requestCreateTaskAuthority);
 
     // 권한이 삭제되면 Task에서 추방
     void deleteTaskAuthority(TaskAuthority taskAuthority)
@@ -42,4 +46,5 @@ public interface TaskAuthorityService {
     TaskAuthority updateTaskAuthority(Long originalTaskAuthorityId, TaskAuthority newTaskAuthority)
             throws NotFoundException, AuthorizationException;
 
+    ResponseTaskAuthority updateTaskAuthority(Long originalTaskAuthorityId, RequestUpdateTaskAuthority requestUpdateTaskAuthority);
 }
