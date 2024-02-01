@@ -9,12 +9,9 @@ import com.task.weaver.domain.task.dto.request.RequestCreateTask;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
 import com.task.weaver.domain.task.dto.response.ResponseTask;
 import com.task.weaver.domain.task.entity.Task;
-import com.task.weaver.domain.taskmember.entity.TaskManager;
-import com.task.weaver.domain.tasktag.TaskTag;
-import com.task.weaver.domain.user.entity.User;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.awt.print.Pageable;
 
 public interface TaskService {
 
@@ -27,8 +24,8 @@ public interface TaskService {
             throws NotFoundException, AuthorizationException;
     Page<Task> getTasks(StatusTag statusTag, Pageable pageable)
             throws NotFoundException, AuthorizationException;
-    Page<Task> getTasks(User user, Pageable pageable)
-            throws NotFoundException, AuthorizationException;
+//    Page<Task> getTasks(User user, Pageable pageable)
+//            throws NotFoundException, AuthorizationException;
 
     ResponseTask addTask(RequestCreateTask request)
             throws AuthorizationException;

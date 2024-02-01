@@ -2,7 +2,7 @@ package com.task.weaver.domain.issue.entity;
 
 import com.task.weaver.domain.issue.dto.request.IssueRequest;
 import com.task.weaver.domain.status.StatusTag;
-import com.task.weaver.domain.task.Task;
+import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -34,7 +34,7 @@ public class Issue {
     @JoinColumn(name = "create_user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "status_tag_id")
     private StatusTag statusTag;
 
@@ -51,7 +51,7 @@ public class Issue {
     private LocalDateTime createdDate;
 
     public static Issue from(IssueRequest issueRequest, Task task, User user, StatusTag statusTag) {
-        return Issue.builder().task(task).user(user).statusTag(statusTag).issueName(issueRequest.getIssueName()).issueType(
+        return Issue.builder().task(task).user(user).statusTag(statusTag).issueName(issueRequest.issueName()).issueType(
             issueRequest.issueType()).issueText(issueRequest.issueText()).build();
     }
 }

@@ -11,20 +11,18 @@ import com.task.weaver.domain.task.dto.response.ResponseTask;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.repository.TaskRepository;
 import com.task.weaver.domain.task.service.TaskService;
-import com.task.weaver.domain.taskmember.entity.TaskManager;
-import com.task.weaver.domain.tasktag.TaskTag;
-import com.task.weaver.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Pageable;
 
 @Service
 @RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
+
     @Override
     public ResponseTask getTask(Long taskId) throws NotFoundException, AuthorizationException {
         Task task = taskRepository.findById(taskId).get();
@@ -49,11 +47,11 @@ public class TaskServiceImpl implements TaskService {
         return tasks;
     }
 
-    @Override
-    public Page<Task> getTasks(User user, Pageable pageable) throws NotFoundException, AuthorizationException {
-        Page<Task> tasks = taskRepository.findByUser(user, pageable);
-        return tasks;
-    }
+//    @Override
+//    public Page<Task> getTasks(User user, Pageable pageable) throws NotFoundException, AuthorizationException {
+//        Page<Task> tasks = taskRepository.findByUser(user, pageable);
+//        return tasks;
+//    }
 
 
     @Override

@@ -20,7 +20,7 @@ public class User {
     private Long userId;
 
     @Column(name = "nickname", length = 20)
-    private String nickName;
+    private String name;
 
     @Column(name = "is_online", length = 20)
     private String isOnline;
@@ -32,7 +32,7 @@ public class User {
     private String password;
 
     public void updateUser(RequestUpdateUser requestUpdateUser){
-        this.nickName = requestUpdateUser.getNickname();
+        this.name = requestUpdateUser.getNickname();
         this.mail = requestUpdateUser.getMail();
         this.password = requestUpdateUser.getPassword();
     }

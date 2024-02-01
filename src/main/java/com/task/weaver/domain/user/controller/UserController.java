@@ -1,10 +1,9 @@
 package com.task.weaver.domain.user.controller;
 
-import com.task.weaver.domain.user.dto.reesponse.ResponseUser;
 import com.task.weaver.domain.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
+import com.task.weaver.domain.user.dto.response.ResponseUser;
 import com.task.weaver.domain.user.service.UserService;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -2,6 +2,7 @@ package com.task.weaver.domain.comment.entity;
 
 import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.comment.entity.Comment;
+import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,9 +22,9 @@ public class CommentCheckTable extends BaseEntity {
     @Column(name = "comment_check_id")
     private Long comment_check_id;
 
-    /**
-     * Todo: User와 매핑
-     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment")
