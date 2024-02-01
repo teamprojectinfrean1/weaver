@@ -1,4 +1,4 @@
-package com.task.weaver.domain.user.dto.reesponse;
+package com.task.weaver.domain.user.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class ResponseUser {
 }

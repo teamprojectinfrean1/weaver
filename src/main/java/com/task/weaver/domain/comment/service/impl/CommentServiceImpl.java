@@ -5,7 +5,7 @@ import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.domain.comment.dto.request.RequestCreateComment;
 import com.task.weaver.domain.comment.entity.Comment;
 import com.task.weaver.domain.comment.service.CommentService;
-import com.task.weaver.domain.project.Project;
+import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.story.entity.Story;
 import com.task.weaver.domain.user.entity.User;
 import org.springframework.data.domain.Page;
