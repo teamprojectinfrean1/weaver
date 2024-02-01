@@ -1,4 +1,8 @@
 package com.task.weaver.domain.issue.dto.response;
 
-public record IssueResponse() {
+import lombok.Builder;
+
+@Builder
+public record IssueResponse(Long issueId,
+							String issueName) {
 }

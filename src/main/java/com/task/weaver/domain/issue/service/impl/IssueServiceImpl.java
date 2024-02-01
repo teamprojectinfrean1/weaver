@@ -2,6 +2,7 @@ package com.task.weaver.domain.issue.service.impl;
 
 import com.task.weaver.common.exception.AuthorizationException;
 import com.task.weaver.common.exception.NotFoundException;
+import com.task.weaver.domain.issue.dto.response.IssueResponse;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.issue.entity.IssueMention;
 import com.task.weaver.domain.issue.repository.IssueRepository;
@@ -24,9 +25,9 @@ public class IssueServiceImpl implements IssueService {
 	private final IssueRepository issueRepository;
 
 	@Override
-	public Issue getIssue(Long issueId) throws NotFoundException, AuthorizationException {
-		Issue issue = issueRepository.findById(issueId).orElseThrow();
-		return null;
+	public IssueResponse getIssue(Long issueId) throws NotFoundException, AuthorizationException {
+		Issue issue = issueRepository.findById(issueId).orElseThrow(() -> new IllegalArgumentException(""));
+		return new IssueResponse();
 	}
 
 	@Override
