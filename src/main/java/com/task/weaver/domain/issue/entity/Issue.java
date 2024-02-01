@@ -1,5 +1,6 @@
 package com.task.weaver.domain.issue.entity;
 
+import com.task.weaver.domain.issue.dto.request.IssueRequest;
 import com.task.weaver.domain.status.StatusTag;
 import com.task.weaver.domain.task.Task;
 import com.task.weaver.domain.user.entity.User;
@@ -10,6 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
 
 @Entity
 @AllArgsConstructor
@@ -28,12 +31,12 @@ public class Issue {
     private Task task;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "status_tag_id")
-    private StatusTag statusTag;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "create_user_id")
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "status_tag_id")
+    private StatusTag statusTag;
 
     @Column(name = "issue_name", length = 100)
     private String issueName;
@@ -44,5 +47,11 @@ public class Issue {
     @Column(name = "issue_text")
     private String issueText;
 
-    private LocalDateTime created;
+    @CreatedDate
+    private LocalDateTime createdDate;
+
+    public static Issue from(IssueRequest issueRequest, Task task, User user, StatusTag statusTag) {
+        return Issue.builder().task(task).user(user).statusTag(statusTag).issueName(issueRequest.getIssueName()).issueType(
+            issueRequest.issueType()).issueText(issueRequest.issueText()).build();
+    }
 }
