@@ -31,15 +31,15 @@ public class Issue {
     private Task task;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "status_tag_id")
-    private StatusTag statusTag;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "create_user_id")
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "status_tag_id")
+    private StatusTag statusTag;
+
     @Column(name = "issue_name", length = 100)
-    private Strng issueName;
+    private String issueName;
 
     @Column(name = "issue_type", length = 100)
     private String issueType;
@@ -50,7 +50,8 @@ public class Issue {
     @CreatedDate
     private LocalDateTime createdDate;
 
-    public static Issue from(IssueRequest issueRequest, Task task, User user) {
-        return Issue.builder().task(task).user(user).
+    public static Issue from(IssueRequest issueRequest, Task task, User user, StatusTag statusTag) {
+        return Issue.builder().task(task).user(user).statusTag(statusTag).issueName(issueRequest.getIssueName()).issueType(
+            issueRequest.issueType()).issueText(issueRequest.issueText()).build();
     }
 }

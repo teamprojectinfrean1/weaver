@@ -1,7 +1,6 @@
 package com.task.weaver.domain.task;
 
 import com.task.weaver.domain.project.entity.Project;
-import com.task.weaver.domain.status.StatusTag;
 import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
