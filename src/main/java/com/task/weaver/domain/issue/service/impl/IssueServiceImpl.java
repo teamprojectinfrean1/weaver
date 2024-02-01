@@ -3,6 +3,8 @@ package com.task.weaver.domain.issue.service.impl;
 import com.task.weaver.common.exception.AuthorizationException;
 import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.domain.issue.entity.Issue;
+import com.task.weaver.domain.issue.entity.IssueMention;
+import com.task.weaver.domain.issue.repository.IssueRepository;
 import com.task.weaver.domain.issue.service.IssueService;
 import com.task.weaver.domain.status.StatusTag;
 import com.task.weaver.domain.task.Task;
@@ -11,12 +13,19 @@ import com.task.weaver.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class IssueServiceImpl implements IssueService {
+	private final IssueRepository issueRepository;
 
 	@Override
 	public Issue getIssue(Long issueId) throws NotFoundException, AuthorizationException {
+		Issue issue = issueRepository.findById(issueId).orElseThrow();
 		return null;
 	}
 
@@ -26,32 +35,49 @@ public class IssueServiceImpl implements IssueService {
 	}
 
 	@Override
-	public Page<Issue> getIssues(Task task, Pageable pageable) {
+	public Page<Issue> getIssues(Task task, Pageable pageable) throws NotFoundException, AuthorizationException {
 		return null;
 	}
 
 	@Override
-	public Page<Issue> getIssues(Task task, Long userId, Pageable pageable) {
+	public Page<Issue> getIssues(Task task, Long userId, Pageable pageable) throws
+		NotFoundException,
+		AuthorizationException {
 		return null;
 	}
 
 	@Override
-	public Page<Issue> getIssues(Task task, User user, Pageable pageable) {
+	public Page<Issue> getIssues(Task task, User user, Pageable pageable) throws
+		NotFoundException,
+		AuthorizationException {
 		return null;
 	}
 
 	@Override
-	public Page<Issue> getIssues(Long taskId, Long userId, Pageable pageable) {
+	public Page<Issue> getIssues(Long taskId, Long userId, Pageable pageable) throws
+		NotFoundException,
+		AuthorizationException {
 		return null;
 	}
 
 	@Override
-	public Page<Issue> getIssues(Long taskId, User user, Pageable pageable) {
+	public Page<Issue> getIssues(Long taskId, User user, Pageable pageable) throws
+		NotFoundException,
+		AuthorizationException {
 		return null;
 	}
 
 	@Override
-	public Page<Issue> getIssues(StatusTag statusTag, Pageable pageable) {
+	public Page<Issue> getIssues(StatusTag statusTag, Pageable pageable) throws
+		NotFoundException,
+		AuthorizationException {
+		return null;
+	}
+
+	@Override
+	public Page<Issue> getIssues(IssueMention issueMention, Pageable pageable) throws
+		NotFoundException,
+		AuthorizationException {
 		return null;
 	}
 
