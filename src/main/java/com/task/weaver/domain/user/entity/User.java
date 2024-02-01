@@ -1,5 +1,6 @@
 package com.task.weaver.domain.user.entity;
 
+import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,4 +31,9 @@ public class User {
     @Column(name = "password", length = 20)
     private String password;
 
+    public void updateUser(RequestUpdateUser requestUpdateUser){
+        this.nickName = requestUpdateUser.getNickname();
+        this.mail = requestUpdateUser.getMail();
+        this.password = requestUpdateUser.getPassword();
+    }
 }

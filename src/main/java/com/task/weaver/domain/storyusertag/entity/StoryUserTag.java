@@ -1,4 +1,4 @@
-package com.task.weaver.domain.storyusertag;
+package com.task.weaver.domain.storyusertag.entity;
 
 import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.story.entity.Story;
