@@ -7,6 +7,8 @@ import com.task.weaver.domain.project.dto.request.RequestPageProject;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.service.ProjectService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +21,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Project Controller", description = "프로젝트 관련 컨트롤러")
 @RequestMapping("/api/v1/project")
 @RestController
 @RequiredArgsConstructor
 public class ProjectController {
     private final ProjectService projectService;
 
+    @Operation(summary = "프로젝트 단건 조회", description = "프로젝트 단건 조회")
     @GetMapping("/{projectId}")
     public ResponseEntity<DataResponse<RequestCreateProject>> getProject(@PathVariable Long projectId) {
         RequestCreateProject project = projectService.getProject(projectId);

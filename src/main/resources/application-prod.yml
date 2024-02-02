@@ -15,3 +15,16 @@ spring:
         show_sql: true
         format_sql: true
         use_sql_comments: #
+
+springdoc:
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui
+    tags-sorter: alpha
+    docExpansion: "none"
+    persistAuthorization: true
+    defaultModelsExpandDepth: -1
+  use-fqn: true
