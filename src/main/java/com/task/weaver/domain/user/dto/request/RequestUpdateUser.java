@@ -1,4 +1,4 @@
-package com.task.weaver.domain.user.dto.reesponse;
+package com.task.weaver.domain.user.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,5 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ResponseUser {
+public class RequestUpdateUser {
+    private String nickname;
+    private String mail;
+    private String password;
 }

@@ -1,5 +1,6 @@
 package com.task.weaver.domain.user.entity;
 
+import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +20,7 @@ public class User {
     private Long userId;
 
     @Column(name = "nickname", length = 20)
-    private String nickName;
+    private String name;
 
     @Column(name = "is_online", length = 20)
     private String isOnline;
@@ -30,4 +31,9 @@ public class User {
     @Column(name = "password", length = 20)
     private String password;
 
+    public void updateUser(RequestUpdateUser requestUpdateUser){
+        this.name = requestUpdateUser.getNickname();
+        this.mail = requestUpdateUser.getMail();
+        this.password = requestUpdateUser.getPassword();
+    }
 }

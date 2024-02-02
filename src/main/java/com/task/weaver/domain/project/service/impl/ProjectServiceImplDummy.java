@@ -1,7 +1,6 @@
 package com.task.weaver.domain.project.service.impl;
 
 import com.task.weaver.common.exception.BusinessException;
-import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.domain.project.dto.request.RequestCreateProject;
 import com.task.weaver.domain.project.dto.request.RequestPageProject;
@@ -10,7 +9,11 @@ import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
 import com.task.weaver.domain.project.service.ProjectService;
 import java.util.Optional;
+import java.util.function.Function;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,9 +23,14 @@ public class ProjectServiceImplDummy implements ProjectService {
     private final ProjectRepository projectRepository;
 
     @Override
-    public ResponsePageResult<RequestCreateProject, Project> getProjects(final RequestPageProject requestPageProject,
-                                                                         final Long userId) throws BusinessException {
-        return null;
+    public ResponsePageResult<RequestCreateProject, Project> getProjects(final RequestPageProject requestPageProject)
+            throws BusinessException {
+
+        Pageable pageable = requestPageProject.getPageable(Sort.by("projectId").descending());
+        Page<Project> result = projectRepository.findAll(pageable);
+        Function<Project, RequestCreateProject> fn = (this::entityToDto);
+
+        return new ResponsePageResult<>(result, fn);
     }
 
     @Override
@@ -34,16 +42,43 @@ public class ProjectServiceImplDummy implements ProjectService {
 
     @Override
     public Long addProject(final RequestCreateProject dto) throws BusinessException {
-        return null;
+        Project project = dtoToEntity(dto);
+        projectRepository.save(project);
+        return project.getProjectId();
     }
 
     @Override
     public void updateProject(final RequestCreateProject dto) throws BusinessException {
-
+        Optional<Project> result = projectRepository.findById(dto.projectId());
+        if (result.isPresent()) {
+            Project entity = result.get();
+            entity.changeDetail(dto.detail());
+            entity.changeName(dto.name());
+            projectRepository.save(entity);
+            return;
+        }
+        throw new ProjectNotFoundException(new Throwable(String.valueOf(dto.projectId())));
     }
 
     @Override
     public void deleteProject(final Long projectId) throws BusinessException {
+        Optional<Project> project = projectRepository.findById(projectId);
+        if (project.isPresent()){
+            projectRepository.deleteById(projectId);
+            return;
+        }
+        throw new ProjectNotFoundException(new Throwable(String.valueOf(projectId)));
+    }
 
+    @Override
+    public void updateProjectView(Long projectId) {
+        Optional<Project> result = projectRepository.findById(projectId);
+        if (result.isPresent()) {
+            Project project = result.get();
+            project.changePublic();
+            projectRepository.save(project);
+            return;
+        }
+        throw new ProjectNotFoundException(new Throwable(String.valueOf(projectId)));
     }
 }

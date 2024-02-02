@@ -2,6 +2,10 @@ package com.task.weaver.domain.story.entity;
 
 import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.comment.entity.Comment;
+import com.task.weaver.domain.project.entity.Project;
+import com.task.weaver.domain.story.dto.UpdateStory;
+import com.task.weaver.domain.task.entity.Task;
+import com.task.weaver.domain.user.entity.User;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -20,21 +24,22 @@ import java.util.List;
 @Builder
 public class Story extends BaseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "story_id")
     private Long story_id;
 
-    @OneToMany(mappedBy = "story")
-    @Column(name = "comment_list")
-    private List<Comment> commentList;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    private Project project;
 
-    @OneToMany(mappedBy = "story")
-    @Column(name = "story_check_table")
-    private List<StoryCheckTable> storyCheckTable;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "writer_user_id")
+    private User user;
 
-    /**
-     * Todo: User와 매핑
-     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mention_task_id")
+    private Task mentionTask;
 
     @Column(name = "title")
     private String title;
@@ -47,6 +52,11 @@ public class Story extends BaseEntity {
     private LocalDate created;
 
     @Column(name = "due_date")
-    @Nullable
     private LocalDate dueDate;
+
+    public void update (UpdateStory updateStory) {
+        title = updateStory.title();
+        body  = updateStory.body();
+        mentionTask = updateStory.mention();
+    }
 }

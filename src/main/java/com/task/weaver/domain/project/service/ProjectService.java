@@ -10,12 +10,12 @@ public interface ProjectService {
 
     default Project dtoToEntity(RequestCreateProject dto) {
         return Project.builder()
-                .customUrl(dto.getCustomUrl())
-                .bannerUrl(dto.getBannerUrl())
-                .name(dto.getName())
-                .detail(dto.getDetail())
-                .dueDate(dto.getDueDate())
-                .created(dto.getCreated())
+                .customUrl(dto.customUrl())
+                .bannerUrl(dto.bannerUrl())
+                .name(dto.name())
+                .detail(dto.detail())
+                .dueDate(dto.dueDate())
+                .created(dto.created())
                 .isPublic(dto.hasPublic())
                 .build();
     }
@@ -33,7 +33,7 @@ public interface ProjectService {
                 .build();
     }
 
-    ResponsePageResult<RequestCreateProject, Project> getProjects(RequestPageProject requestPageProject, Long userId)
+    ResponsePageResult<RequestCreateProject, Project> getProjects(RequestPageProject requestPageProject)
             throws BusinessException;
 
     RequestCreateProject getProject(Long projectId) throws BusinessException;
@@ -43,4 +43,6 @@ public interface ProjectService {
     void updateProject(RequestCreateProject dto) throws BusinessException;
 
     void deleteProject(Long projectId) throws BusinessException;
+
+    void updateProjectView(Long projectId);
 }

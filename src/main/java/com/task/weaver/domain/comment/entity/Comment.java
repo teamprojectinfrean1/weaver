@@ -3,6 +3,7 @@ package com.task.weaver.domain.comment.entity;
 import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.comment.dto.request.RequestUpdateComment;
 import com.task.weaver.domain.story.entity.Story;
+import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +12,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity(name = "COMMENT")
 @AllArgsConstructor
@@ -20,22 +20,18 @@ import java.util.List;
 @Builder
 public class Comment extends BaseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
     private Long comment_id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "story")
-    @Column(name = "story")
+    @JoinColumn(name = "story_id")
     private Story story;
 
-    /**
-     * Todo: User와 매핑
-     */
-
-    @OneToMany(mappedBy = "comment")
-    @Column(name = "comment_check_table")
-    private List<CommentCheckTable> commentCheckTable;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     private String body;
 
