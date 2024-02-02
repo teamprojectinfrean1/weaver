@@ -1,8 +1,5 @@
 package com.task.weaver.domain.comment.service;
 
-import com.task.weaver.common.exception.AuthorizationException;
-import com.task.weaver.common.exception.NotFoundException;
-import com.task.weaver.domain.comment.dto.request.RequestCreateComment;
 import com.task.weaver.domain.comment.dto.request.RequestUpdateComment;
 import com.task.weaver.domain.comment.dto.response.ResponseComment;
 import com.task.weaver.domain.comment.entity.Comment;
@@ -20,10 +17,10 @@ public interface CommentService {
     Page<Comment> getComments (Project project, Story story, Pageable pageable);
     Comment addComment (String content, Story story, User user);
 
-    void deleteComment (Comment comment);
-    void deleteComment (Long commentId);
+    void deleteComment (User deleter, Comment comment);
+    void deleteComment (User deleter, Long commentId);
 
-    ResponseComment updateComment(Comment originalComment, RequestUpdateComment newComment);
+    ResponseComment updateComment(User updater, Comment originalComment, RequestUpdateComment newComment);
 
-    ResponseComment updateComment(Long originalCommentId, RequestUpdateComment newComment);
+    ResponseComment updateComment(User updater, Long originalCommentId, RequestUpdateComment newComment);
 }

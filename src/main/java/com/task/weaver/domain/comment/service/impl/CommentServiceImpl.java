@@ -1,5 +1,6 @@
 package com.task.weaver.domain.comment.service.impl;
 
+import com.task.weaver.common.exception.AuthorizationException;
 import com.task.weaver.domain.comment.dto.request.RequestCreateComment;
 import com.task.weaver.domain.comment.dto.request.RequestUpdateComment;
 import com.task.weaver.domain.comment.dto.response.ResponseComment;
@@ -28,46 +29,58 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Page<Comment> getComments(Long projectId, Pageable pageable){
-        return null;
+        return commentRepository.findAllByProjectId(projectId, pageable);
     }
 
     @Override
     public Page<Comment> getComments(Project project, Pageable pageable){
-        return null;
+        return commentRepository.findAllByProject(project, pageable);
     }
 
     @Override
     public Page<Comment> getComments(Project project, Story story, Pageable pageable){
-        return null;
+        return commentRepository.findAllByProjectAndStory(project, story, pageable);
     }
 
     @Override
     public Comment addComment(String content, Story story, User user){
-        return null;
+        Comment comment = Comment.builder()
+                .body(content)
+                .story(story)
+                .user(user)
+                .build();
+        return commentRepository.save(comment);
     }
 
     @Override
-    public void deleteComment(Comment comment){
+    public void deleteComment(User deleter, Comment comment){
+        validateOwner(deleter, comment);
         commentRepository.delete(comment);
     }
 
     @Override
-    public void deleteComment(Long commentId){
+    public void deleteComment(User deleter, Long commentId){
+        validateOwner(deleter, commentRepository.findById(commentId).get());
         commentRepository.delete(commentRepository.findById(commentId).get());
     }
 
     @Override
-    public ResponseComment updateComment(Comment originalComment, RequestUpdateComment newComment){
+    public ResponseComment updateComment(User updater, Comment originalComment, RequestUpdateComment newComment){
+        validateOwner(updater, originalComment);
         originalComment.updateComment(newComment);
-        commentRepository.save(originalComment);
         return new ResponseComment(originalComment);
     }
 
     @Override
-    public ResponseComment updateComment(Long originalCommentId, RequestUpdateComment newComment){
+    public ResponseComment updateComment(User updater, Long originalCommentId, RequestUpdateComment newComment){
         Comment comment = commentRepository.findById(originalCommentId).get();
+        validateOwner(updater, comment);
         comment.updateComment(newComment);
-        commentRepository.save(comment);
         return new ResponseComment(comment);
+    }
+    private void validateOwner (User user, Comment comment) throws AuthorizationException {
+        if (user != comment.getUser()) {
+            throw new AuthorizationException();
+        }
     }
 }
