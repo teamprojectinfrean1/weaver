@@ -1,4 +1,4 @@
-package com.task.weaver.issue;
+package com.task.weaver.domain.issue.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
