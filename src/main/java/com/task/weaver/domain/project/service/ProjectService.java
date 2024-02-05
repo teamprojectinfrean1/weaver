@@ -44,5 +44,5 @@ public interface ProjectService {
 
     void deleteProject(Long projectId) throws BusinessException;
 
-    void updateProjectView(Long projectId);
+    void updateProjectView(Long projectId) throws BusinessException;
 }
