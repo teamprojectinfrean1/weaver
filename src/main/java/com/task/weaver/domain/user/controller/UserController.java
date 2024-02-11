@@ -7,6 +7,8 @@ import com.task.weaver.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,6 +23,8 @@ public class UserController {
     }
 
     @PostMapping()
+    @MessageMapping("/addUser")
+    @SendTo("/topic")
     public ResponseEntity<ResponseUser> addUser(@RequestBody RequestCreateUser requestCreateUser){
         ResponseUser responseUser = userService.addUser(requestCreateUser);
         return ResponseEntity.status(HttpStatus.OK).body(responseUser);

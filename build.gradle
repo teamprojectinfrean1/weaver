@@ -37,6 +37,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+	// added mongodb
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
 	// swagger Docs
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4'
 
