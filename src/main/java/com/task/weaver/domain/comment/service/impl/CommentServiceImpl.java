@@ -28,21 +28,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Page<Comment> getComments(Long projectId, Pageable pageable){
-        return commentRepository.findAllByProjectId(projectId, pageable);
-    }
-
-    @Override
-    public Page<Comment> getComments(Project project, Pageable pageable){
-        return commentRepository.findAllByProject(project, pageable);
-    }
-
-    @Override
-    public Page<Comment> getComments(Project project, Story story, Pageable pageable){
-        return commentRepository.findAllByProjectAndStory(project, story, pageable);
-    }
-
-    @Override
     public Comment addComment(String content, Story story, User user){
         Comment comment = Comment.builder()
                 .body(content)

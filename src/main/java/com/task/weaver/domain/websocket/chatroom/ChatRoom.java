@@ -1,17 +1,19 @@
 package com.task.weaver.domain.websocket.chatroom;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 @AllArgsConstructor
-@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Builder
 @Getter
-@Document
+@Entity
 public class ChatRoom {
+    @Id
     private String chatRoomId;
     private String chatId;
     private String senderId;

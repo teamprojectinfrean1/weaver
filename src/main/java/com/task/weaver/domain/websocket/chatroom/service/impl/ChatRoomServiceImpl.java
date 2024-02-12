@@ -16,7 +16,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     @Override
     public Optional<String> getChatRoomId(String senderId, String receiverId, boolean createIfNotExist) {
         return chatRoomRepository.findBySenderIdAndReceiverId(senderId, receiverId)
-                .map(ChatRoom::getChatRoomId)
+                .map( a-> a.getChatId())
                 .or(() -> {
                     if (createIfNotExist) {
                         String chatId = createChatId(senderId, receiverId);

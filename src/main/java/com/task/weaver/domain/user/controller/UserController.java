@@ -23,8 +23,6 @@ public class UserController {
     }
 
     @PostMapping()
-    @MessageMapping("/addUser")
-    @SendTo("/topic")
     public ResponseEntity<ResponseUser> addUser(@RequestBody RequestCreateUser requestCreateUser){
         ResponseUser responseUser = userService.addUser(requestCreateUser);
         return ResponseEntity.status(HttpStatus.OK).body(responseUser);

@@ -1,15 +1,15 @@
 package com.task.weaver.domain.websocket.chat;
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.*;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Getter
-@Document
+@Entity
 public class ChatMessage {
     @Id
     private String chatMessageId;

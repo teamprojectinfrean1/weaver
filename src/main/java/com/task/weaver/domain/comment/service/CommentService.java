@@ -12,9 +12,6 @@ import org.springframework.data.domain.Pageable;
 public interface CommentService {
     ResponseComment getComment(Long id);
 
-    Page<Comment> getComments (Long projectId, Pageable pageable);
-    Page<Comment> getComments (Project project, Pageable pageable);
-    Page<Comment> getComments (Project project, Story story, Pageable pageable);
     Comment addComment (String content, Story story, User user);
 
     void deleteComment (User deleter, Comment comment);
