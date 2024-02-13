@@ -8,9 +8,12 @@ import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.issue.entity.IssueMention;
 import com.task.weaver.domain.issue.repository.IssueRepository;
 import com.task.weaver.domain.issue.service.IssueService;
-import com.task.weaver.domain.status.StatusTag;
+import com.task.weaver.domain.status.entity.StatusTag;
+import com.task.weaver.domain.status.repository.StatusTagRepository;
 import com.task.weaver.domain.task.entity.Task;
+import com.task.weaver.domain.task.repository.TaskRepository;
 import com.task.weaver.domain.user.entity.User;
+import com.task.weaver.domain.user.repository.UserRepository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,8 +27,9 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class IssueServiceImpl implements IssueService {
 	private final IssueRepository issueRepository;
-	// private final UserRepository userRepository;
-	// private final TaskRepository taskRepository;
+	private final UserRepository userRepository;
+	private final TaskRepository taskRepository;
+	private final StatusTagRepository statusTagRepository;
 
 	@Override
 	public IssueResponse getIssue(Long issueId) throws NotFoundException, AuthorizationException {
@@ -94,13 +98,15 @@ public class IssueServiceImpl implements IssueService {
 	@Override
 	public void addIssue(IssueRequest issueRequest) throws AuthorizationException {
 		// task, user, statustag
-		// Task task = taskRepository.findById(issueRequest.getTaskId())
-		// 	.orElseThrow(() -> new IllegalArgumentException(""));
-		// User user = userRepository.findById(issueRequest.getUserId())
-		// 	.orElseThrow(() -> new IllegalArgumentException(""));
+		Task task = taskRepository.findById(issueRequest.taskId())
+			.orElseThrow(() -> new IllegalArgumentException(""));
+		User user = userRepository.findById(issueRequest.userId())
+			.orElseThrow(() -> new IllegalArgumentException(""));
+		StatusTag statusTag = statusTagRepository.findById(issueRequest.statusTagId())
+			.orElseThrow(() -> new IllegalArgumentException(""));
 
-		// Issue issue = Issue.from(issueRequest, task, user, statusTag);
-		// issueRepository.save(issue);
+		Issue issue = Issue.from(issueRequest, task, user, statusTag);
+		issueRepository.save(issue);
 	}
 
 	@Override

@@ -1,7 +1,7 @@
 package com.task.weaver.domain.task.repository;
 
 import com.task.weaver.domain.project.entity.Project;
-import com.task.weaver.domain.status.StatusTag;
+import com.task.weaver.domain.status.entity.StatusTag;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.repository.dsl.TaskRepositoryDsl;
 import com.task.weaver.domain.user.entity.User;

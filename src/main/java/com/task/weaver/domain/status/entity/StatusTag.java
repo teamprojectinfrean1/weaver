@@ -1,6 +1,5 @@
-package com.task.weaver.domain.status;
+package com.task.weaver.domain.status.entity;
 
-import com.task.weaver.domain.task.entity.Task;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
