@@ -11,14 +11,13 @@ import java.util.List;
 
 public interface UserService {
     ResponseUser getUser(Long user_id);
-    ResponseUser getUser(String nickname);
+    ResponseUser getUser(String email);
 
     List<ResponseUser> getUsers(Long project_id);
     List<ResponseUser> getUsers(Project project); //프로젝트에 연괸된 사람들
     List<ResponseUser> getUsers(User user);  //본인과 연결된 다른 사람들
     //Optional<List<User>> getUsers(Task task); //task와 연결된 사람들
     List<ResponseUser> getUsers(Story story); //story에 연괸된 사람들
-
 
     ResponseUser addUser(RequestCreateUser requestCreateUser);
 
