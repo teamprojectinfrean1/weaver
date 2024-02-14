@@ -1,5 +1,6 @@
 package com.task.weaver.domain.user.entity;
 
+import com.task.weaver.domain.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -36,4 +37,5 @@ public class User {
         this.email = requestUpdateUser.getEmail();
         this.password = requestUpdateUser.getPassword();
     }
+
 }

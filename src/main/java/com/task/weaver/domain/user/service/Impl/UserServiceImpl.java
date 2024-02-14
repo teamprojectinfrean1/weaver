@@ -1,5 +1,7 @@
 package com.task.weaver.domain.user.service.Impl;
 
+import com.task.weaver.common.exception.BusinessException;
+import com.task.weaver.common.exception.user.ExistingEmailException;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.story.entity.Story;
 import com.task.weaver.domain.user.dto.request.RequestCreateUser;
@@ -10,12 +12,15 @@ import com.task.weaver.domain.user.repository.UserRepository;
 import com.task.weaver.domain.user.service.UserService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public ResponseUser getUser(Long user_id) {
@@ -51,11 +56,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseUser addUser(RequestCreateUser requestCreateUser) {
-        // 예외처리
-        isExistEmail(requestCreateUser.getEmail());
+    public ResponseUser addUser(RequestCreateUser requestCreateUser) throws BusinessException {
 
-        User user = requestCreateUser.toEntity();
+        if(!isExistEmail(requestCreateUser.getEmail())) {
+            throw new ExistingEmailException(new Throwable(requestCreateUser.getEmail()));
+        }
+
+        User user = User.builder()
+            .name(requestCreateUser.getName())
+            .email(requestCreateUser.getEmail())
+            .password(passwordEncoder.encode(requestCreateUser.getPassword()))
+            .build();
 
 
         User savedUser = userRepository.save(user);
