@@ -52,10 +52,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseUser addUser(RequestCreateUser requestCreateUser) {
+        // 예외처리
+        isExistEmail(requestCreateUser.getEmail());
+
         User user = requestCreateUser.toEntity();
+
+
         User savedUser = userRepository.save(user);
 
         return new ResponseUser(savedUser);
+    }
+
+    private boolean isExistEmail(String email) {
+        return userRepository.findByEmail(email).isPresent();
     }
 
     @Override

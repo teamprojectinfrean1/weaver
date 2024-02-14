@@ -25,15 +25,15 @@ public class User {
     @Column(name = "is_online", length = 20)
     private String isOnline;
 
-    @Column(name = "mail", length = 100)
-    private String mail;
+    @Column(name = "email", length = 100)
+    private String email;
 
     @Column(name = "password", length = 20)
     private String password;
 
     public void updateUser(RequestUpdateUser requestUpdateUser){
         this.name = requestUpdateUser.getNickname();
-        this.mail = requestUpdateUser.getMail();
+        this.email = requestUpdateUser.getEmail();
         this.password = requestUpdateUser.getPassword();
     }
 }

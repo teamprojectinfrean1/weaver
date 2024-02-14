@@ -12,13 +12,13 @@ import lombok.NoArgsConstructor;
 @Builder
 public class RequestCreateUser {
     private String nickname;
-    private String mail;
+    private String email;
     private String password;
 
     public User toEntity(){
         return User.builder()
                 .name(nickname)
-                .mail(mail)
+                .email(email)
                 .password(password)
                 .build();
     }
