@@ -8,6 +8,7 @@ import com.task.weaver.domain.user.dto.response.ResponseUser;
 import com.task.weaver.domain.user.entity.User;
 import java.util.List;
 
+import org.springframework.security.core.userdetails.UserDetails;
 
 public interface UserService {
     ResponseUser getUser(Long user_id);

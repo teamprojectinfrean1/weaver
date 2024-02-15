@@ -1,8 +1,8 @@
 package com.task.weaver.domain.authorization.service;
 
 import com.task.weaver.domain.authorization.dto.request.RequestSignIn;
-import com.task.weaver.domain.authorization.util.JWToken;
+import com.task.weaver.domain.authorization.dto.response.TokenResponse;
 
 public interface AuthorizationService {
-	JWToken login (RequestSignIn requestSignIn);
+	TokenResponse login (RequestSignIn requestSignIn);
 }
