@@ -20,7 +20,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(responseUser);
     }
 
-    @PostMapping()
+    @PostMapping("")
     public ResponseEntity<ResponseUser> addUser(@RequestBody RequestCreateUser requestCreateUser){
         ResponseUser responseUser = userService.addUser(requestCreateUser);
         return ResponseEntity.status(HttpStatus.OK).body(responseUser);
