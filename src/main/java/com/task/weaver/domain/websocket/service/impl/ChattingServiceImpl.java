@@ -3,11 +3,13 @@ package com.task.weaver.domain.websocket.service.impl;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.UserRepository;
 import com.task.weaver.domain.websocket.dto.ChattingRequest;
+import com.task.weaver.domain.websocket.dto.ChattingRoomResponse;
 import com.task.weaver.domain.websocket.entity.Chatting;
 import com.task.weaver.domain.websocket.entity.ChattingRoom;
 import com.task.weaver.domain.websocket.repository.ChattingRoomRepository;
 import com.task.weaver.domain.websocket.service.ChattingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,5 +36,14 @@ public class ChattingServiceImpl implements ChattingService {
                 .build();
         chattingRoom.createChatting(chatting);
         chattingRoomRepository.save(chattingRoom);
+    }
+
+    @Override
+    public ChattingRoomResponse createChattingRoom() {
+        ChattingRoom chattingRoom = ChattingRoom.builder().build();
+        ChattingRoom savedChattingRoom = chattingRoomRepository.save(chattingRoom);
+        return ChattingRoomResponse.builder()
+                .chattingRoomId(savedChattingRoom.getId())
+                .build();
     }
 }
