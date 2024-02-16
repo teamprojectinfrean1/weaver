@@ -1,0 +1,30 @@
+spring:
+  sql:
+    init:
+      mode: always
+  datasource:
+    url: jdbc:mariadb://localhost:3307/localdb
+    username: root
+    password: 1234
+    driver-class-name: org.mariadb.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+springdoc:
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui
+    tags-sorter: alpha
+    docExpansion: "none"
+    persistAuthorization: true
+    defaultModelsExpandDepth: -1
+  use-fqn: true
