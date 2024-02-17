@@ -73,7 +73,7 @@ public class JwtTokenProvider {
 		Date validity = new Date(now.getTime() + REFRESH_TOKEN_VALID_TIME);
 
 		String j = Jwts.builder()
-			.setSubject(authentication.getName()) // sub
+			// .setSubject(authentication.getName()) // sub
 			.setIssuedAt(now) // 발행 시간
 			.signWith(key, SignatureAlgorithm.HS512) // 암호화
 			.setExpiration(validity) // 만료 시간
@@ -110,7 +110,8 @@ public class JwtTokenProvider {
 	 */
 	private Claims parseClaims(String accessToken) {
 		try {
-			return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(accessToken).getBody();
+			// log.info();
+			return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
 		} catch (ExpiredJwtException e) {
 			return e.getClaims();
 		}

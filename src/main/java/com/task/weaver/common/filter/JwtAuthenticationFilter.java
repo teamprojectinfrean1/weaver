@@ -44,6 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			// 2. Validation Access Token
 			// validateToken으로 토큰 유효성 검사
 			// 정상 토큰이면 해당 토큰으로 Authentication을 가져와 SecurityContext에 저장
+			log.info(jwtTokenProvider.validateToken(token) ? "true" : "f");
 			if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
 				Authentication authentication = jwtTokenProvider.getAuthentication(token);
 				SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -68,6 +69,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private String parseBearerToken(HttpServletRequest request) {
 
 		String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+
+		log.info("parseBearerToken - bearerToken" + bearerToken);
+		// log.info(StringUtils.hasText(bearerToken) ? "true" : "f");
 
 		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer-")) {
 			return bearerToken.substring(7);

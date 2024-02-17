@@ -14,9 +14,5 @@ public class RefreshToken {
 	@Id
 	private String id;
 	private String refreshToken;
-	/**
-	 * @Indexed 해당 필드 값으로 데이터 찾아옴 -> Key
-	 */
-	@Indexed
-	private String accessToken;
+
 }

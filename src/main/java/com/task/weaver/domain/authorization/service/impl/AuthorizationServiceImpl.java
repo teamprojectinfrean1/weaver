@@ -10,7 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.task.weaver.common.exception.authorization.InvalidPasswordException;
 import com.task.weaver.domain.authorization.dto.request.RequestSignIn;
-import com.task.weaver.domain.authorization.dto.response.TokenResponse;
+import com.task.weaver.domain.authorization.dto.request.RequestToken;
+import com.task.weaver.domain.authorization.dto.response.ResponseToken;
 import com.task.weaver.domain.authorization.redis.RefreshToken;
 import com.task.weaver.domain.authorization.redis.RefreshTokenRedisRepository;
 import com.task.weaver.domain.authorization.service.AuthorizationService;
@@ -35,7 +36,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public TokenResponse login(RequestSignIn requestSignIn) {
+	public ResponseToken login(RequestSignIn requestSignIn) {
 		// userId check
 		ResponseUser user = userService.getUser(requestSignIn.email());
 
@@ -57,12 +58,12 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 		String accessToken = jwtTokenProvider.createAccessToken(authentication);
 
 		// refresh token redis에 저장
-		refreshTokenRedisRepository.save(new RefreshToken(String.valueOf(user.getUser_id()), refreshToken, accessToken));
+		refreshTokenRedisRepository.save(new RefreshToken(authentication.getName(), refreshToken));
 
 		// 기존 토큰 있으면 수정, 없으면 생성
 
 		// accessToken, refreshToken 리턴
-		return TokenResponse.builder()
+		return ResponseToken.builder()
 			.accessToken("Bearer-" + accessToken)
 			.refreshToken("Bearer-" + refreshToken)
 			.build();
@@ -74,5 +75,52 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 		log.info(requestSignIn.password());
 		log.info(passwordEncoder.matches(requestSignIn.password(), user.getPassword()) ? "true" : "false");
 		return passwordEncoder.matches(requestSignIn.password(), user.getPassword()); // 암호화된 비밀번호가 뒤로 와야 한다 순서
+	}
+
+	public ResponseToken reissue(RequestToken requestToken) {
+
+		String resolvedToken = resolveToken(requestToken.refreshToken());
+
+		// refresh token 유효성 검증
+		jwtTokenProvider.validateToken(resolvedToken);
+
+		Authentication authentication = jwtTokenProvider.getAuthentication(requestToken.accessToken());
+
+		log.info("resolvedToken : " + resolvedToken);
+		log.info("authentication.getName() : " + authentication.getName());
+
+		// authentication.getname()으로 redis에 있는 refresh token 가져오기
+		RefreshToken findTokenEntity = refreshTokenRedisRepository.findById(authentication.getName())
+			.orElseThrow(() -> new RuntimeException("")); // 예외 처리 추후 수정
+
+		// refresh token, redis 에 저장된 것과 일치하는지 검증
+		log.info("resolvedToken : " + resolvedToken);
+		log.info("findrefreshtoken : " + findTokenEntity.getRefreshToken());
+		if(!resolvedToken.equals(findTokenEntity.getRefreshToken()))
+			throw new IllegalArgumentException(""); // 예외 처리 추후 수정
+
+		// accessToken과 refreshToken 모두 재발행
+		String newRefreshToken = jwtTokenProvider.createRefreshToken(authentication);
+		String newAccessToken = jwtTokenProvider.createRefreshToken(authentication);
+
+		// redis 에 새로 발급한 refreshtoken 저장
+		refreshTokenRedisRepository.save(new RefreshToken(authentication.getName(), newRefreshToken));
+
+		return ResponseToken.builder()
+			.accessToken("Bearer-"+newAccessToken)
+			.refreshToken("Bearer-"+newRefreshToken)
+			.build();
+	}
+
+	/**
+	 * token 앞 "Bearer-" 제거
+	 * @param accessToken
+	 * @return
+	 */
+	private String resolveToken(String accessToken) {
+		if(accessToken.startsWith("Bearer-"))
+			return accessToken.substring(7);
+		// 예외 처리 추후 수정
+		throw new RuntimeException("not valid refresh token");
 	}
 }
