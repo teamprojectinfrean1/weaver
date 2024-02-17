@@ -7,4 +7,5 @@ import com.task.weaver.domain.authorization.dto.response.ResponseToken;
 public interface AuthorizationService {
 	ResponseToken login (RequestSignIn requestSignIn);
 	ResponseToken reissue (RequestToken requestToken);
+	void logout(String refreshToken);
 }

@@ -76,4 +76,12 @@ public class AuthorizationController {
 		// access token body에 담아 return
 		return ResponseEntity.ok().body(responseToken.accessToken());
 	}
+
+	@GetMapping("/logout")
+	public ResponseEntity<?> logout(@CookieValue(value = "refresh-token", required = false) Cookie cookie, HttpServletResponse res) {
+		authorizationService.logout(cookie.getValue());
+		cookie.setMaxAge(0);
+		res.setHeader("Set-Cookie", cookie.toString());
+		return ResponseEntity.ok().body("-- logout --");
+	}
 }

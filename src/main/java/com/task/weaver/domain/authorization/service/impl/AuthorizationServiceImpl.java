@@ -84,9 +84,9 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 		// refresh token 유효성 검증
 		jwtTokenProvider.validateToken(resolvedToken);
 
-		Authentication authentication = jwtTokenProvider.getAuthentication(requestToken.accessToken());
+		Authentication authentication = jwtTokenProvider.getAuthentication(resolvedToken);
 
-		log.info("resolvedToken : " + resolvedToken);
+		// log.info("resolvedToken : " + resolvedToken);
 		log.info("authentication.getName() : " + authentication.getName());
 
 		// authentication.getname()으로 redis에 있는 refresh token 가져오기
@@ -101,7 +101,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
 		// accessToken과 refreshToken 모두 재발행
 		String newRefreshToken = jwtTokenProvider.createRefreshToken(authentication);
-		String newAccessToken = jwtTokenProvider.createRefreshToken(authentication);
+		String newAccessToken = jwtTokenProvider.createAccessToken(authentication);
 
 		// redis 에 새로 발급한 refreshtoken 저장
 		refreshTokenRedisRepository.save(new RefreshToken(authentication.getName(), newRefreshToken));
@@ -122,5 +122,14 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 			return accessToken.substring(7);
 		// 예외 처리 추후 수정
 		throw new RuntimeException("not valid refresh token");
+	}
+
+
+	@Override
+	public void logout(String refreshToken) {
+
+		Authentication authentication = jwtTokenProvider.getAuthentication(resolveToken(refreshToken));
+
+		refreshTokenRedisRepository.deleteById(authentication.getName());
 	}
 }
