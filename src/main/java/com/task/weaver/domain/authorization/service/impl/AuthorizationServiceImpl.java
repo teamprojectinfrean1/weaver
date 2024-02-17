@@ -19,14 +19,16 @@ import com.task.weaver.domain.user.dto.response.ResponseUser;
 import com.task.weaver.domain.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthorizationServiceImpl implements AuthorizationService {
 
-	private PasswordEncoder passwordEncoder;
-	private AuthenticationManagerBuilder authenticationManagerBuilder;
-	private JwtTokenProvider jwtTokenProvider;
+	private final PasswordEncoder passwordEncoder;
+	private final AuthenticationManagerBuilder authenticationManagerBuilder;
+	private final JwtTokenProvider jwtTokenProvider;
 
 	private final UserService userService;
 	private final RefreshTokenRedisRepository refreshTokenRedisRepository;
@@ -61,13 +63,16 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
 		// accessToken, refreshToken 리턴
 		return TokenResponse.builder()
-			.accessToken("Bearer " + accessToken)
-			.refreshToken("Bearer " + refreshToken)
+			.accessToken("Bearer-" + accessToken)
+			.refreshToken("Bearer-" + refreshToken)
 			.build();
 	}
 
 	private boolean isCheckPassword(RequestSignIn requestSignIn) {
 		ResponseUser user = userService.getUser(requestSignIn.email());
-		return passwordEncoder.matches(requestSignIn.password(), user.getPassword());
+		log.info(user.getPassword());
+		log.info(requestSignIn.password());
+		log.info(passwordEncoder.matches(requestSignIn.password(), user.getPassword()) ? "true" : "false");
+		return passwordEncoder.matches(requestSignIn.password(), user.getPassword()); // 암호화된 비밀번호가 뒤로 와야 한다 순서
 	}
 }

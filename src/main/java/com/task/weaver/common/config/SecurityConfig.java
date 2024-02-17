@@ -36,8 +36,14 @@ public class SecurityConfig {
 	private static final String[] PERMIT_URL_ARRAY = {
 		/* KAKAO */
 		// "/user/kakao/callback/**",
-		"/user/reissue",
-		"/user/logout"
+		"/api/v1/auth/login",
+		"/api/v1/reissue/reissue",
+		"/api/v1/user/join",
+		"/user/logout",
+		"/v3/api-docs/**",
+		"/swagger-ui.html",
+		"/webjars/**",
+		"/favicon.com"
 	};
 
 	/**
@@ -62,16 +68,17 @@ public class SecurityConfig {
 	 * 		-> SecurityFilterChain : HttpSecurity 구성 담당
 	 * @return
 	 */
-	@Bean
-	public WebSecurityCustomizer webSecurityCustomizer() {
-		return (web) -> web.ignoring()
-			.requestMatchers(
-				"/v3/api-docs/**",
-				"/swagger-ui.html",
-				"/webjars/**",
-				"/favicon.com"
-			);
-	}
+	// web.ignoring()을 사용할 경우 spring security의 보호를 받을 수 없기 때문에 authorizeHttpRequests().permitAll 에 추가하여 설정하는 방식으로 변경
+	// @Bean
+	// public WebSecurityCustomizer webSecurityCustomizer() {
+	// 	return (web) -> web.ignoring()
+	// 		.requestMatchers(
+	// 			"/v3/api-docs/**",
+	// 			"/swagger-ui.html",
+	// 			"/webjars/**",
+	// 			"/favicon.com"
+	// 		);
+	// }
 
 	/**
 	 * PasswordEncoder

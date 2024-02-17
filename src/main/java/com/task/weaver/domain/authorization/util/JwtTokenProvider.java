@@ -1,5 +1,6 @@
 package com.task.weaver.domain.authorization.util;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
@@ -38,10 +39,6 @@ public class JwtTokenProvider {
 	// refresh token -> 7days
 	private final Long REFRESH_TOKEN_VALID_TIME = 7 * 24 * 60 * 60 * 1000L;
 
-	public static final String TOKEN_PREFIX = "Bearer ";
-	public static final String HEADER_STRING = "Authorization";
-	public static final String ISSUER = "";
-
 	private final CustomUserDetailsService customUserDetailsService;
 
 	/**
@@ -49,8 +46,8 @@ public class JwtTokenProvider {
 	 */
 	@PostConstruct
 	protected void init() {
-		secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
-		key = Keys.hmacShaKeyFor(secretKey.getBytes());
+		String encoededKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+		key = Keys.hmacShaKeyFor(encoededKey.getBytes(StandardCharsets.UTF_8));
 	}
 
 	/**
@@ -75,12 +72,16 @@ public class JwtTokenProvider {
 		Date now = new Date();
 		Date validity = new Date(now.getTime() + REFRESH_TOKEN_VALID_TIME);
 
-		return Jwts.builder()
-			.setSubject(authentication.getName())
+		String j = Jwts.builder()
+			.setSubject(authentication.getName()) // sub
 			.setIssuedAt(now) // 발행 시간
 			.signWith(key, SignatureAlgorithm.HS512) // 암호화
 			.setExpiration(validity) // 만료 시간
 			.compact();
+
+		log.info(j);
+
+		return j;
 	}
 
 	/**

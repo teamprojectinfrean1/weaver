@@ -19,5 +19,6 @@ public class ResponseUser {
         this.user_id = user.getUserId();
         this.name = user.getName();
         this.email = user.getEmail();
+        this.password = user.getPassword();
     }
 }

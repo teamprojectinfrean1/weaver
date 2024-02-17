@@ -30,6 +30,8 @@ public class AuthorizationController {
 		// access token -> header? body? cookie?
 		TokenResponse tokenResponse = authorizationService.login(requestSignIn);
 
+		log.info("refreshToken : " + tokenResponse.refreshToken());
+
 		// refresh token cookie에 담기
 		ResponseCookie cookie = ResponseCookie.from("refresh-token", tokenResponse.refreshToken())
 			.maxAge(60 * 60 * 24 * 15)
@@ -41,7 +43,6 @@ public class AuthorizationController {
 			.build();
 
 		res.setHeader("Set-Cookie", cookie.toString());
-		log.info(tokenResponse.accessToken());
 
 		// access token body에 담아 return
 		return ResponseEntity.ok().body(tokenResponse.accessToken());

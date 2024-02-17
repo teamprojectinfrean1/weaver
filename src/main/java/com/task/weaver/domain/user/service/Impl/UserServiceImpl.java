@@ -16,6 +16,7 @@ import com.task.weaver.domain.user.service.UserService;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,6 +24,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -68,9 +70,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseUser addUser(RequestCreateUser requestCreateUser) throws BusinessException {
 
-        if(!isExistEmail(requestCreateUser.getEmail())) {
-            throw new ExistingEmailException(new Throwable(requestCreateUser.getEmail()));
-        }
+        isExistEmail(requestCreateUser.getEmail());
 
         User user = User.builder()
             .name(requestCreateUser.getName())
@@ -78,14 +78,17 @@ public class UserServiceImpl implements UserService {
             .password(passwordEncoder.encode(requestCreateUser.getPassword()))
             .build();
 
-
         User savedUser = userRepository.save(user);
 
         return new ResponseUser(savedUser);
     }
 
-    private boolean isExistEmail(String email) {
-        return userRepository.findByEmail(email).isPresent();
+    private void isExistEmail(String email) {
+        // log.info("service - join - isExistEmail - ing"+ userRepository.findByEmail(email).isPresent());
+        userRepository.findByEmail(email).ifPresent(user -> {
+            log.debug("userId : {}, 아이디 중복으로 회원가입 실패", email);
+            throw new RuntimeException("아이디 중복");
+        });
     }
 
     @Override

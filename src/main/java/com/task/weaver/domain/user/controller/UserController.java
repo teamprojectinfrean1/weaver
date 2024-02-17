@@ -5,10 +5,13 @@ import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.user.dto.response.ResponseUser;
 import com.task.weaver.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
@@ -20,9 +23,11 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(responseUser);
     }
 
-    @PostMapping("")
+    @PostMapping("/join")
     public ResponseEntity<ResponseUser> addUser(@RequestBody RequestCreateUser requestCreateUser){
+        log.info("controller - join - before");
         ResponseUser responseUser = userService.addUser(requestCreateUser);
+        log.info("controller - join - after");
         return ResponseEntity.status(HttpStatus.OK).body(responseUser);
     }
 

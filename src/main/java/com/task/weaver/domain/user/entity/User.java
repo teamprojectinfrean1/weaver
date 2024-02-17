@@ -12,7 +12,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "member")
+@Entity(name = "user")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -28,7 +28,7 @@ public class User implements UserDetails {
     private String name;
 
     @Column(name = "is_online", length = 20)
-    private String isOnline;
+    private boolean isOnline;
 
     @Column(name = "email", length = 100)
     private String email;
@@ -85,6 +85,7 @@ public class User implements UserDetails {
      */
     @Override
     public boolean isEnabled() {
+        this.isOnline = true;
         // 이메일 인증 여부를 여기서 확인해줄수도 있음
         return true;
     }
