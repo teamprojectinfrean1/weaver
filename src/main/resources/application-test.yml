@@ -1,13 +1,12 @@
 spring:
   datasource:
-    url: jdbc:mysql://114.202.33.83:13306/taskgram?serverTimezone=UTC&characterEncoding=UTF-8
-    username: develop
-    password: '!dev2024@'
+    url: jdbc:mysql://localhost:3306/weaver?serverTimezone=UTC&characterEncoding=UTF-8
+    username: root
+    password: 'root'
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
-    database-platform: org.hibernate.dialect.MySQL8Dialect
-
+#    database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
       ddl-auto: none
     properties:
@@ -15,6 +14,12 @@ spring:
         show_sql: true
         format_sql: true
         use_sql_comments: #
+    open-in-view: false
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 springdoc:
   default-consumes-media-type: application/json;charset=UTF-8
@@ -34,3 +39,7 @@ oauth:
     url: https://kauth.kakao.com/oauth
     id: 269732da6c1f4791883a8271be0633ac
     redirect: http://localhost:3000/kakao/callback
+
+jwt:
+  secret:
+    key: '!dev2024@-backend-jwt-secretkey2024!@-38523084793tdjf9328e83gcweg893213ce2r43t24'

@@ -1,5 +1,10 @@
 package com.task.weaver.domain.user.service.Impl;
 
+import static com.task.weaver.common.exception.ErrorCode.*;
+
+import com.task.weaver.common.exception.BusinessException;
+import com.task.weaver.common.exception.ErrorCode;
+import com.task.weaver.common.exception.user.ExistingEmailException;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.story.entity.Story;
 import com.task.weaver.domain.user.dto.request.RequestCreateUser;
@@ -9,23 +14,35 @@ import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.UserRepository;
 import com.task.weaver.domain.user.service.UserService;
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public ResponseUser getUser(Long user_id) {
-        User user = userRepository.findById(user_id).get();  //예외추가 필요.
+        User user = userRepository.findById(user_id)
+            .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
         return new ResponseUser(user);
     }
 
     @Override
-    public ResponseUser getUser(String nickname) {
-        User findUser = userRepository.findByName(nickname).get();
+    public ResponseUser getUser(String email) {
+        // 예외처리
+        User findUser = userRepository.findByEmail(email)
+            .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
 
         return new ResponseUser(findUser);
     }
@@ -51,11 +68,27 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseUser addUser(RequestCreateUser requestCreateUser) {
-        User user = requestCreateUser.toEntity();
+    public ResponseUser addUser(RequestCreateUser requestCreateUser) throws BusinessException {
+
+        isExistEmail(requestCreateUser.getEmail());
+
+        User user = User.builder()
+            .name(requestCreateUser.getName())
+            .email(requestCreateUser.getEmail())
+            .password(passwordEncoder.encode(requestCreateUser.getPassword()))
+            .build();
+
         User savedUser = userRepository.save(user);
 
         return new ResponseUser(savedUser);
+    }
+
+    private void isExistEmail(String email) {
+        // log.info("service - join - isExistEmail - ing"+ userRepository.findByEmail(email).isPresent());
+        userRepository.findByEmail(email).ifPresent(user -> {
+            log.debug("userId : {}, 아이디 중복으로 회원가입 실패", email);
+            throw new RuntimeException("아이디 중복");
+        });
     }
 
     @Override
