@@ -1,5 +1,6 @@
 package com.task.weaver.domain.websocket.entity;
 
+import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +24,9 @@ public class ChattingRoom {
     @Builder.Default
     @OneToMany(mappedBy = "chattingRoom", cascade = CascadeType.ALL)
     private final List<Chatting> chattings = new ArrayList<>();
-
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
     public void createChatting(Chatting chatting) {
         chattings.add(chatting);
     }
