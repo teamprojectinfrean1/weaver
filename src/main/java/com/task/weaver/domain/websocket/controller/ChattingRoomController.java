@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ChattingRoomController {
     private final ChattingService chattingService;
 
-    @GetMapping("/chattings")
+    @GetMapping("/chattings/")
     public ResponseEntity<ChattingRoomResponse> createChattingRoom() {
         ChattingRoomResponse chattingRoom = chattingService.createChattingRoom();
         return ResponseEntity.ok(chattingRoom);

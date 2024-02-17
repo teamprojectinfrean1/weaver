@@ -4,8 +4,11 @@ import com.task.weaver.domain.websocket.dto.ChattingRequest;
 import com.task.weaver.domain.websocket.dto.ChattingRoomResponse;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 public interface ChattingService {
     void save(Long chattingId, ChattingRequest chattingRequest);
 
     ChattingRoomResponse createChattingRoom();
+    List<ChattingRoomResponse> getChattingRoomsByUserId(Long userId);
 }

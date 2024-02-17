@@ -1,5 +1,6 @@
 package com.task.weaver.domain.websocket.service.impl;
 
+import com.task.weaver.common.exception.BusinessException;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.UserRepository;
 import com.task.weaver.domain.websocket.dto.ChattingRequest;
@@ -14,6 +15,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ChattingServiceImpl implements ChattingService {
@@ -23,12 +26,12 @@ public class ChattingServiceImpl implements ChattingService {
     private final ChattingRoomRepository chattingRoomRepository;
     @Override
     @Transactional
-    public void save(Long chattingId, ChattingRequest chattingRequest) {
+    public void save(Long chattingId, ChattingRequest chattingRequest) throws BusinessException {
         User sender = userRepository.findById(chattingRequest.getSenderId())
-                .orElseThrow(() -> new IllegalArgumentException("There's no member"));
+                .orElseThrow();
         simpMessagingTemplate.convertAndSend("/subscription/chattings/" + chattingId, chattingRequest.getContent());
         ChattingRoom chattingRoom = chattingRoomRepository.findById(chattingId)
-                .orElseThrow(() -> new IllegalArgumentException("There's no chatting room"));
+                .orElseThrow();
         Chatting chatting = Chatting.builder()
                 .user(sender)
                 .chattingRoom(chattingRoom)
@@ -39,7 +42,12 @@ public class ChattingServiceImpl implements ChattingService {
     }
 
     @Override
-    public ChattingRoomResponse createChattingRoom() {
+    public List<ChattingRoomResponse> getChattingRoomsByUserId(Long userId) throws BusinessException {
+        return null;
+    }
+
+    @Override
+    public ChattingRoomResponse createChattingRoom() throws BusinessException {
         ChattingRoom chattingRoom = ChattingRoom.builder().build();
         ChattingRoom savedChattingRoom = chattingRoomRepository.save(chattingRoom);
         return ChattingRoomResponse.builder()
