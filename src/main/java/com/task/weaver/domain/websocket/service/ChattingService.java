@@ -7,5 +7,5 @@ import org.springframework.http.ResponseEntity;
 public interface ChattingService {
     void save(Long chattingId, ChattingRequest chattingRequest);
 
-    ChattingRoomResponse createChattingRoom();
+    ChattingRoomResponse createChattingRoom(Long project_id);
 }

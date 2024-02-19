@@ -1,5 +1,6 @@
 package com.task.weaver.domain.websocket.entity;
 
+import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,12 +14,12 @@ import java.util.List;
 
 @Entity
 @Getter
-@SuperBuilder
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChattingRoom {
+public class ChattingRoom extends BaseEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     @Builder.Default

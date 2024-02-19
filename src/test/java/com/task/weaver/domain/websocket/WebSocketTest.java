@@ -21,7 +21,7 @@ public class WebSocketTest {
 
     @Test
     public void test() {
-        ChattingRoomResponse chattingRoom = chattingService.createChattingRoom();
+        ChattingRoomResponse chattingRoom = chattingService.createChattingRoom(1L);
         System.out.println(chattingRoom.getChattingRoomId());
     }
 }
