@@ -14,13 +14,13 @@ import org.springframework.context.annotation.Configuration;
 //@OpenAPIDefinition(security = {@SecurityRequirement(name = "Access-Token")})
 public class SwaggerConfig {
 
-    @Bean
-    public GroupedOpenApi publicMemberApi() {
-        return GroupedOpenApi.builder()
-                .group("PROJECT")
-                .pathsToMatch("/api/v1/project/**")
-                .build();
-    }
+//    @Bean
+//    public GroupedOpenApi publicMemberApi() {
+//        return GroupedOpenApi.builder()
+//                .group("PROJECT")
+//                .pathsToMatch("/api/v1/project/**")
+//                .build();
+//    }
 
     @Bean
     public OpenAPI weaverOpenAPI() {
