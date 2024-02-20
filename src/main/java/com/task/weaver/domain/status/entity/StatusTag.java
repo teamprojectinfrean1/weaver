@@ -6,7 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "STATUS_TAG")
+@Entity
+@Table(name = "STATUS_TAG")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
