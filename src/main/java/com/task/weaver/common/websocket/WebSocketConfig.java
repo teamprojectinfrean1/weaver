@@ -18,7 +18,7 @@ import java.util.List;
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/chattings")
+        registry.addEndpoint("/chattingWs")
                 .setAllowedOriginPatterns("*")
                 .withSockJS();  //낮은 버전 브라우저도 사용할 수 있도록.
     }

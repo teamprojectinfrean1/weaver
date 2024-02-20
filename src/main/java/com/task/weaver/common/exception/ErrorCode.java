@@ -1,5 +1,6 @@
 package com.task.weaver.common.exception;
 
+import com.task.weaver.domain.websocket.entity.ChattingRoom;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
@@ -15,7 +16,17 @@ public enum ErrorCode {
     RESOURCE_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "R001", "해당 리소스에 대한 권한이 없습니다."),
 
     // Project
-    PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "P001", "해당 프로젝트를 찾을 수 없습니다.");
+    PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "P001", "해당 프로젝트를 찾을 수 없습니다."),
+
+    //User
+
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "U001", "해당 유저를 찾을 수 없습니다."),
+
+    // Chatting Room
+    CHATTINGROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CHR001", "해당 채팅룸을 찾을 수 없습니다."),
+
+    //Chatting
+    CHATTING_NOT_FOUND(HttpStatus.NOT_FOUND, "CH001", "해당 채팅을 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final String code;
