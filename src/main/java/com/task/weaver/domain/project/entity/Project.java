@@ -1,9 +1,13 @@
 package com.task.weaver.domain.project.entity;
 
 import com.task.weaver.domain.BaseEntity;
+import com.task.weaver.domain.projectmember.ProjectMember;
 import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -45,6 +49,9 @@ public class Project extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+    @Builder.Default
+    @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE)
+    private List<ProjectMember> projectMember = new ArrayList<>();
 
     public void changeName(String name) {
         this.name = name;

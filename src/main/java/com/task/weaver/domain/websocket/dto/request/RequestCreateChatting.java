@@ -1,4 +1,4 @@
-package com.task.weaver.domain.websocket.dto;
+package com.task.weaver.domain.websocket.dto.request;
 
 import lombok.*;
 
@@ -6,7 +6,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ChattingRequest {
+public class RequestCreateChatting {
 
     private Long senderId;
     private String content;

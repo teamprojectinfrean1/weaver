@@ -1,6 +1,6 @@
 package com.task.weaver.domain.websocket.controller;
 
-import com.task.weaver.domain.websocket.dto.ChattingRequest;
+import com.task.weaver.domain.websocket.dto.request.RequestCreateChatting;
 import com.task.weaver.domain.websocket.service.ChattingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -16,9 +16,9 @@ public class ChattingWsController {
 
     @MessageMapping("/{chattingRoomId}/messages")
    // @SendTo("/sub/{chattingRoomId}")                      //convertAndSend대신 이걸 사용해도 됨
-    public void chat(@DestinationVariable("chattingRoomId") Long chattingRoomId, ChattingRequest chattingRequest) { //@DestinationVariable에 추가로 chattingRoomId를 괄호 쓰고 넣어줘야 파라미터 인식을 함.
-        chattingService.save(chattingRoomId, chattingRequest);
-        simpMessagingTemplate.convertAndSend("/sub/" + chattingRoomId, chattingRequest.getContent());
+    public void chat(@DestinationVariable("chattingRoomId") Long chattingRoomId, RequestCreateChatting requestCreateChatting) { //@DestinationVariable에 추가로 chattingRoomId를 괄호 쓰고 넣어줘야 파라미터 인식을 함.
+        chattingService.save(chattingRoomId, requestCreateChatting);
+        simpMessagingTemplate.convertAndSend("/sub/" + chattingRoomId, requestCreateChatting.getContent());
     }
 }
 

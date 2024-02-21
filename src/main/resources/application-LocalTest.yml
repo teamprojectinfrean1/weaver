@@ -15,6 +15,10 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 springdoc:
   default-consumes-media-type: application/json;charset=UTF-8
@@ -28,3 +32,13 @@ springdoc:
     persistAuthorization: true
     defaultModelsExpandDepth: -1
   use-fqn: true
+
+oauth:
+  kakako:
+    url: https://kauth.kakao.com/oauth
+    id: 269732da6c1f4791883a8271be0633ac
+    redirect: http://localhost:3000/kakao/callback
+
+jwt:
+  secret:
+    key: '!dev2024@-backend-jwt-secretkey2024!@-38523084793tdjf9328e83gcweg893213ce2r43t24'
