@@ -35,7 +35,7 @@ public class IssueController {
 	}
 
 	@Operation(summary = "이슈 생성", description = "이슈 생성")
-	@PostMapping("")
+	@PostMapping
 	public ResponseEntity<?> addIssue(@RequestBody CreateIssueRequest createIssueRequest) {
 		issueService.addIssue(createIssueRequest);
 		return ResponseEntity.ok().body("Add Issue Successful");

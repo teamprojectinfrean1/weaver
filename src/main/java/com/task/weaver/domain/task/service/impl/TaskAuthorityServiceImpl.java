@@ -41,14 +41,16 @@ public class TaskAuthorityServiceImpl implements TaskAuthorityService {
 
     @Override
     public Page<TaskAuthority> getTaskAuthorities(Task task, Pageable pageable) throws NotFoundException, AuthorizationException {
-        return (Page<TaskAuthority>) taskAuthorityRepository.findById(task.getTaskId()).orElseThrow(
-                () -> new NotFoundException());
+        // return (Page<TaskAuthority>) taskAuthorityRepository.findById(task.getTaskId()).orElseThrow(
+        //         () -> new NotFoundException());
+        return null;
     }
 
     @Override
     public Page<TaskAuthority> getTaskAuthorities(User user, Pageable pageable) throws NotFoundException, AuthorizationException {
-        return (Page<TaskAuthority>) taskAuthorityRepository.findById(user.getUserId()).orElseThrow(
-                () -> new NotFoundException());
+        // return (Page<TaskAuthority>) taskAuthorityRepository.findById(user.getUserId()).orElseThrow(
+        //         () -> new NotFoundException());
+        return null;
     }
 
     @Override

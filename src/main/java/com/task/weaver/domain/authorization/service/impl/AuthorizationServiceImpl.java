@@ -64,8 +64,8 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
 		// accessToken, refreshToken 리턴
 		return ResponseToken.builder()
-			.accessToken("Bearer-" + accessToken)
-			.refreshToken("Bearer-" + refreshToken)
+			.accessToken("Bearer " + accessToken)
+			.refreshToken(refreshToken)
 			.build();
 	}
 
@@ -107,8 +107,8 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 		refreshTokenRedisRepository.save(new RefreshToken(authentication.getName(), newRefreshToken));
 
 		return ResponseToken.builder()
-			.accessToken("Bearer-"+newAccessToken)
-			.refreshToken("Bearer-"+newRefreshToken)
+			.accessToken("Bearer "+newAccessToken)
+			.refreshToken(newRefreshToken)
 			.build();
 	}
 
@@ -118,7 +118,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 	 * @return
 	 */
 	private String resolveToken(String accessToken) {
-		if(accessToken.startsWith("Bearer-"))
+		if(accessToken.startsWith("Bearer "))
 			return accessToken.substring(7);
 		// 예외 처리 추후 수정
 		throw new RuntimeException("not valid refresh token");
