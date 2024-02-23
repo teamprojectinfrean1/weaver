@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class RequestUpdateUser {
     private String nickname;
-    private String mail;
+    private String email;
     private String password;
 }

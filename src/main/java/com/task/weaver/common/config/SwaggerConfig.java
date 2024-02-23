@@ -1,4 +1,4 @@
-package com.task.weaver.common.swagger;
+package com.task.weaver.common.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -14,13 +14,13 @@ import org.springframework.context.annotation.Configuration;
 //@OpenAPIDefinition(security = {@SecurityRequirement(name = "Access-Token")})
 public class SwaggerConfig {
 
-    @Bean
-    public GroupedOpenApi publicMemberApi() {
-        return GroupedOpenApi.builder()
-                .group("PROJECT")
-                .pathsToMatch("/api/v1/project/**")
-                .build();
-    }
+//    @Bean
+//    public GroupedOpenApi publicMemberApi() {
+//        return GroupedOpenApi.builder()
+//                .group("PROJECT")
+//                .pathsToMatch("/api/v1/project/**")
+//                .build();
+//    }
 
     @Bean
     public OpenAPI weaverOpenAPI() {

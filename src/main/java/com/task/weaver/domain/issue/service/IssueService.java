@@ -6,7 +6,7 @@ import com.task.weaver.domain.issue.dto.request.IssueRequest;
 import com.task.weaver.domain.issue.dto.response.IssueResponse;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.issue.entity.IssueMention;
-import com.task.weaver.domain.status.StatusTag;
+import com.task.weaver.domain.status.entity.StatusTag;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.user.entity.User;
 

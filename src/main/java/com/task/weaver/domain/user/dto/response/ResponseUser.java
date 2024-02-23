@@ -11,12 +11,14 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ResponseUser {
     private Long user_id;
-    private String nickname;
-    private String mail;
+    private String name;
+    private String email;
+    private String password;
 
     public ResponseUser(User user){
         this.user_id = user.getUserId();
-        this.nickname = user.getName();
-        this.mail = user.getMail();
+        this.name = user.getName();
+        this.email = user.getEmail();
+        this.password = user.getPassword();
     }
 }

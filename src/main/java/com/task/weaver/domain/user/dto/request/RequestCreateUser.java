@@ -5,21 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class RequestCreateUser {
-    private String nickname;
-    private String mail;
+    private String name;
+    private String email;
     private String password;
-
-    public User toEntity(){
-        return User.builder()
-                .name(nickname)
-                .mail(mail)
-                .password(password)
-                .build();
-    }
 }
