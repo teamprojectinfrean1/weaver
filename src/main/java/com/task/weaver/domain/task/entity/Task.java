@@ -36,6 +36,9 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "creator_user_id")
     private User user;
+    @OneToMany(mappedBy = "task")
+    @Builder.Default
+    private List<Issue> issueList = new ArrayList<>();
 
     @Column(name = "taskName", length = 100)
     private String taskName;

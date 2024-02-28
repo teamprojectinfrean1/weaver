@@ -3,8 +3,11 @@ package com.task.weaver.domain.project.service.impl;
 import com.task.weaver.common.exception.BusinessException;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.user.UserNotFoundException;
+import com.task.weaver.domain.issue.dto.response.IssueResponse;
+import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.dto.request.RequestCreateProject;
 import com.task.weaver.domain.project.dto.request.RequestPageProject;
+import com.task.weaver.domain.project.dto.response.ResponseGetProject;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
@@ -17,6 +20,7 @@ import java.util.function.Function;
 
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import com.task.weaver.domain.projectmember.repository.ProjectMemberRepository;
+import com.task.weaver.domain.task.dto.response.ResponseTask;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.UserRepository;
@@ -48,10 +52,28 @@ public class ProjectServiceImplDummy implements ProjectService {
     }
 
     @Override
-    public RequestCreateProject getProject(final Long projectId) throws BusinessException {
-        return projectRepository.findById(projectId)
-                .map(this::entityToDto)
+    public ResponseGetProject getProject(final Long projectId) throws BusinessException {
+        Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(projectId))));
+
+        List<ResponseTask> ResponseTaskList = new ArrayList<>();
+        List<IssueResponse> ResponseIssueList = new ArrayList<>();
+
+        List<Task> taskList = project.getTaskList();
+
+        for (Task task : taskList) {
+            ResponseTaskList.add(new ResponseTask(task));
+
+            for (Issue issue : task.getIssueList()) {
+                ResponseIssueList.add(new IssueResponse(issue));
+            }
+        }
+
+        ResponseGetProject responseGetProject = new ResponseGetProject(project);
+        responseGetProject.setTaskList(ResponseTaskList);
+        responseGetProject.setIssueList(ResponseIssueList);
+
+        return responseGetProject;
     }
 
     @Override
