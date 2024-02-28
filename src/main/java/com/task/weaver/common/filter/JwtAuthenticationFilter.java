@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-	private static final String AUTHORIZATION_HEADER = "Refresh-Token";
+	private static final String AUTHORIZATION_HEADER = "Authorization";
 
 	private final JwtTokenProvider jwtTokenProvider;
 
