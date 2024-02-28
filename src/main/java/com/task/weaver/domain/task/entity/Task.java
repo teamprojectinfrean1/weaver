@@ -1,5 +1,6 @@
 package com.task.weaver.domain.task.entity;
 
+import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.status.entity.StatusTag;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
@@ -8,10 +9,14 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
+@Setter
 @Builder
 public class Task {
 

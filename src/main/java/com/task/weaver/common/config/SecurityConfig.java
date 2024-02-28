@@ -36,14 +36,15 @@ public class SecurityConfig {
 	private static final String[] PERMIT_URL_ARRAY = {
 		/* KAKAO */
 		// "/user/kakao/callback/**",
-		"/api/v1/auth/login",
-		"/api/v1/auth/reissue",
-		"/api/v1/user/join",
-		"/user/logout",
-		"/v3/api-docs/**",
-		"/swagger-ui.html",
-		"/webjars/**",
-		"/favicon.com"
+		    "/api/v1/auth/login",
+		    "/api/v1/auth/reissue",
+		    "/api/v1/user/join",
+			"/user/logout",
+		    "/api-docs/**",
+			"/swagger-ui/**",
+			"/swagger-resources/**",
+		    "/webjars/**",
+		    "/favicon.com",
 	};
 
 	/**

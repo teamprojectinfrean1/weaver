@@ -7,7 +7,7 @@ import com.task.weaver.domain.chattingRoomMember.ChattingRoomMember;
 import com.task.weaver.domain.chattingRoomMember.ChattingRoomMemberRepository;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
-import com.task.weaver.domain.projectmember.ProjectMember;
+import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.UserRepository;
 import com.task.weaver.domain.websocket.dto.request.RequestCreateChatting;
@@ -83,10 +83,10 @@ public class ChattingServiceImpl implements ChattingService {
                 .name(project.getName() + " chattingRoom")
                 .build();
 
-        for(ProjectMember projectMember : project.getProjectMember()){  //프로젝트에 참여된 member들 가져옴
+        for(ProjectMember projectMember : project.getProjectMemberList()){  //프로젝트에 참여된 member들 가져옴
             ChattingRoomMember chattingRoomMember = ChattingRoomMember.builder()     //다대다 관계 chattingRoomMember를 만든다.
                     .chattingRoom(chattingRoom)
-                    .user(projectMember.getUser())
+                    .user(projectMember.getUser())                                   //그 프로젝트에 연관된 member들 다 chattingroom에 연결시킴
                     .build();
 
             chattingRoomMemberRepository.save(chattingRoomMember);

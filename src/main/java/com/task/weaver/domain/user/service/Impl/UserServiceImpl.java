@@ -4,8 +4,10 @@ import static com.task.weaver.common.exception.ErrorCode.*;
 
 import com.task.weaver.common.exception.BusinessException;
 import com.task.weaver.common.exception.ErrorCode;
+import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.user.ExistingEmailException;
 import com.task.weaver.domain.project.entity.Project;
+import com.task.weaver.domain.project.repository.ProjectRepository;
 import com.task.weaver.domain.story.entity.Story;
 import com.task.weaver.domain.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
@@ -29,6 +31,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final ProjectRepository projectRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -48,7 +51,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<ResponseUser> getUsers(Long project_id) {
+    public List<ResponseUser> getUsers(Long project_id) throws BusinessException{
+        Project project = projectRepository.findById(project_id)
+                .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(project_id))));
+
+
         return null;
     }
 
@@ -73,10 +80,10 @@ public class UserServiceImpl implements UserService {
         isExistEmail(requestCreateUser.getEmail());
 
         User user = User.builder()
-            .name(requestCreateUser.getName())
-            .email(requestCreateUser.getEmail())
-            .password(passwordEncoder.encode(requestCreateUser.getPassword()))
-            .build();
+                .nickname(requestCreateUser.getNickname())
+                .email(requestCreateUser.getEmail())
+                .password(passwordEncoder.encode(requestCreateUser.getPassword()))
+                .build();
 
         User savedUser = userRepository.save(user);
 

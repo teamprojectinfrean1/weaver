@@ -14,7 +14,8 @@ public interface ProjectService {
                 .bannerUrl(dto.bannerUrl())
                 .name(dto.name())
                 .detail(dto.detail())
-                .dueDate(dto.dueDate())
+                .start_date(dto.start_date())
+                .end_date(dto.end_date())
                 .created(dto.created())
                 .isPublic(dto.hasPublic())
                 .build();
@@ -27,7 +28,8 @@ public interface ProjectService {
                 .bannerUrl(entity.getBannerUrl())
                 .name(entity.getName())
                 .detail(entity.getDetail())
-                .dueDate(entity.getDueDate())
+                .start_date(entity.getStart_date())
+                .end_date(entity.getEnd_date())
                 .created(entity.getCreated())
                 .hasPublic(entity.getIsPublic())
                 .build();
