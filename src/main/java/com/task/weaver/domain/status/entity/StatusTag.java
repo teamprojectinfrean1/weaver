@@ -17,7 +17,7 @@ public class StatusTag {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "status_tag_id", length = 100)
-	private String statusTagId;
+	private Long statusTagId;
 
 	@Column(name = "hex_code", length = 8)
 	private String hexCode;

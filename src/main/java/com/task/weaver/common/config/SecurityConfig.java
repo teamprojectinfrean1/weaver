@@ -40,8 +40,8 @@ public class SecurityConfig {
 		"/api/v1/auth/reissue",
 		"/api/v1/user/join",
 		"/user/logout",
-		"/v3/api-docs/**",
-		"/swagger-ui.html",
+		"/api-docs/**",
+		"/swagger-ui/**",
 		"/webjars/**",
 		"/favicon.com"
 	};
@@ -141,4 +141,6 @@ public class SecurityConfig {
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
 	}
+
+
 }

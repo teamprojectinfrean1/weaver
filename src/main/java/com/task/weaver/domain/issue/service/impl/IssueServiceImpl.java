@@ -2,7 +2,7 @@ package com.task.weaver.domain.issue.service.impl;
 
 import com.task.weaver.common.exception.AuthorizationException;
 import com.task.weaver.common.exception.NotFoundException;
-import com.task.weaver.domain.issue.dto.request.IssueRequest;
+import com.task.weaver.domain.issue.dto.request.CreateIssueRequest;
 import com.task.weaver.domain.issue.dto.response.IssueResponse;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.issue.entity.IssueMention;
@@ -43,39 +43,13 @@ public class IssueServiceImpl implements IssueService {
 		return null;
 	}
 
-//	@Override
-//	public Page<Issue> getIssues(Long taskId, Pageable pageable) throws NotFoundException, AuthorizationException {
-//		return issueRepository.findAllBytaskId(taskId, pageable);
-//	}
-
-	@Override
-	public Page<Issue> getIssues(Task task, Pageable pageable) throws NotFoundException, AuthorizationException {
-		return issueRepository.findAllByTask(task, pageable);
-	}
-
-	@Override
-	public Page<Issue> getIssues(Task task, Long userId, Pageable pageable) throws
-		NotFoundException,
-		AuthorizationException {
-		return null;
-	}
-
-	@Override
-	public Page<Issue> getIssues(Task task, User user, Pageable pageable) throws
-		NotFoundException,
-		AuthorizationException {
-		return null;
-	}
+	// @Override
+	// public Page<Issue> getIssues(Long taskId, Pageable pageable) throws NotFoundException, AuthorizationException {
+	// 	return issueRepository.findAllBytaskId(taskId, pageable);
+	// }
 
 	@Override
 	public Page<Issue> getIssues(Long taskId, Long userId, Pageable pageable) throws
-		NotFoundException,
-		AuthorizationException {
-		return null;
-	}
-
-	@Override
-	public Page<Issue> getIssues(Long taskId, User user, Pageable pageable) throws
 		NotFoundException,
 		AuthorizationException {
 		return null;
@@ -96,22 +70,17 @@ public class IssueServiceImpl implements IssueService {
 	}
 
 	@Override
-	public void addIssue(IssueRequest issueRequest) throws AuthorizationException {
+	public void addIssue(CreateIssueRequest createIssueRequest) throws AuthorizationException {
 		// task, user, statustag
-		Task task = taskRepository.findById(issueRequest.taskId())
+		Task task = taskRepository.findById(createIssueRequest.taskId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
-		User user = userRepository.findById(issueRequest.userId())
+		User user = userRepository.findById(createIssueRequest.userId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
-		StatusTag statusTag = statusTagRepository.findById(issueRequest.statusTagId())
+		StatusTag statusTag = statusTagRepository.findById(createIssueRequest.statusTagId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
 
-		Issue issue = Issue.from(issueRequest, task, user, statusTag);
+		Issue issue = Issue.from(createIssueRequest, task, user, statusTag);
 		issueRepository.save(issue);
-	}
-
-	@Override
-	public Issue addIssue(Issue issue, Task task, User user) throws AuthorizationException {
-		return null;
 	}
 
 	@Override
