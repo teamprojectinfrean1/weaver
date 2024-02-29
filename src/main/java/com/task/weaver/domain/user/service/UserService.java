@@ -6,9 +6,8 @@ import com.task.weaver.domain.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.user.dto.response.ResponseUser;
 import com.task.weaver.domain.user.entity.User;
+import com.task.weaver.domain.user.dto.response.EmailVerificationResult;
 import java.util.List;
-
-import org.springframework.security.core.userdetails.UserDetails;
 
 public interface UserService {
     ResponseUser getUser(Long user_id);
@@ -26,4 +25,8 @@ public interface UserService {
     void deleteUser(Long user_id);
     void deleteUser(User user);
 
+    void sendCodeToEmail(String toEmail);
+    void checkDuplicatedEmail(String email);
+    String createCode();
+    EmailVerificationResult verifiedCode(String email, String authCode);
 }
