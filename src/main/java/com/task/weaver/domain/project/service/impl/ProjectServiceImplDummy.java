@@ -8,6 +8,7 @@ import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.dto.request.RequestCreateProject;
 import com.task.weaver.domain.project.dto.request.RequestPageProject;
 import com.task.weaver.domain.project.dto.response.ResponseGetProject;
+import com.task.weaver.domain.project.dto.response.ResponseGetProjectList;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
@@ -49,6 +50,20 @@ public class ProjectServiceImplDummy implements ProjectService {
         Function<Project, RequestCreateProject> fn = (this::entityToDto);
 
         return new ResponsePageResult<>(result, fn);
+    }
+
+    @Override
+    public List<ResponseGetProjectList> getProejctsForMain(String nickname) throws BusinessException {
+        List<Project> result = projectRepository.findProjectsByNickname(nickname)
+                .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(nickname))));
+        List<ResponseGetProjectList> responseGetProjectLists = new ArrayList<>();
+
+        for (Project project : result) {
+            ResponseGetProjectList responseGetProjectList = new ResponseGetProjectList(project);
+            responseGetProjectLists.add(responseGetProjectList);
+        }
+
+        return responseGetProjectLists;
     }
 
     @Override

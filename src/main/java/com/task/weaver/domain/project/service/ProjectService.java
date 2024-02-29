@@ -4,8 +4,11 @@ import com.task.weaver.common.exception.BusinessException;
 import com.task.weaver.domain.project.dto.request.RequestCreateProject;
 import com.task.weaver.domain.project.dto.request.RequestPageProject;
 import com.task.weaver.domain.project.dto.response.ResponseGetProject;
+import com.task.weaver.domain.project.dto.response.ResponseGetProjectList;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
+
+import java.util.List;
 
 public interface ProjectService {
 
@@ -38,6 +41,8 @@ public interface ProjectService {
 
     ResponsePageResult<RequestCreateProject, Project> getProjects(RequestPageProject requestPageProject)
             throws BusinessException;
+
+    List<ResponseGetProjectList> getProejctsForMain(String nickname) throws BusinessException;
 
     ResponseGetProject getProject(Long projectId) throws BusinessException;
 

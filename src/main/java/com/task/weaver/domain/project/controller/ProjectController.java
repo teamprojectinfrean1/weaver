@@ -4,12 +4,15 @@ import com.task.weaver.common.response.DataResponse;
 import com.task.weaver.common.response.MessageResponse;
 import com.task.weaver.domain.project.dto.request.RequestCreateProject;
 import com.task.weaver.domain.project.dto.request.RequestPageProject;
+import com.task.weaver.domain.project.dto.response.ResponseGetProject;
+import com.task.weaver.domain.project.dto.response.ResponseGetProjectList;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.datetime.DateFormatterRegistrar;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,6 +24,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
+import java.util.List;
+
 @Tag(name = "Project Controller", description = "프로젝트 관련 컨트롤러")
 @RequestMapping("/api/v1/project")
 @RestController
@@ -30,8 +36,8 @@ public class ProjectController {
 
     @Operation(summary = "프로젝트 단건 조회", description = "프로젝트 단건 조회")
     @GetMapping("/{projectId}")
-    public ResponseEntity<DataResponse<RequestCreateProject>> getProject(@PathVariable Long projectId) {
-        RequestCreateProject project = projectService.getProject(projectId);
+    public ResponseEntity<DataResponse<ResponseGetProject>> getProject(@PathVariable Long projectId) {
+        ResponseGetProject project = projectService.getProject(projectId);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트 조회 성공", project), HttpStatus.OK);
     }
 
@@ -39,6 +45,11 @@ public class ProjectController {
     public ResponseEntity<DataResponse<ResponsePageResult<RequestCreateProject, Project>>> getProjects(@RequestBody RequestPageProject pageProject) {
         ResponsePageResult<RequestCreateProject, Project> projects = projectService.getProjects(pageProject);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트 리스트 조회 성공", projects), HttpStatus.OK);
+    }
+    @GetMapping("/{nickname}")
+    public ResponseEntity<DataResponse<List<ResponseGetProjectList>>> getProjects(@PathVariable String nickname){
+        List<ResponseGetProjectList> projects = projectService.getProejctsForMain(nickname);
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "유저의 프로젝트 리스트 조회 성공", projects), HttpStatus.OK);
     }
 
     @PostMapping

@@ -2,8 +2,11 @@ package com.task.weaver.domain.task.service.impl;
 
 import com.task.weaver.common.exception.AuthorizationException;
 import com.task.weaver.common.exception.NotFoundException;
+import com.task.weaver.common.exception.project.ProjectNotFoundException;
+import com.task.weaver.common.exception.user.UserNotFoundException;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.entity.Project;
+import com.task.weaver.domain.project.repository.ProjectRepository;
 import com.task.weaver.domain.status.entity.StatusTag;
 import com.task.weaver.domain.task.dto.request.RequestCreateTask;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
@@ -11,10 +14,14 @@ import com.task.weaver.domain.task.dto.response.ResponseTask;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.repository.TaskRepository;
 import com.task.weaver.domain.task.service.TaskService;
+import com.task.weaver.domain.user.entity.User;
+import com.task.weaver.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import javax.swing.*;
 
 
 @Service
@@ -22,6 +29,8 @@ import org.springframework.stereotype.Service;
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
+    private final ProjectRepository projectRepository;
+    private final UserRepository userRepository;
 
     @Override
     public ResponseTask getTask(Long taskId) throws NotFoundException, AuthorizationException {
@@ -56,7 +65,13 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public ResponseTask addTask(RequestCreateTask request) throws AuthorizationException {
-        Task entity = request.toEntity();
+        User user = userRepository.findById(request.getProject_id())
+                .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(request.getProject_id()))));
+
+        Project project = projectRepository.findById(request.getProject_id())
+                .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(request.getProject_id()))));
+
+        Task entity = request.toEntity(user, project);
         Task save = taskRepository.save(entity);
 
         ResponseTask responseTask = new ResponseTask(save);

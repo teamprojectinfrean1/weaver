@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 
@@ -21,17 +22,19 @@ public class ResponseTask {
     private Project project;
     private StatusTag statusTag;
     private User user;
-    private String taskName;
-    private String detail;
-    private LocalDateTime dueDate;
+    private String title;
+    private String content;
+    private LocalDateTime start_date;
+    private LocalDateTime end_date;
 
     public ResponseTask(Task task) {
         this.taskId = task.getTaskId();
         this.project = task.getProject();
         this.statusTag = task.getStatusTag();
         this.user = task.getUser();
-        this.taskName = task.getTaskName();
-        this.detail = task.getDetail();
-        this.dueDate = task.getDueDate();
+        this.title = task.getTitle();
+        this.content = task.getContent();
+        this.start_date = task.getStart_date();
+        this.end_date = task.getEnd_date();
     }
 }

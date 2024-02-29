@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.domain.project.dto.request.RequestCreateProject;
 import com.task.weaver.domain.project.dto.request.RequestPageProject;
+import com.task.weaver.domain.project.dto.response.ResponseGetProject;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
@@ -42,9 +43,9 @@ class ProjectServiceTest {
 
     @Test
     void getProject() {
-        RequestCreateProject project = projectService.getProject(99L);
+        ResponseGetProject project = projectService.getProject(99L);
         assertThat(project).isNotNull();
-        assertThat(project.projectId()).isEqualTo(99L);
+        assertThat(project.getProject_id()).isEqualTo(99L);
     }
 
     @Test
@@ -56,15 +57,16 @@ class ProjectServiceTest {
                 .detail("new Project Detail")
                 .hasPublic(true)
                 .created(LocalDateTime.now())
-                .dueDate(LocalDateTime.now().plusWeeks(1))
+                .start_date(LocalDateTime.now())
+                .end_date(LocalDateTime.now().plusWeeks(1))
                 .build();
 
         projectService.addProject(dto);
 
-        RequestCreateProject project = projectService.getProject(101L);
+        ResponseGetProject project = projectService.getProject(101L);
 
         assertThat(project).isNotNull();
-        assertThat(project.name()).isEqualTo("new Project Name");
+        assertThat(project.getName()).isEqualTo("new Project Name");
     }
 
     @Test
