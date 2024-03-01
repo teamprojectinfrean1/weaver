@@ -1,6 +1,6 @@
 package com.task.weaver.domain.issue.entity;
 
-import com.task.weaver.domain.issue.dto.request.IssueRequest;
+import com.task.weaver.domain.issue.dto.request.CreateIssueRequest;
 import com.task.weaver.domain.status.entity.StatusTag;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.user.entity.User;
@@ -50,7 +50,7 @@ public class Issue {
     @CreatedDate
     private LocalDateTime createdDate;
 
-    public static Issue from(IssueRequest issueRequest, Task task, User user, StatusTag statusTag) {
+    public static Issue from(CreateIssueRequest issueRequest, Task task, User user, StatusTag statusTag) {
         return Issue.builder().task(task).user(user).statusTag(statusTag).issueName(issueRequest.issueName()).issueType(
             issueRequest.issueType()).issueText(issueRequest.issueText()).build();
     }

@@ -15,11 +15,14 @@ import com.task.weaver.domain.authorization.dto.request.RequestToken;
 import com.task.weaver.domain.authorization.dto.response.ResponseToken;
 import com.task.weaver.domain.authorization.service.AuthorizationService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@Tag(name = "Authorization Controller", description = "인증 관련 컨트롤러")
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
@@ -27,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthorizationController {
 	private final AuthorizationService authorizationService;
 
+	@Operation(summary = "로그인", description = "로그인")
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody RequestSignIn requestSignIn, HttpServletResponse res) {
 		// access token -> header? body? cookie?
@@ -51,8 +55,9 @@ public class AuthorizationController {
 		return ResponseEntity.ok().body(responseToken.accessToken());
 	}
 
+	@Operation(summary = "reissue", description = "refresh token 재발급")
 	@GetMapping("/reissue")
-	public ResponseEntity<?> reissue(@RequestHeader("Authorization") String accessToken, @CookieValue(value = "refresh-token", required = false) Cookie cookie, HttpServletResponse res) {
+	public ResponseEntity<?> reissue(@RequestHeader("Refresh-Token") String accessToken, @CookieValue(value = "refresh-token", required = false) Cookie cookie, HttpServletResponse res) {
 		log.info("reissue controller - cookie : " + cookie.getValue());
 
 		ResponseToken responseToken = authorizationService.reissue(
@@ -77,6 +82,7 @@ public class AuthorizationController {
 		return ResponseEntity.ok().body(responseToken.accessToken());
 	}
 
+	@Operation(summary = "로그아웃", description = "로그아웃")
 	@GetMapping("/logout")
 	public ResponseEntity<?> logout(@CookieValue(value = "refresh-token", required = false) Cookie cookie, HttpServletResponse res) {
 		authorizationService.logout(cookie.getValue());
