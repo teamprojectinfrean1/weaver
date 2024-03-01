@@ -17,21 +17,23 @@ import java.time.LocalDateTime;
 @Builder
 public class RequestCreateTask {
 
-    private Project project;
-    private StatusTag statusTag;
-    private User user;
-    private String taskName;
-    private String detail;
-    private LocalDateTime dueDate;
+    private Long project_id;
+//    private StatusTag statusTag;
+//    private User user;
+    private Long creator_id;
+    private String title;
+    private String content;
+    private LocalDateTime start_date;
+    private LocalDateTime end_date;
 
-    public Task toEntity() {
+    public Task toEntity(User user, Project project) {
         return Task.builder()
                 .project(project)
-                .statusTag(statusTag)
                 .user(user)
-                .taskName(taskName)
-                .detail(detail)
-                .dueDate(dueDate)
+                .title(title)
+                .content(content)
+                .start_date(start_date)
+                .end_date(end_date)
                 .build();
     }
 

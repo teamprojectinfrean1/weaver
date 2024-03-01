@@ -1,17 +1,16 @@
 package com.task.weaver.domain.websocket.service;
 
-import com.task.weaver.domain.websocket.dto.ChattingRequest;
-import com.task.weaver.domain.websocket.dto.ChattingResponse;
-import com.task.weaver.domain.websocket.dto.ChattingRoomResponse;
-import org.springframework.http.ResponseEntity;
+import com.task.weaver.domain.websocket.dto.request.RequestCreateChatting;
+import com.task.weaver.domain.websocket.dto.response.ResponseGetChattings;
+import com.task.weaver.domain.websocket.dto.response.ResponseCreateChattingRoom;
 
 import java.util.List;
 
 public interface ChattingService {
-    List<ChattingResponse> getChattings(Long project_id);
+    List<ResponseGetChattings> getChattings(Long project_id);
+    void deleteChatting(Long chatting_id);
+    void save(Long chattingId, RequestCreateChatting requestCreateChatting);
 
+    ResponseCreateChattingRoom createChattingRoom(Long project_id);
 
-    void save(Long chattingId, ChattingRequest chattingRequest);
-
-    ChattingRoomResponse createChattingRoom(Long project_id);
 }

@@ -19,14 +19,15 @@ class ProjectRepositoryTest {
     public void 데이터_삽입_테스트() {
         IntStream.rangeClosed(1, 100).forEach( i -> {
             LocalDateTime now = LocalDateTime.now();
-            LocalDateTime dueDate = now.plusWeeks(1);
+            LocalDateTime end_Date = now.plusWeeks(1);
 
             Project project = Project.builder()
                     .customUrl("Custom URL..." + i)
                     .bannerUrl("Banner URL..." + i)
                     .detail("Detail..." + i)
                     .created(now)
-                    .dueDate(dueDate)
+                    .start_date(now)
+                    .end_date(end_Date)
                     .name("Project Name..." + i)
                     .isPublic(true)
                     .build();

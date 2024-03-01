@@ -42,6 +42,7 @@ public class SecurityConfig {
 		"/user/logout",
 		"/api-docs/**",
 		"/swagger-ui/**",
+    "/swagger-resources/**",
 		"/webjars/**",
 		"/favicon.com"
 	};

@@ -13,7 +13,7 @@ public class DataResponse<T> extends DefaultResponse{
 
     private final T data;
 
-    public DataResponse(HttpStatus status, String message, T data) {
+    protected DataResponse(HttpStatus status, String message, T data) {
         super(status.value(), message);
         this.data = data;
     }

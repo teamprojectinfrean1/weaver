@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 
@@ -18,7 +19,8 @@ public class RequestUpdateTask {
     private Project project;
     private StatusTag statusTag;
     private User user;
-    private String taskName;
-    private String detail;
-    private LocalDate dueDate;
+    private String title;
+    private String content;
+    private LocalDate start_date;
+    private LocalDate end_date;
 }

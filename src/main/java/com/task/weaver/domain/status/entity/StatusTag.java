@@ -19,6 +19,6 @@ public class StatusTag {
 	@Column(name = "status_tag_id", length = 100)
 	private Long statusTagId;
 
-	@Column(name = "hex_code", length = 8)
-	private String hexCode;
+	@Column(name = "content", length = 8)
+	private String content;
 }

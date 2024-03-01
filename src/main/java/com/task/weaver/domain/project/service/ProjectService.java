@@ -3,8 +3,12 @@ package com.task.weaver.domain.project.service;
 import com.task.weaver.common.exception.BusinessException;
 import com.task.weaver.domain.project.dto.request.RequestCreateProject;
 import com.task.weaver.domain.project.dto.request.RequestPageProject;
+import com.task.weaver.domain.project.dto.response.ResponseGetProject;
+import com.task.weaver.domain.project.dto.response.ResponseGetProjectList;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
+
+import java.util.List;
 
 public interface ProjectService {
 
@@ -14,7 +18,8 @@ public interface ProjectService {
                 .bannerUrl(dto.bannerUrl())
                 .name(dto.name())
                 .detail(dto.detail())
-                .dueDate(dto.dueDate())
+                .start_date(dto.start_date())
+                .end_date(dto.end_date())
                 .created(dto.created())
                 .isPublic(dto.hasPublic())
                 .build();
@@ -27,7 +32,8 @@ public interface ProjectService {
                 .bannerUrl(entity.getBannerUrl())
                 .name(entity.getName())
                 .detail(entity.getDetail())
-                .dueDate(entity.getDueDate())
+                .start_date(entity.getStart_date())
+                .end_date(entity.getEnd_date())
                 .created(entity.getCreated())
                 .hasPublic(entity.getIsPublic())
                 .build();
@@ -36,7 +42,9 @@ public interface ProjectService {
     ResponsePageResult<RequestCreateProject, Project> getProjects(RequestPageProject requestPageProject)
             throws BusinessException;
 
-    RequestCreateProject getProject(Long projectId) throws BusinessException;
+    List<ResponseGetProjectList> getProejctsForMain(String nickname) throws BusinessException;
+
+    ResponseGetProject getProject(Long projectId) throws BusinessException;
 
     Long addProject(RequestCreateProject dto) throws BusinessException;
 

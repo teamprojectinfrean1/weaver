@@ -1,7 +1,10 @@
 package com.task.weaver.domain.user.entity;
 
 import java.util.Collection;
+import java.util.List;
 
+import com.task.weaver.domain.chattingRoomMember.ChattingRoomMember;
+import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -25,7 +28,7 @@ public class User implements UserDetails {
     private Long userId;
 
     @Column(name = "nickname", length = 20)
-    private String name;
+    private String nickname;
 
     @Column(name = "is_online", length = 20)
     private boolean isOnline;
@@ -35,9 +38,15 @@ public class User implements UserDetails {
 
     @Column(name = "password", length = 20)
     private String password;
+    @Column
+    private String phone_number;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<ChattingRoomMember> chattingRoomMemberList;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<ProjectMember> projectMemberList;
     public void updateUser(RequestUpdateUser requestUpdateUser){
-        this.name = requestUpdateUser.getNickname();
+        this.nickname = requestUpdateUser.getNickname();
         this.email = requestUpdateUser.getEmail();
         this.password = requestUpdateUser.getPassword();
     }
