@@ -21,6 +21,7 @@ import java.util.function.Function;
 
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import com.task.weaver.domain.projectmember.repository.ProjectMemberRepository;
+import com.task.weaver.domain.task.dto.response.ResponseGetTask;
 import com.task.weaver.domain.task.dto.response.ResponseTask;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.user.entity.User;
@@ -71,13 +72,13 @@ public class ProjectServiceImplDummy implements ProjectService {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(projectId))));
 
-        List<ResponseTask> ResponseTaskList = new ArrayList<>();
+        List<ResponseGetTask> ResponseTaskList = new ArrayList<>();
         List<IssueResponse> ResponseIssueList = new ArrayList<>();
 
         List<Task> taskList = project.getTaskList();
 
         for (Task task : taskList) {
-            ResponseTaskList.add(new ResponseTask(task));
+            ResponseTaskList.add(new ResponseGetTask(task));
 
             for (Issue issue : task.getIssueList()) {
                 ResponseIssueList.add(new IssueResponse(issue));
@@ -105,7 +106,7 @@ public class ProjectServiceImplDummy implements ProjectService {
                     .project(savedProject)
                     .user(user)
                     .build();
-
+            projectMemberRepository.save(projectMember);
             projectMemberList.add(projectMember);
         }
 
@@ -116,8 +117,8 @@ public class ProjectServiceImplDummy implements ProjectService {
     }
 
     @Override
-    public void updateProject(final RequestCreateProject dto) throws BusinessException {
-        Optional<Project> result = projectRepository.findById(dto.projectId());
+    public void updateProject(Long project_id, final RequestCreateProject dto) throws BusinessException {
+        Optional<Project> result = projectRepository.findById(project_id);
         if (result.isPresent()) {
             Project entity = result.get();
             entity.changeDetail(dto.detail());
@@ -125,7 +126,7 @@ public class ProjectServiceImplDummy implements ProjectService {
             projectRepository.save(entity);
             return;
         }
-        throw new ProjectNotFoundException(new Throwable(String.valueOf(dto.projectId())));
+        throw new ProjectNotFoundException(new Throwable(String.valueOf(project_id)));
     }
 
     @Override

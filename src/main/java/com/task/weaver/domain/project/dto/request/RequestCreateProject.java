@@ -7,8 +7,7 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record RequestCreateProject(Long projectId,
-                                   @NotEmpty String customUrl,
+public record RequestCreateProject(@NotEmpty String customUrl,
                                    @NotEmpty String bannerUrl,
                                    @NotEmpty String name,
                                    @NotEmpty String detail,

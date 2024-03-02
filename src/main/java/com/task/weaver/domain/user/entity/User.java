@@ -3,6 +3,7 @@ package com.task.weaver.domain.user.entity;
 import java.util.Collection;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.task.weaver.domain.chattingRoomMember.ChattingRoomMember;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,6 +28,8 @@ public class User implements UserDetails {
     @Column(name = "user_id")
     private Long userId;
 
+    @Column(name = "id", length = 30)
+    private String id;
     @Column(name = "nickname", length = 20)
     private String nickname;
 
@@ -36,10 +39,9 @@ public class User implements UserDetails {
     @Column(name = "email", length = 100)
     private String email;
 
-    @Column(name = "password", length = 20)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(name = "password")
     private String password;
-    @Column
-    private String phone_number;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<ChattingRoomMember> chattingRoomMemberList;

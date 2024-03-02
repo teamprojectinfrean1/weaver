@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 public interface UserService {
     ResponseUser getUser(Long user_id);
     ResponseUser getUser(String email);
+    Boolean checkMail(String email);
+    Boolean checkId(String id);
 
     List<ResponseUser> getUsers(Long project_id);
     List<ResponseUser> getUsers(Project project); //프로젝트에 연괸된 사람들

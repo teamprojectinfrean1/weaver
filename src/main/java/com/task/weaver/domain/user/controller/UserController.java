@@ -1,5 +1,6 @@
 package com.task.weaver.domain.user.controller;
 
+import com.task.weaver.domain.user.dto.request.RequestCheckMail;
 import com.task.weaver.domain.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.user.dto.response.ResponseUser;
@@ -23,6 +24,14 @@ public class UserController {
     public ResponseEntity<ResponseUser> getUser(@RequestParam Long user_id){
         ResponseUser responseUser = userService.getUser(user_id);
         return ResponseEntity.status(HttpStatus.OK).body(responseUser);
+    }
+    @GetMapping("/checkMail")
+    public ResponseEntity<Boolean> checkMail(@RequestParam String email){
+        return ResponseEntity.ok().body(userService.checkMail(email));
+    }
+    @GetMapping("/checkId")
+    public ResponseEntity<Boolean> checkId(@RequestParam String id){
+        return ResponseEntity.ok().body(userService.checkId(id));
     }
 
     @PostMapping("/join")

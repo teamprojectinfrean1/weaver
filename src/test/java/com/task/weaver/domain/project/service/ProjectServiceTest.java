@@ -77,7 +77,7 @@ class ProjectServiceTest {
         project.changeDetail("update Detail");
         project.changePublic();
         RequestCreateProject requestCreateProject = projectService.entityToDto(project);
-        projectService.updateProject(requestCreateProject);
+        projectService.updateProject(101L, requestCreateProject);
     }
 
     @Test

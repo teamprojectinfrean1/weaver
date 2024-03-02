@@ -51,6 +51,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Boolean checkMail(String email) {
+        if(userRepository.findByEmail(email).isPresent())
+            return true;
+        return false;
+    }
+
+    @Override
+    public Boolean checkId(String id) {
+        if(userRepository.findByUserId(id).isPresent())
+            return true;
+        return false;
+    }
+
+    @Override
     public List<ResponseUser> getUsers(Long project_id) throws BusinessException{
         Project project = projectRepository.findById(project_id)
                 .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(project_id))));
@@ -80,6 +94,7 @@ public class UserServiceImpl implements UserService {
         isExistEmail(requestCreateUser.getEmail());
 
         User user = User.builder()
+                .id(requestCreateUser.getId())
                 .nickname(requestCreateUser.getNickname())
                 .email(requestCreateUser.getEmail())
                 .password(passwordEncoder.encode(requestCreateUser.getPassword()))

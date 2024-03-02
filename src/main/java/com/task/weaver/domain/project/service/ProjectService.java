@@ -27,7 +27,6 @@ public interface ProjectService {
 
     default RequestCreateProject entityToDto(Project entity) {
         return RequestCreateProject.builder()
-                .projectId(entity.getProjectId())
                 .customUrl(entity.getCustomUrl())
                 .bannerUrl(entity.getBannerUrl())
                 .name(entity.getName())
@@ -48,7 +47,7 @@ public interface ProjectService {
 
     Long addProject(RequestCreateProject dto) throws BusinessException;
 
-    void updateProject(RequestCreateProject dto) throws BusinessException;
+    void updateProject(Long project_id, RequestCreateProject dto) throws BusinessException;
 
     void deleteProject(Long projectId) throws BusinessException;
 

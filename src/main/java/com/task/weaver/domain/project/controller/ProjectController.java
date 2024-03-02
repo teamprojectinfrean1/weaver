@@ -40,36 +40,37 @@ public class ProjectController {
         ResponseGetProject project = projectService.getProject(projectId);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트 조회 성공", project), HttpStatus.OK);
     }
-
+    @Operation(summary = "프로젝트 다수 조회", description = "프로젝트 페이지로 조회")
     @GetMapping
     public ResponseEntity<DataResponse<ResponsePageResult<RequestCreateProject, Project>>> getProjects(@RequestBody RequestPageProject pageProject) {
         ResponsePageResult<RequestCreateProject, Project> projects = projectService.getProjects(pageProject);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트 리스트 조회 성공", projects), HttpStatus.OK);
     }
+    @Operation(summary = "닉네임 기반으로 프로젝트 리스트 조회", description = "로그인한 사용자가 참여한 프로젝트들을 조회")
     @GetMapping("/{nickname}")
     public ResponseEntity<DataResponse<List<ResponseGetProjectList>>> getProjects(@PathVariable String nickname){
         List<ResponseGetProjectList> projects = projectService.getProejctsForMain(nickname);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "유저의 프로젝트 리스트 조회 성공", projects), HttpStatus.OK);
     }
-
+    @Operation(summary = "프로젝트 생성", description = "프로젝트 생성")
     @PostMapping
     public ResponseEntity<DataResponse<Long>> addProject(@RequestBody RequestCreateProject project) {
         Long aLong = projectService.addProject(project);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.CREATED, "프로젝트 추가 성공", aLong), HttpStatus.CREATED);
     }
-
-    @PutMapping
-    public ResponseEntity<MessageResponse> updateProject(@RequestBody RequestCreateProject project) {
-        projectService.updateProject(project);
+    @Operation(summary = "프로젝트 업데이트", description = "프로젝트 정보 수정")
+    @PutMapping("/{project_id}")
+    public ResponseEntity<MessageResponse> updateProject(@PathVariable Long project_id, @RequestBody RequestCreateProject project) {
+        projectService.updateProject(project_id, project);
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "프로젝트 업데이트 성공"), HttpStatus.OK);
     }
-
+    @Operation(summary = "프로젝트 뷰 업데이트", description = "프로젝트 뷰 업데이트")
     @PutMapping("/{projectId}")
     public ResponseEntity<MessageResponse> updateProject(@PathVariable Long projectId) {
         projectService.updateProjectView(projectId);
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "프로젝트 뷰 업데이트 성공"), HttpStatus.OK);
     }
-
+    @Operation(summary = "프로젝트 삭제", description = "프로젝트 삭제")
     @DeleteMapping("/{projectId}")
     public ResponseEntity<MessageResponse> deleteProject(@PathVariable Long projectId) {
         projectService.deleteProject(projectId);
