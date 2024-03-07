@@ -26,7 +26,7 @@ public class Task {
     private Long taskId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
+    @JoinColumn(name = "projectId")
     private Project project;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -40,47 +40,47 @@ public class Task {
     @Builder.Default
     private List<Issue> issueList = new ArrayList<>();
 
-    @Column(name = "title", length = 100)
-    private String title;
-    @Column(name = "content")
-    private String content;
-    @Column(name = "start_date")
-    private LocalDateTime start_date;
-    @Column(name = "end_date")
-    private LocalDateTime end_date;
+    @Column(name = "taskTitle", length = 100)
+    private String taskTitle;
+    @Column(name = "taskContent")
+    private String taskContent;
+    @Column(name = "startDate")
+    private LocalDateTime startDate;
+    @Column(name = "endDate")
+    private LocalDateTime endDate;
 
     public String getTitle() {
-        return this.title;
+        return this.taskTitle;
     }
 
-    public Task(Long taskId, Project project, StatusTag statusTag, User user, String taskName, String detail, LocalDateTime start_date, LocalDateTime end_date) {
+    public Task(Long taskId, Project project, StatusTag statusTag, User user, String taskName, String detail, LocalDateTime startDate, LocalDateTime endDate) {
         this.taskId = taskId;
         this.project = project;
         this.statusTag = statusTag;
         this.user = user;
-        this.title = taskName;
-        this.content = detail;
-        this.start_date = start_date;
-        this.end_date = end_date;
+        this.taskTitle = taskName;
+        this.taskContent = detail;
+        this.startDate = startDate;
+        this.startDate = startDate;
     }
 
     public void updateTask(Task newTask) {
         this.project = newTask.getProject();
         this.statusTag = newTask.getStatusTag();
         this.user = newTask.getUser();
-        this.title = newTask.getTitle();
-        this.content = newTask.getContent();
-        this.start_date = newTask.getStart_date();
-        this.end_date = newTask.getEnd_date();
+        this.taskTitle = newTask.getTitle();
+        this.taskContent = newTask.getTaskContent();
+        this.startDate = newTask.getStartDate();
+        this.endDate = newTask.getEndDate();
     }
 
     public void updateTask(RequestUpdateTask requestUpdateTask) {
-        this.project = requestUpdateTask.getProject();
-        this.statusTag = requestUpdateTask.getStatusTag();
-        this.user = requestUpdateTask.getUser();
-        this.title = requestUpdateTask.getTitle();
-        this.content = requestUpdateTask.getContent();
-        this.start_date = requestUpdateTask.getStart_date().atStartOfDay();
-        this.end_date = requestUpdateTask.getEnd_date().atStartOfDay();
+//        this.project = requestUpdateTask.getProject();
+//        this.statusTag = requestUpdateTask.getStatusTag();
+//        this.user = requestUpdateTask.getUser();
+        this.taskTitle = requestUpdateTask.getTaskTitle();
+        this.taskContent = requestUpdateTask.getTaskContent();
+        this.startDate = requestUpdateTask.getStartDate().atStartOfDay();
+        this.endDate = requestUpdateTask.getEndDate().atStartOfDay();
     }
 }

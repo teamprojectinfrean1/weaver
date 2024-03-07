@@ -8,11 +8,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Optional;
+import java.util.UUID;
 
-public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryDsl {
+public interface UserRepository extends JpaRepository<User, UUID>, UserRepositoryDsl {
     Optional<User> findByNickname(String nickname);
     Optional<User> findByEmail(String email);
 
-    @Query("SELECT u FROM User AS u FROM u.id = :id")
+    @Query("SELECT u FROM User AS u WHERE u.id = :id")
     Optional<User> findByUserId(@Param("id") String id);
 }

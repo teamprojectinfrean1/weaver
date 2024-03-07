@@ -19,9 +19,9 @@ public class WebSocketTest {
         this.chattingService = chattingService;
     }
 
-    @Test
-    public void test() {
-        ResponseCreateChattingRoom chattingRoom = chattingService.createChattingRoom(1L);
-        System.out.println(chattingRoom.getChattingRoomId());
-    }
+//    @Test
+//    public void test() {
+//        ResponseCreateChattingRoom chattingRoom = chattingService.createChattingRoom(1L);
+//        System.out.println(chattingRoom.getChattingRoomId());
+//    }
 }

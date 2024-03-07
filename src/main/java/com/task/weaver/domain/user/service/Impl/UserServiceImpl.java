@@ -6,16 +6,21 @@ import com.task.weaver.common.exception.BusinessException;
 import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.user.ExistingEmailException;
+import com.task.weaver.common.exception.user.UserNotFoundException;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
 import com.task.weaver.domain.story.entity.Story;
 import com.task.weaver.domain.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
+import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
 import com.task.weaver.domain.user.dto.response.ResponseUser;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.UserRepository;
 import com.task.weaver.domain.user.service.UserService;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +31,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.swing.*;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -35,8 +42,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public ResponseUser getUser(Long user_id) {
-        User user = userRepository.findById(user_id)
+    public ResponseUser getUser(UUID userId) {
+        User user = userRepository.findById(userId)
             .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
         return new ResponseUser(user);
     }
@@ -53,24 +60,31 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean checkMail(String email) {
         if(userRepository.findByEmail(email).isPresent())
-            return true;
-        return false;
+            return false;
+        return true;
     }
 
     @Override
     public Boolean checkId(String id) {
         if(userRepository.findByUserId(id).isPresent())
-            return true;
-        return false;
+            return false;
+        return true;
     }
 
     @Override
-    public List<ResponseUser> getUsers(Long project_id) throws BusinessException{
-        Project project = projectRepository.findById(project_id)
-                .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(project_id))));
+    public List<ResponseGetUserList> getUsers(UUID projectId) throws BusinessException{
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(projectId))));
 
+        List<User> users = userRepository.findUsersForProject(projectId)
+                .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(projectId))));
 
-        return null;
+        List<ResponseGetUserList> responseGetUserLists = new ArrayList<>();
+
+        for (User user : users)
+            responseGetUserLists.add(new ResponseGetUserList(user));
+
+        return responseGetUserLists;
     }
 
     @Override
@@ -102,6 +116,7 @@ public class UserServiceImpl implements UserService {
 
         User savedUser = userRepository.save(user);
 
+        log.info("user uuid : " + savedUser.getUserId());
         return new ResponseUser(savedUser);
     }
 
@@ -114,16 +129,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseUser updateUser(Long user_id, RequestUpdateUser requestUpdateUser) {
-        User findUser = userRepository.findById(user_id).get();
+    public ResponseUser updateUser(UUID userId, RequestUpdateUser requestUpdateUser) {
+        User findUser = userRepository.findById(userId).get();
         findUser.updateUser(requestUpdateUser);
 
         return new ResponseUser(findUser);
     }
 
     @Override
-    public void deleteUser(Long user_id) {
-        userRepository.deleteById(user_id);
+    public void deleteUser(UUID userId) {
+        userRepository.deleteById(userId);
     }
 
     @Override

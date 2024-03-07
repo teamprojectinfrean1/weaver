@@ -2,10 +2,12 @@ package com.task.weaver.domain.user.entity;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.task.weaver.domain.chattingRoomMember.ChattingRoomMember;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -16,7 +18,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "user")
+@Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -24,16 +26,17 @@ import lombok.NoArgsConstructor;
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID userId;
 
     @Column(name = "id", length = 30)
     private String id;
     @Column(name = "nickname", length = 20)
     private String nickname;
 
-    @Column(name = "is_online", length = 20)
+    @Column(name = "isOnline", length = 20)
     private boolean isOnline;
 
     @Column(name = "email", length = 100)
@@ -42,7 +45,8 @@ public class User implements UserDetails {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "password")
     private String password;
-
+    @Column(name = "profileImage")
+    private String profileImage;
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<ChattingRoomMember> chattingRoomMemberList;
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)

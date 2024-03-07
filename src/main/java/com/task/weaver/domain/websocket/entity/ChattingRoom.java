@@ -31,7 +31,7 @@ public class ChattingRoom extends BaseEntity {
     @OneToMany(mappedBy = "chattingRoom", cascade = CascadeType.REMOVE)
     private List<ChattingRoomMember> chattingRoomMemberList = new ArrayList<>();
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
+    @JoinColumn(name = "projectId")
     private Project project;
     public void createChatting(Chatting chatting) {
         chattings.add(chatting);

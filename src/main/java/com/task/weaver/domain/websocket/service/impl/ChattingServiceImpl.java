@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -58,10 +59,10 @@ public class ChattingServiceImpl implements ChattingService {
     @Override
     @Transactional
     public void save(Long chattingId, RequestCreateChatting requestCreateChatting) {
-        Long user_id = requestCreateChatting.getSenderId();
+        UUID userId = requestCreateChatting.getSenderId();
 
-        User sender = userRepository.findById(user_id)
-                .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(user_id))));
+        User sender = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(userId))));
         ChattingRoom chattingRoom = chattingRoomRepository.findById(chattingId)
                 .orElseThrow(() -> new ChattingRoomNotFoundException(new Throwable(String.valueOf(chattingId))));
 
@@ -75,9 +76,9 @@ public class ChattingServiceImpl implements ChattingService {
     }
 
     @Override
-    public ResponseCreateChattingRoom createChattingRoom(Long project_id) {
-        Project project = projectRepository.findById(project_id)
-                .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(project_id))));
+    public ResponseCreateChattingRoom createChattingRoom(UUID projectId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(projectId))));
 
         ChattingRoom chattingRoom = ChattingRoom.builder()
                 .name(project.getName() + " chattingRoom")

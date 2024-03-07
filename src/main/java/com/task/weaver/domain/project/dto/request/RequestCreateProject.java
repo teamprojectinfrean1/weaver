@@ -3,17 +3,16 @@ package com.task.weaver.domain.project.dto.request;
 import jakarta.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import lombok.Builder;
 
 @Builder
-public record RequestCreateProject(@NotEmpty String customUrl,
-                                   @NotEmpty String bannerUrl,
-                                   @NotEmpty String name,
-                                   @NotEmpty String detail,
-                                   LocalDateTime start_date,
-                                   LocalDateTime end_date,
-                                   LocalDateTime created,
-                                   boolean hasPublic,
-                                   List<String> nicknames) {
+public record RequestCreateProject(@NotEmpty String projectName,
+                                   @NotEmpty String projectContent,
+                                   LocalDateTime startDate,
+                                   LocalDateTime endDate,
+                                   boolean isPublic,
+                                   List<String> projectTagList,
+                                   List<UUID> memberUuidList) {
 }

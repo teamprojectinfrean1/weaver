@@ -24,17 +24,17 @@ public class ResponseTask {
     private User user;
     private String title;
     private String content;
-    private LocalDateTime start_date;
-    private LocalDateTime end_date;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
 
     public ResponseTask(Task task) {
         this.taskId = task.getTaskId();
         this.project = task.getProject();
         this.statusTag = task.getStatusTag();
         this.user = task.getUser();
-        this.title = task.getTitle();
-        this.content = task.getContent();
-        this.start_date = task.getStart_date();
-        this.end_date = task.getEnd_date();
+        this.title = task.getTaskTitle();
+        this.content = task.getTaskContent();
+        this.startDate = task.getStartDate();
+        this.startDate = task.getEndDate();
     }
 }

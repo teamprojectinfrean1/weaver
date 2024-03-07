@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "TASK_TAG")
+@Entity(name = "TASK_STATUS")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

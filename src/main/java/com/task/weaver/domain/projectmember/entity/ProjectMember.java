@@ -26,7 +26,7 @@ public class ProjectMember extends BaseEntity {
     private Long projectMemberId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
+    @JoinColumn(name = "projectId")
     private Project project;
 
     @ManyToOne(fetch = FetchType.LAZY)

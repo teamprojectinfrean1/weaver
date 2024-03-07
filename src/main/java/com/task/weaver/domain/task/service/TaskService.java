@@ -3,10 +3,14 @@ package com.task.weaver.domain.task.service;
 import com.task.weaver.common.exception.AuthorizationException;
 import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.domain.issue.entity.Issue;
+import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.status.entity.StatusTag;
 import com.task.weaver.domain.task.dto.request.RequestCreateTask;
+import com.task.weaver.domain.task.dto.request.RequestGetTaskPage;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
+import com.task.weaver.domain.task.dto.response.ResponseGetTask;
+import com.task.weaver.domain.task.dto.response.ResponseGetTaskList;
 import com.task.weaver.domain.task.dto.response.ResponseTask;
 import com.task.weaver.domain.task.entity.Task;
 import org.springframework.data.domain.Page;
@@ -15,19 +19,19 @@ import org.springframework.data.domain.Pageable;
 
 public interface TaskService {
 
-    ResponseTask getTask(Long taskId)
+    ResponseGetTask getTask(Long taskId)
             throws NotFoundException, AuthorizationException;
     ResponseTask getTask(Issue issue)
             throws NotFoundException, AuthorizationException;
 
-    Page<Task> getTasks(Project project, Pageable pageable)
+    ResponsePageResult<ResponseGetTaskList, Task> getTasks(RequestGetTaskPage requestGetTaskPage)
             throws NotFoundException, AuthorizationException;
     Page<Task> getTasks(StatusTag statusTag, Pageable pageable)
             throws NotFoundException, AuthorizationException;
 //    Page<Task> getTasks(User user, Pageable pageable)
 //            throws NotFoundException, AuthorizationException;
 
-    ResponseTask addTask(RequestCreateTask request)
+    ResponseGetTask addTask(RequestCreateTask request)
             throws AuthorizationException;
 
     ResponseTask addTask(Task task)
@@ -38,10 +42,10 @@ public interface TaskService {
     void deleteTask(Long taskId)
             throws NotFoundException, AuthorizationException;
 
-    ResponseTask updateTask(Task originalTask, Task newTask)
+    ResponseGetTask updateTask(Task originalTask, Task newTask)
             throws NotFoundException, AuthorizationException;
-    ResponseTask updateTask(Long originalTaskId, Task newTask)
+    ResponseGetTask updateTask(Long originalTaskId, Task newTask)
             throws NotFoundException, AuthorizationException;
-    ResponseTask updateTask(Long taskId, RequestUpdateTask requestUpdateUser)
+    ResponseGetTask updateTask(Long taskId, RequestUpdateTask requestUpdateUser)
             throws NotFoundException, AuthorizationException;
 }
