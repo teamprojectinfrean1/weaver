@@ -5,6 +5,7 @@ import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.task.TaskNotFoundException;
 import com.task.weaver.common.exception.user.UserNotFoundException;
+import com.task.weaver.domain.issue.dto.request.RequestIssueForTask;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
@@ -16,6 +17,7 @@ import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
 import com.task.weaver.domain.task.dto.response.ResponseGetTask;
 import com.task.weaver.domain.task.dto.response.ResponseGetTaskList;
 import com.task.weaver.domain.task.dto.response.ResponseTask;
+import com.task.weaver.domain.task.dto.response.ResponseUpdateDetail;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.repository.TaskRepository;
 import com.task.weaver.domain.task.service.TaskService;
@@ -29,6 +31,8 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 
@@ -44,8 +48,18 @@ public class TaskServiceImpl implements TaskService {
     public ResponseGetTask getTask(Long taskId) throws NotFoundException, AuthorizationException {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException(new Throwable(String.valueOf(taskId))));
+        User modifier = task.getModifier();
 
         ResponseGetTask responseTask = new ResponseGetTask(task);
+
+        ResponseUpdateDetail responseUpdateDetail = ResponseUpdateDetail.builder()
+                .userUuid(modifier.getUserId())
+                .userNickname(modifier.getNickname())
+                .updatedDate(task.getModDate())
+                .build();
+
+        responseTask.setLastUpdateDetail(responseUpdateDetail);
+
         return responseTask;
     }
 
@@ -120,7 +134,9 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public ResponseGetTask updateTask(Long originalTaskId, Task newTask) throws NotFoundException, AuthorizationException {
-        Task task = taskRepository.findById(originalTaskId).get();
+        Task task = taskRepository.findById(originalTaskId)
+                .orElseThrow(() -> new TaskNotFoundException(new Throwable(String.valueOf(originalTaskId))));
+
         task.updateTask(newTask);
         return new ResponseGetTask(task);
     }
@@ -128,7 +144,12 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public ResponseGetTask updateTask(Long taskId, RequestUpdateTask requestUpdateUser) throws NotFoundException, AuthorizationException {
-        Task findTask = taskRepository.findById(taskId).get();
+        Task findTask = taskRepository.findById(taskId)
+                .orElseThrow(() -> new TaskNotFoundException(new Throwable(String.valueOf(taskId))));
+
+        List<RequestIssueForTask> requestIssueForTasks = requestUpdateUser.getIssueList();
+        List<Issue> issueList = new ArrayList<>();
+
         findTask.updateTask(requestUpdateUser);
 
         ResponseGetTask responseTask = new ResponseGetTask(findTask);

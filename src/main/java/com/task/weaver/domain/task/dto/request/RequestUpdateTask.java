@@ -1,5 +1,6 @@
 package com.task.weaver.domain.task.dto.request;
 
+import com.task.weaver.domain.issue.dto.request.RequestIssueForTask;
 import com.task.weaver.domain.issue.dto.response.ResponseIssueForTask;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.status.entity.StatusTag;
@@ -27,6 +28,6 @@ public class RequestUpdateTask {
     private LocalDate endDate;
     private String taskStatus;
     private List<String> taskTagList;
-    private List<ResponseIssueForTask> issueList;
+    private List<RequestIssueForTask> issueList;
     private String editDeletePermission;
 }

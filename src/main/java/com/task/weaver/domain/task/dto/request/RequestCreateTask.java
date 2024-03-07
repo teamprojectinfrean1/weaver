@@ -1,5 +1,6 @@
 package com.task.weaver.domain.task.dto.request;
 
+import com.task.weaver.domain.issue.dto.request.RequestIssueForTask;
 import com.task.weaver.domain.issue.dto.response.ResponseIssueForTask;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.status.entity.StatusTag;
@@ -29,17 +30,19 @@ public class RequestCreateTask {
     private List<String> taskTagList;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private List<ResponseIssueForTask> issueList;
+    private List<RequestIssueForTask> issueList;
     private String editDeletePermission;
 
     public Task toEntity(User user, Project project) {
         return Task.builder()
                 .project(project)
                 .user(user)
+                .modifier(user)
                 .taskTitle(taskTitle)
                 .taskContent(taskContent)
                 .startDate(startDate)
                 .endDate(endDate)
+                .editDeletePermission(editDeletePermission)
                 .build();
     }
 

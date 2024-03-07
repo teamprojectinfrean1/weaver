@@ -1,5 +1,7 @@
 package com.task.weaver.domain.task.entity;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
+import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.status.entity.StatusTag;
@@ -11,6 +13,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @NoArgsConstructor
@@ -18,7 +21,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class Task {
+public class Task extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,6 +42,9 @@ public class Task {
     @OneToMany(mappedBy = "task")
     @Builder.Default
     private List<Issue> issueList = new ArrayList<>();
+    @OneToOne
+    @JoinColumn(name = "last_update_user_id")
+    private User modifier;
 
     @Column(name = "taskTitle", length = 100)
     private String taskTitle;
@@ -48,6 +54,7 @@ public class Task {
     private LocalDateTime startDate;
     @Column(name = "endDate")
     private LocalDateTime endDate;
+    private String editDeletePermission;
 
     public String getTitle() {
         return this.taskTitle;
@@ -61,7 +68,7 @@ public class Task {
         this.taskTitle = taskName;
         this.taskContent = detail;
         this.startDate = startDate;
-        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
     public void updateTask(Task newTask) {
@@ -82,5 +89,6 @@ public class Task {
         this.taskContent = requestUpdateTask.getTaskContent();
         this.startDate = requestUpdateTask.getStartDate().atStartOfDay();
         this.endDate = requestUpdateTask.getEndDate().atStartOfDay();
+        this.editDeletePermission = requestUpdateTask.getEditDeletePermission();
     }
 }
