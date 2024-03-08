@@ -67,12 +67,16 @@ public class ProjectServiceImplDummy implements ProjectService {
 
         List<Project> result = projectRepository.findProjectsByUser(user)
                 .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(userId))));
+
         List<ResponseGetProjectList> responseGetProjectLists = new ArrayList<>();
 
         for (Project project : result) {
             ResponseGetProjectList responseGetProjectList = new ResponseGetProjectList(project);
-            responseGetProjectLists.add(responseGetProjectList);
 
+            if(project.getProjectId() == user.getMainProject().getProjectId())
+                responseGetProjectList.setIsMainProject(true);
+
+            responseGetProjectLists.add(responseGetProjectList);
         }
 
         return responseGetProjectLists;
@@ -121,8 +125,10 @@ public class ProjectServiceImplDummy implements ProjectService {
             projectMemberRepository.save(projectMember);
             projectMemberList.add(projectMember);
         }
-//        savedProject.setUser(creator);
+
         savedProject.setProjectMemberList(projectMemberList);
+        savedProject.setModifier(writer);
+
         log.info("project uuid : " + savedProject.getProjectId());
         projectRepository.save(savedProject);
 

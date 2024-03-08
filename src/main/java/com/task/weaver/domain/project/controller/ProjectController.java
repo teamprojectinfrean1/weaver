@@ -4,6 +4,7 @@ import com.task.weaver.common.response.DataResponse;
 import com.task.weaver.common.response.MessageResponse;
 import com.task.weaver.domain.project.dto.request.RequestCreateProject;
 import com.task.weaver.domain.project.dto.request.RequestPageProject;
+import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
 import com.task.weaver.domain.project.dto.response.ResponseGetProject;
 import com.task.weaver.domain.project.dto.response.ResponseGetProjectList;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
@@ -78,7 +79,7 @@ public class ProjectController {
     @Operation(summary = "프로젝트 업데이트", description = "프로젝트 정보 수정")
     @PutMapping("/{projectId}")
     @Parameter(name = "projectId", description = "프로젝트 uuid", in = ParameterIn.PATH)
-    public ResponseEntity<MessageResponse> updateProject(@PathVariable("projectId") UUID projectId, @RequestBody RequestCreateProject project) {
+    public ResponseEntity<MessageResponse> updateProject(@PathVariable("projectId") UUID projectId, @RequestBody RequestUpdateProject project) {
         projectService.updateProject(projectId, project);
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "프로젝트 업데이트 성공"), HttpStatus.OK);
     }
