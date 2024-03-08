@@ -6,9 +6,11 @@ import java.util.UUID;
 
 @Builder
 public record CreateIssueRequest(UUID userId,
+								 Long managerId,
 								 Long taskId,
-								 Long statusTagId,
-								 String issueName,
-								 String issueType,
-								 String issueText) {
+								 String startDate,
+								 String endDate,
+								 String title,
+								 String content,
+								 String status) {
 }

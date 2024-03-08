@@ -5,8 +5,6 @@ import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.domain.issue.dto.request.CreateIssueRequest;
 import com.task.weaver.domain.issue.dto.response.IssueResponse;
 import com.task.weaver.domain.issue.entity.Issue;
-import com.task.weaver.domain.issue.entity.IssueMention;
-import com.task.weaver.domain.status.entity.StatusTag;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,11 +15,10 @@ public interface IssueService {
 
     Page<Issue> getIssues (Long taskId, Pageable pageable) throws NotFoundException, AuthorizationException;
     Page<Issue> getIssues (Long taskId, Long userId, Pageable pageable) throws NotFoundException, AuthorizationException;
-    Page<Issue> getIssues (StatusTag statusTag, Pageable pageable) throws NotFoundException, AuthorizationException;
-    Page<Issue> getIssues (IssueMention issueMention, Pageable pageable) throws NotFoundException, AuthorizationException;
 
 
-    void addIssue(CreateIssueRequest issueRequest) throws AuthorizationException;
+    Long addIssue(CreateIssueRequest issueRequest) throws AuthorizationException;
+
     Issue addIssue (Issue issue, Long taskId, Long userId) throws AuthorizationException;
 
     Issue updateIssue (Issue originalIssue, Issue newIssue) throws NotFoundException, AuthorizationException;

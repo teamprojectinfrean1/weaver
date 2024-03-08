@@ -1,7 +1,6 @@
 package com.task.weaver.domain.issue.entity;
 
-import com.task.weaver.domain.issue.dto.request.CreateIssueRequest;
-import com.task.weaver.domain.status.entity.StatusTag;
+import com.task.weaver.common.model.Status;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -12,7 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 @Entity
 @AllArgsConstructor
@@ -31,27 +30,39 @@ public class Issue {
     private Task task;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "create_user_id")
-    private User user;
+    @JoinColumn(name = "creator_id")
+    private User creator;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "status_tag_id")
-    private StatusTag statusTag;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "manager_id")
+    private User manager;
 
-    @Column(name = "issue_name", length = 100)
-    private String issueName;
+    @Column(name = "title", length = 100)
+    private String title;
 
-    @Column(name = "issue_type", length = 100)
-    private String issueType;
+    @Column(name = "content")
+    private String content;
 
-    @Column(name = "issue_text")
-    private String issueText;
+    @LastModifiedDate
+    @Column(name = "modify_date")
+    private LocalDateTime modDate;
 
-    @CreatedDate
-    private LocalDateTime createdDate;
+    @Column(name = "start_date")
+    private LocalDateTime startDate;
 
-    public static Issue from(CreateIssueRequest issueRequest, Task task, User user, StatusTag statusTag) {
-        return Issue.builder().task(task).user(user).statusTag(statusTag).issueName(issueRequest.issueName()).issueType(
-            issueRequest.issueType()).issueText(issueRequest.issueText()).build();
-    }
+    @Column(name = "end_date")
+    private LocalDateTime endDate;
+
+    @Column(name = "visible")
+    private boolean visible;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+
+
+    // public Issue from(CreateIssueRequest issueRequest, Task task, User user) {
+    //     return Issue.builder().task(task).Id(user).managerId(user).title(issueRequest.issueName()).issueType(
+    //         issueRequest.issueType()).issueText(issueRequest.issueText()).build();
+    // }
 }
