@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ser.Serializers;
 import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.entity.Project;
-import com.task.weaver.domain.status.entity.StatusTag;
+import com.task.weaver.domain.status.entity.Status;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
 import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -34,7 +34,7 @@ public class Task extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "status_tag_id")
-    private StatusTag statusTag;
+    private Status statusTag;
 
     @ManyToOne
     @JoinColumn(name = "creator_user_id")
@@ -60,7 +60,7 @@ public class Task extends BaseEntity {
         return this.taskTitle;
     }
 
-    public Task(Long taskId, Project project, StatusTag statusTag, User user, String taskName, String detail, LocalDateTime startDate, LocalDateTime endDate) {
+    public Task(Long taskId, Project project, Status statusTag, User user, String taskName, String detail, LocalDateTime startDate, LocalDateTime endDate) {
         this.taskId = taskId;
         this.project = project;
         this.statusTag = statusTag;
