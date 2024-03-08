@@ -1,5 +1,7 @@
 package com.task.weaver.domain.issue.entity;
 
+import com.task.weaver.domain.status.entity.Status;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,5 +18,11 @@ public class IssueStatus {
 	@Column(name = "issue_status_id")
 	private Long issueStatusId;
 
-	// private
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "issue_id")
+	private Issue issue;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "status_id")
+	private Status status;
 }
