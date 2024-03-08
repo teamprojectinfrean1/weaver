@@ -4,18 +4,17 @@ import java.time.LocalDateTime;
 
 import com.task.weaver.domain.issue.entity.Issue;
 
-import com.task.weaver.domain.status.entity.StatusTag;
-import jdk.jshell.Snippet;
 import lombok.Builder;
 
 @Builder
 public record IssueResponse(Long issueId,
-							String issueName,
-							String issueType,
-							LocalDateTime createDate,
-							StatusTag statusTag
+							String title,
+							String content,
+							LocalDateTime modDate,
+							String status
 							) {
+
 	public IssueResponse(Issue issue) {
-		this(issue.getIssueId(), issue.getIssueName(), issue.getIssueType(), issue.getCreatedDate(), issue.getStatusTag());
+		this(issue.getIssueId(), issue.getTitle(), issue.getContent(), issue.getModDate(), issue.getStatus().toString());
 	}
 }

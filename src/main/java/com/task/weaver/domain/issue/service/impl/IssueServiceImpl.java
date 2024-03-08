@@ -1,15 +1,16 @@
 package com.task.weaver.domain.issue.service.impl;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import com.task.weaver.common.exception.AuthorizationException;
 import com.task.weaver.common.exception.NotFoundException;
+import com.task.weaver.common.model.Status;
 import com.task.weaver.domain.issue.dto.request.CreateIssueRequest;
 import com.task.weaver.domain.issue.dto.response.IssueResponse;
 import com.task.weaver.domain.issue.entity.Issue;
-import com.task.weaver.domain.issue.entity.IssueMention;
 import com.task.weaver.domain.issue.repository.IssueRepository;
 import com.task.weaver.domain.issue.service.IssueService;
-import com.task.weaver.domain.status.entity.StatusTag;
-import com.task.weaver.domain.status.repository.StatusTagRepository;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.repository.TaskRepository;
 import com.task.weaver.domain.user.entity.User;
@@ -29,7 +30,6 @@ public class IssueServiceImpl implements IssueService {
 	private final IssueRepository issueRepository;
 	private final UserRepository userRepository;
 	private final TaskRepository taskRepository;
-	private final StatusTagRepository statusTagRepository;
 
 	@Override
 	public IssueResponse getIssue(Long issueId) throws NotFoundException, AuthorizationException {
@@ -56,31 +56,26 @@ public class IssueServiceImpl implements IssueService {
 	}
 
 	@Override
-	public Page<Issue> getIssues(StatusTag statusTag, Pageable pageable) throws
-		NotFoundException,
-		AuthorizationException {
-		return null;
-	}
-
-	@Override
-	public Page<Issue> getIssues(IssueMention issueMention, Pageable pageable) throws
-		NotFoundException,
-		AuthorizationException {
-		return null;
-	}
-
-	@Override
-	public void addIssue(CreateIssueRequest createIssueRequest) throws AuthorizationException {
-		// task, user, statustag
+	public Long addIssue(CreateIssueRequest createIssueRequest) throws AuthorizationException {
 		Task task = taskRepository.findById(createIssueRequest.taskId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
-		User user = userRepository.findById(createIssueRequest.userId())
+		User creator = userRepository.findById(createIssueRequest.creatorId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
-		StatusTag statusTag = statusTagRepository.findById(createIssueRequest.statusTagId())
+		User manager = userRepository.findById(createIssueRequest.managerId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
 
-		Issue issue = Issue.from(createIssueRequest, task, user, statusTag);
-		issueRepository.save(issue);
+		Issue issue = Issue.builder()
+			.task(task)
+			.creator(creator)
+			.manager(manager)
+			.title(createIssueRequest.title())
+			.content(createIssueRequest.content())
+			.startDate(LocalDateTime.parse(createIssueRequest.startDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+			.endDate(LocalDateTime.parse(createIssueRequest.endDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+			.visible(false)
+			.status(Status.valueOf(createIssueRequest.status()))
+			.build();
+		return issueRepository.save(issue).getIssueId();
 	}
 
 	@Override

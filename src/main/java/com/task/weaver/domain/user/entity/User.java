@@ -1,9 +1,11 @@
 package com.task.weaver.domain.user.entity;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import com.task.weaver.domain.chattingRoomMember.ChattingRoomMember;
+import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -45,6 +47,13 @@ public class User implements UserDetails {
     private List<ChattingRoomMember> chattingRoomMemberList;
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<ProjectMember> projectMemberList;
+
+    @OneToMany(mappedBy = "creator")
+    private List<Issue> creatorIssueList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "manager")
+    private List<Issue> managerIssueList = new ArrayList<>();
+
     public void updateUser(RequestUpdateUser requestUpdateUser){
         this.nickname = requestUpdateUser.getNickname();
         this.email = requestUpdateUser.getEmail();

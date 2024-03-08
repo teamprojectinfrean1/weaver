@@ -3,10 +3,12 @@ package com.task.weaver.domain.issue.dto.request;
 import lombok.Builder;
 
 @Builder
-public record CreateIssueRequest(Long userId,
+public record CreateIssueRequest(Long creatorId,
+								 Long managerId,
 								 Long taskId,
-								 Long statusTagId,
-								 String issueName,
-								 String issueType,
-								 String issueText) {
+								 String startDate,
+								 String endDate,
+								 String title,
+								 String content,
+								 String status) {
 }
