@@ -5,7 +5,6 @@ import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.domain.issue.dto.request.CreateIssueRequest;
 import com.task.weaver.domain.issue.dto.response.IssueResponse;
 import com.task.weaver.domain.issue.entity.Issue;
-import com.task.weaver.domain.issue.entity.IssueMention;
 import com.task.weaver.domain.status.entity.StatusTag;
 
 import org.springframework.data.domain.Page;

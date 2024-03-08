@@ -10,10 +10,9 @@ import lombok.Builder;
 
 @Builder
 public record IssueResponse(Long issueId,
-							String issueName,
-							String issueType,
-							LocalDateTime createDate,
-							StatusTag statusTag
+							String issueTitle,
+							String issueContent,
+							LocalDateTime modDate
 							) {
 	public IssueResponse(Issue issue) {
 		this(issue.getIssueId(), issue.getIssueName(), issue.getIssueType(), issue.getCreatedDate(), issue.getStatusTag());

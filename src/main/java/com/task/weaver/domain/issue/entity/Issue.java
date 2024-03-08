@@ -12,7 +12,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import org.springframework.cglib.core.Local;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 @Entity
 @AllArgsConstructor
@@ -28,30 +30,39 @@ public class Issue {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id")
-    private Task task;
+    private Task taskId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "create_user_id")
-    private User user;
+    @JoinColumn(name = "writer_id")
+    private User writerId;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "status_tag_id")
-    private StatusTag statusTag;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "manager_id")
+    private User managerId;
 
-    @Column(name = "issue_name", length = 100)
-    private String issueName;
+    @Column(name = "title", length = 100)
+    private String title;
 
-    @Column(name = "issue_type", length = 100)
-    private String issueType;
+    @Column(name = "content")
+    private String content;
 
     @Column(name = "issue_text")
     private String issueText;
 
-    @CreatedDate
-    private LocalDateTime createdDate;
+    @LastModifiedDate
+    private LocalDateTime updateDate;
 
-    public static Issue from(CreateIssueRequest issueRequest, Task task, User user, StatusTag statusTag) {
-        return Issue.builder().task(task).user(user).statusTag(statusTag).issueName(issueRequest.issueName()).issueType(
+    @Column(name = "start_date")
+    private LocalDateTime startDate;
+
+    @Column(name = "end_date")
+    private LocalDateTime endDate;
+
+    @Column(name = "visible")
+    private boolean visible;
+
+    public static Issue from(CreateIssueRequest issueRequest, Task task, User user) {
+        return Issue.builder().task(task).writerId(user).managerId(user).title(issueRequest.issueName()).issueType(
             issueRequest.issueType()).issueText(issueRequest.issueText()).build();
     }
 }
