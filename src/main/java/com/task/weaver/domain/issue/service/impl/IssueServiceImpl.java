@@ -5,14 +5,12 @@ import java.time.format.DateTimeFormatter;
 
 import com.task.weaver.common.exception.AuthorizationException;
 import com.task.weaver.common.exception.NotFoundException;
+import com.task.weaver.common.model.Status;
 import com.task.weaver.domain.issue.dto.request.CreateIssueRequest;
 import com.task.weaver.domain.issue.dto.response.IssueResponse;
 import com.task.weaver.domain.issue.entity.Issue;
-import com.task.weaver.domain.issue.entity.IssueStatus;
 import com.task.weaver.domain.issue.repository.IssueRepository;
-import com.task.weaver.domain.issue.repository.IssueStatusRepository;
 import com.task.weaver.domain.issue.service.IssueService;
-import com.task.weaver.domain.status.repository.StatusRepository;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.repository.TaskRepository;
 import com.task.weaver.domain.user.entity.User;
@@ -30,16 +28,13 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class IssueServiceImpl implements IssueService {
 	private final IssueRepository issueRepository;
-	private final IssueStatusRepository issueStatusRepository;
-	private final StatusRepository statusRepository;
 	private final UserRepository userRepository;
 	private final TaskRepository taskRepository;
 
 	@Override
 	public IssueResponse getIssue(Long issueId) throws NotFoundException, AuthorizationException {
 		Issue issue = issueRepository.findById(issueId).orElseThrow(() -> new IllegalArgumentException(""));
-		// return new IssueResponse(issue);
-		return null;
+		return new IssueResponse(issue);
 	}
 
 	@Override
@@ -68,8 +63,6 @@ public class IssueServiceImpl implements IssueService {
 			.orElseThrow(() -> new IllegalArgumentException(""));
 		User manager = userRepository.findById(createIssueRequest.managerId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
-		// StatusTag statusTag = statusTagRepository.findById(createIssueRequest.statusId())
-		// 	.orElseThrow(() -> new IllegalArgumentException(""));
 
 		Issue issue = Issue.builder()
 			.task(task)
@@ -79,18 +72,10 @@ public class IssueServiceImpl implements IssueService {
 			.content(createIssueRequest.content())
 			.startDate(LocalDateTime.parse(createIssueRequest.startDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")))
 			.endDate(LocalDateTime.parse(createIssueRequest.endDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+			.visible(false)
+			.status(Status.valueOf(createIssueRequest.status()))
 			.build();
 		return issueRepository.save(issue).getIssueId();
-	}
-
-	@Override
-	public void addIssueStatus(Long issueId, Long statusId){
-		IssueStatus issueStatus = IssueStatus.builder()
-			.issue(issueRepository.getById(issueId))
-			.status(statusRepository.getReferenceById(statusId))
-			.build();
-
-		issueStatusRepository.save(issueStatus);
 	}
 
 	@Override

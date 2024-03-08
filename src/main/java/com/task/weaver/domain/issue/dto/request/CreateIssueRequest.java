@@ -1,8 +1,5 @@
 package com.task.weaver.domain.issue.dto.request;
 
-import com.task.weaver.domain.issue.entity.IssueStatus;
-import com.task.weaver.domain.issue.service.IssueService;
-
 import lombok.Builder;
 
 @Builder
@@ -13,5 +10,5 @@ public record CreateIssueRequest(Long creatorId,
 								 String endDate,
 								 String title,
 								 String content,
-								 Long statusId) {
+								 String status) {
 }

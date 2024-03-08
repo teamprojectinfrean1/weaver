@@ -1,5 +1,6 @@
 package com.task.weaver.domain.issue.entity;
 
+import com.task.weaver.common.model.Status;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -10,8 +11,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import org.springframework.cglib.core.Local;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 @Entity
@@ -56,6 +55,9 @@ public class Issue {
 
     @Column(name = "visible")
     private boolean visible;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
 
 

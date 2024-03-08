@@ -19,8 +19,6 @@ public interface IssueService {
 
     Long addIssue(CreateIssueRequest issueRequest) throws AuthorizationException;
 
-    void addIssueStatus(Long issueId, Long statusId);
-
     Issue addIssue (Issue issue, Long taskId, Long userId) throws AuthorizationException;
 
     Issue updateIssue (Issue originalIssue, Issue newIssue) throws NotFoundException, AuthorizationException;
