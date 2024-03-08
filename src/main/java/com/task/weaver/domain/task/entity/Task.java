@@ -1,5 +1,7 @@
 package com.task.weaver.domain.task.entity;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
+import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.status.entity.StatusTag;
@@ -11,6 +13,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @NoArgsConstructor
@@ -18,7 +21,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class Task {
+public class Task extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +29,7 @@ public class Task {
     private Long taskId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
+    @JoinColumn(name = "projectId")
     private Project project;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -39,48 +42,54 @@ public class Task {
     @OneToMany(mappedBy = "task")
     @Builder.Default
     private List<Issue> issueList = new ArrayList<>();
+    @OneToOne
+    @JoinColumn(name = "last_update_user_id")
+    private User modifier;
 
-    @Column(name = "title", length = 100)
-    private String title;
-    @Column(name = "content")
-    private String content;
-    @Column(name = "start_date")
-    private LocalDateTime start_date;
-    @Column(name = "end_date")
-    private LocalDateTime end_date;
+    @Column(name = "taskTitle", length = 100)
+    private String taskTitle;
+    @Column(name = "taskContent")
+    private String taskContent;
+    @Column(name = "startDate")
+    private LocalDateTime startDate;
+    @Column(name = "endDate")
+    private LocalDateTime endDate;
+    private String editDeletePermission;
 
     public String getTitle() {
-        return this.title;
+        return this.taskTitle;
     }
 
-    public Task(Long taskId, Project project, StatusTag statusTag, User user, String taskName, String detail, LocalDateTime start_date, LocalDateTime end_date) {
+    public Task(Long taskId, Project project, StatusTag statusTag, User user, String taskName, String detail, LocalDateTime startDate, LocalDateTime endDate) {
         this.taskId = taskId;
         this.project = project;
         this.statusTag = statusTag;
         this.user = user;
-        this.title = taskName;
-        this.content = detail;
-        this.start_date = start_date;
-        this.end_date = end_date;
+        this.taskTitle = taskName;
+        this.taskContent = detail;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
     public void updateTask(Task newTask) {
         this.project = newTask.getProject();
         this.statusTag = newTask.getStatusTag();
         this.user = newTask.getUser();
-        this.title = newTask.getTitle();
-        this.content = newTask.getContent();
-        this.start_date = newTask.getStart_date();
-        this.end_date = newTask.getEnd_date();
+        this.taskTitle = newTask.getTitle();
+        this.taskContent = newTask.getTaskContent();
+        this.startDate = newTask.getStartDate();
+        this.endDate = newTask.getEndDate();
     }
 
-    public void updateTask(RequestUpdateTask requestUpdateTask) {
-        this.project = requestUpdateTask.getProject();
-        this.statusTag = requestUpdateTask.getStatusTag();
-        this.user = requestUpdateTask.getUser();
-        this.title = requestUpdateTask.getTitle();
-        this.content = requestUpdateTask.getContent();
-        this.start_date = requestUpdateTask.getStart_date().atStartOfDay();
-        this.end_date = requestUpdateTask.getEnd_date().atStartOfDay();
+    public void updateTask(RequestUpdateTask requestUpdateTask, User updater) {
+//        this.project = requestUpdateTask.getProject();
+//        this.statusTag = requestUpdateTask.getStatusTag();
+//        this.user = requestUpdateTask.getUser();
+        this.taskTitle = requestUpdateTask.getTaskTitle();
+        this.taskContent = requestUpdateTask.getTaskContent();
+        this.startDate = requestUpdateTask.getStartDate().atStartOfDay();
+        this.endDate = requestUpdateTask.getEndDate().atStartOfDay();
+        this.modifier = updater;
+        this.editDeletePermission = requestUpdateTask.getEditDeletePermission();
     }
 }

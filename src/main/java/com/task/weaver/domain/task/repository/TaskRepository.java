@@ -15,8 +15,8 @@ public interface TaskRepository extends JpaRepository<Task, Long>, TaskRepositor
     Page<Task> findByProject(Project project, Pageable pageable);
     Page<Task> findByStatusTag(StatusTag statusTag, Pageable pageable);
     Page<Task> findByUser(User user, Pageable pageable);
-    Page<Task> findByTaskName(String taskName, Pageable pageable);
-    Page<Task> findByDetail(String detail, Pageable pageable);
-    Page<Task> findByDueDate(LocalDateTime dueDate, Pageable pageable);
+    Page<Task> findByTaskTitle(String taskName, Pageable pageable);
+    Page<Task> findByTaskContent(String detail, Pageable pageable);
+//    Page<Task> findBystartDate(LocalDateTime startDate, Pageable pageable);
 
 }

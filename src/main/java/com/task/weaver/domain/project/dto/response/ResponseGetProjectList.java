@@ -7,28 +7,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class ResponseGetProjectList {
-    private Long project_id;
+    private UUID projectId;
     private String name;
-    private String detail;
-    private LocalDateTime start_date;
-    private LocalDateTime end_date;
-    private LocalDateTime created;
-    private String customUrl;
-    private String bannerUrl;
+    private Boolean isMainProject;
+
     public ResponseGetProjectList(Project project){
-        this.project_id = project.getProjectId();
+        this.projectId = project.getProjectId();
         this.name = project.getName();
-        this.detail = project.getDetail();
-        this.start_date = project.getStart_date();
-        this.end_date = project.getEnd_date();
-        this.created = project.getCreated();
-        this.customUrl = project.getCustomUrl();
-        this.bannerUrl = project.getBannerUrl();
     }
 }

@@ -1,6 +1,8 @@
 package com.task.weaver.domain.project.entity;
 
 import com.task.weaver.domain.BaseEntity;
+import com.task.weaver.domain.project.dto.request.RequestCreateProject;
+import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.user.entity.User;
@@ -8,8 +10,10 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Builder
@@ -20,28 +24,27 @@ import lombok.*;
 public class Project extends BaseEntity {
 
     @Id
-    @Column(name = "project_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long projectId;
-    @Column(name = "custom_url")
-    private String customUrl;
-    @Column(name = "banner_url")
-    private String bannerUrl;
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID projectId;
+//    @Column(name = "custom_url")
+//    private String customUrl;
+//    @Column(name = "banner_url")
+//    private String bannerUrl;
     @Column(name = "name")
     private String name;
     @Column(name = "detail")
     private String detail;
-    @Column(name = "start_date")
-    private LocalDateTime start_date;
-    @Column(name = "end_date")
-    private LocalDateTime end_date;
+    @Column(name = "startDate")
+    private LocalDateTime startDate;
+    @Column(name = "endDate")
+    private LocalDateTime endDate;
     @Column(name = "created")
     private LocalDateTime created;
-    @Column(name = "is_public")
-    private Boolean isPublic;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId")
     private User user;
     @Builder.Default
     @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE)
@@ -49,6 +52,11 @@ public class Project extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE)
     private List<Task> taskList = new ArrayList<>();
+
+    @OneToOne
+    @JoinColumn(name = "last_update_user_id")
+    private User modifier;
+
     public void changeName(String name) {
         this.name = name;
     }
@@ -57,7 +65,15 @@ public class Project extends BaseEntity {
         this.detail = detail;
     }
 
-    public void changePublic() {
-        this.isPublic = !isPublic;
+    public void updateProject(RequestUpdateProject requestUpdateProject, User updater){
+        this.name = requestUpdateProject.projectName();
+        this.detail = requestUpdateProject.projectContent();
+        this.startDate = requestUpdateProject.startDate();
+        this.endDate = requestUpdateProject.endDate();
+        this.modifier = updater;
     }
+
+//    public void changePublic() {
+//        this.isPublic = !isPublic;
+//    }
 }

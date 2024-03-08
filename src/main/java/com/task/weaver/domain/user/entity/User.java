@@ -3,50 +3,60 @@ package com.task.weaver.domain.user.entity;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.chattingRoomMember.ChattingRoomMember;
+import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
+import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Entity(name = "user")
+@Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @Builder
-public class User implements UserDetails {
+public class User extends BaseEntity implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID userId;
 
+    @Column(name = "id", length = 30)
+    private String id;
     @Column(name = "nickname", length = 20)
     private String nickname;
 
-    @Column(name = "is_online", length = 20)
+    @Column(name = "isOnline", length = 20)
     private boolean isOnline;
 
     @Column(name = "email", length = 100)
     private String email;
 
-    @Column(name = "password", length = 20)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(name = "password")
     private String password;
-    @Column
-    private String phone_number;
-
+    @Column(name = "profileImage")
+    private String profileImage;
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<ChattingRoomMember> chattingRoomMemberList;
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<ProjectMember> projectMemberList;
+
+    @OneToOne
+    @JoinColumn(name = "main_Project_id")
+    private Project mainProject;
 
     @OneToMany(mappedBy = "creator")
     private List<Issue> creatorIssueList = new ArrayList<>();

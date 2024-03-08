@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @Tag(name = "ChattingRoom Controller", description = "채팅방 관련 컨트롤러")
 @RestController
 @RequiredArgsConstructor
@@ -18,10 +20,10 @@ import org.springframework.web.bind.annotation.*;
 public class ChattingRoomController {
     private final ChattingService chattingService;
 
-    @PostMapping("/{project_id}")
-    @Parameter(name = "project_id", in = ParameterIn.PATH )
-    public ResponseEntity<DataResponse<ResponseCreateChattingRoom>> createChattingRoom(@PathVariable(name = "project_id") Long project_id) {
-        ResponseCreateChattingRoom chattingRoom = chattingService.createChattingRoom(project_id);
+    @PostMapping("/{projectId}")
+    @Parameter(name = "projectId", in = ParameterIn.PATH )
+    public ResponseEntity<DataResponse<ResponseCreateChattingRoom>> createChattingRoom(@PathVariable(name = "projectId") UUID projectId) {
+        ResponseCreateChattingRoom chattingRoom = chattingService.createChattingRoom(projectId);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "채팅방 생성 성공", chattingRoom), HttpStatus.CREATED);
     }
 }

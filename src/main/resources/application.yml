@@ -2,7 +2,7 @@
 
 spring:
   profiles:
-    active: test # local || prod(operation) || test(not in use) || LocalTest
+    active: LocalTest # local || prod(operation) || test(not in use) || LocalTest
 
   #swagger
   mvc:

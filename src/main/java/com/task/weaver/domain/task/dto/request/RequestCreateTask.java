@@ -1,5 +1,7 @@
 package com.task.weaver.domain.task.dto.request;
 
+import com.task.weaver.domain.issue.dto.request.RequestIssueForTask;
+import com.task.weaver.domain.issue.dto.response.ResponseIssueForTask;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.status.entity.StatusTag;
 import com.task.weaver.domain.task.entity.Task;
@@ -10,6 +12,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -17,23 +21,28 @@ import java.time.LocalDateTime;
 @Builder
 public class RequestCreateTask {
 
-    private Long project_id;
+    private UUID projectId;
 //    private StatusTag statusTag;
 //    private User user;
-    private Long creator_id;
-    private String title;
-    private String content;
-    private LocalDateTime start_date;
-    private LocalDateTime end_date;
+    private UUID writerUuid;
+    private String taskTitle;
+    private String taskContent;
+    private List<String> taskTagList;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+    private List<RequestIssueForTask> issueList;
+    private String editDeletePermission;
 
     public Task toEntity(User user, Project project) {
         return Task.builder()
                 .project(project)
                 .user(user)
-                .title(title)
-                .content(content)
-                .start_date(start_date)
-                .end_date(end_date)
+                .modifier(user)
+                .taskTitle(taskTitle)
+                .taskContent(taskContent)
+                .startDate(startDate)
+                .endDate(endDate)
+                .editDeletePermission(editDeletePermission)
                 .build();
     }
 
