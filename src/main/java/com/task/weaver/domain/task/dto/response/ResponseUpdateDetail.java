@@ -1,5 +1,6 @@
 package com.task.weaver.domain.task.dto.response;
 
+import com.task.weaver.domain.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,4 +17,10 @@ public class ResponseUpdateDetail {
     private UUID userUuid;
     private String userNickname;
     private LocalDateTime updatedDate;
+
+    public ResponseUpdateDetail(User modifier, LocalDateTime modDate){
+        this.userUuid = modifier.getUserId();
+        this.userNickname = modifier.getNickname();
+        this.updatedDate = modDate;
+    }
 }

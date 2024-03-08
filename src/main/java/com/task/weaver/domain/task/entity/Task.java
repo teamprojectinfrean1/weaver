@@ -81,7 +81,7 @@ public class Task extends BaseEntity {
         this.endDate = newTask.getEndDate();
     }
 
-    public void updateTask(RequestUpdateTask requestUpdateTask) {
+    public void updateTask(RequestUpdateTask requestUpdateTask, User updater) {
 //        this.project = requestUpdateTask.getProject();
 //        this.statusTag = requestUpdateTask.getStatusTag();
 //        this.user = requestUpdateTask.getUser();
@@ -89,6 +89,7 @@ public class Task extends BaseEntity {
         this.taskContent = requestUpdateTask.getTaskContent();
         this.startDate = requestUpdateTask.getStartDate().atStartOfDay();
         this.endDate = requestUpdateTask.getEndDate().atStartOfDay();
+        this.modifier = updater;
         this.editDeletePermission = requestUpdateTask.getEditDeletePermission();
     }
 }

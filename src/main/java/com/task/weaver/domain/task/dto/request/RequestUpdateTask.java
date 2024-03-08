@@ -13,6 +13,7 @@ import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -22,6 +23,7 @@ public class RequestUpdateTask {
 //    private Project project;
 //    private StatusTag statusTag;
 //    private User user;
+    private UUID updaterUuid;
     private String taskTitle;
     private String taskContent;
     private LocalDate startDate;

@@ -7,22 +7,21 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.chattingRoomMember.ChattingRoomMember;
+import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @Builder
 public class User extends BaseEntity implements UserDetails {
 
@@ -52,6 +51,9 @@ public class User extends BaseEntity implements UserDetails {
     private List<ChattingRoomMember> chattingRoomMemberList;
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<ProjectMember> projectMemberList;
+    @OneToOne
+    @JoinColumn(name = "main_Project_id")
+    private Project mainProject;
     public void updateUser(RequestUpdateUser requestUpdateUser){
         this.nickname = requestUpdateUser.getNickname();
         this.email = requestUpdateUser.getEmail();

@@ -25,7 +25,7 @@ public class ResponseGetProject {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private List<String> projectTagList;
-    private ResponseUpdateDetail responseUpdateDetail;
+    private ResponseUpdateDetail lastUpdateDetail;
 
     public ResponseGetProject(Project project){
         this.projectId = project.getProjectId();

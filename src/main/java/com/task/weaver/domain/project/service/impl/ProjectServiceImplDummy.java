@@ -7,6 +7,7 @@ import com.task.weaver.domain.issue.dto.response.IssueResponse;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.dto.request.RequestCreateProject;
 import com.task.weaver.domain.project.dto.request.RequestPageProject;
+import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
 import com.task.weaver.domain.project.dto.response.ResponseGetProject;
 import com.task.weaver.domain.project.dto.response.ResponseGetProjectList;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
@@ -24,6 +25,7 @@ import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import com.task.weaver.domain.projectmember.repository.ProjectMemberRepository;
 import com.task.weaver.domain.task.dto.response.ResponseGetTask;
 import com.task.weaver.domain.task.dto.response.ResponseTask;
+import com.task.weaver.domain.task.dto.response.ResponseUpdateDetail;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.UserRepository;
@@ -81,8 +83,16 @@ public class ProjectServiceImplDummy implements ProjectService {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(projectId))));
 
-        ResponseGetProject responseGetProject = new ResponseGetProject(project);
+        User modifier = project.getModifier();
 
+        ResponseUpdateDetail responseUpdateDetail = ResponseUpdateDetail.builder()
+                .userUuid(modifier.getUserId())
+                .userNickname(modifier.getNickname())
+                .updatedDate(project.getModDate())
+                .build();
+
+        ResponseGetProject responseGetProject = new ResponseGetProject(project);
+        responseGetProject.setLastUpdateDetail(responseUpdateDetail);
 
         return responseGetProject;
     }
@@ -90,8 +100,11 @@ public class ProjectServiceImplDummy implements ProjectService {
     @Override
     public UUID addProject(final RequestCreateProject dto) throws BusinessException {
         Project project = dtoToEntity(dto);
-//        User creator = userRepository.findById(dto.creatorId())
-//                .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(dto.creatorId()))));
+        User writer = userRepository.findById(dto.writerUuid())
+                .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(dto.writerUuid()))));
+
+        if(writer.getMainProject() == null)   //작성자가 처음 만든 프로젝트면, 메인 프로젝트로 선정
+            writer.setMainProject(project);
 
         Project savedProject = projectRepository.save(project);
         List<ProjectMember> projectMemberList = new ArrayList<>();
@@ -117,16 +130,30 @@ public class ProjectServiceImplDummy implements ProjectService {
     }
 
     @Override
-    public void updateProject(UUID projectId, final RequestCreateProject dto) throws BusinessException {
+    public void updateProject(UUID projectId, final RequestUpdateProject dto) throws BusinessException {
         Optional<Project> result = projectRepository.findById(projectId);
+
         if (result.isPresent()) {
+            User updater = userRepository.findById(dto.updaterUuid())
+                .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(dto.updaterUuid()))));
             Project entity = result.get();
-            entity.changeDetail(dto.projectContent());
-            entity.changeName(dto.projectName());
-            projectRepository.save(entity);
+//            entity.changeDetail(dto.projectContent());
+//            entity.changeName(dto.projectName());
+            entity.updateProject(dto, updater);
+//            projectRepository.save(entity);
             return;
         }
         throw new ProjectNotFoundException(new Throwable(String.valueOf(projectId)));
+    }
+
+    @Override
+    public void updateMainProject(UUID projectId) throws BusinessException {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(projectId))));
+
+        User writer = project.getUser();
+        writer.setMainProject(project);
+        return ;
     }
 
     @Override

@@ -48,6 +48,7 @@ public class TaskServiceImpl implements TaskService {
     public ResponseGetTask getTask(Long taskId) throws NotFoundException, AuthorizationException {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException(new Throwable(String.valueOf(taskId))));
+
         User modifier = task.getModifier();
 
         ResponseGetTask responseTask = new ResponseGetTask(task);
@@ -143,14 +144,17 @@ public class TaskServiceImpl implements TaskService {
 
 
     @Override
-    public ResponseGetTask updateTask(Long taskId, RequestUpdateTask requestUpdateUser) throws NotFoundException, AuthorizationException {
+    public ResponseGetTask updateTask(Long taskId, RequestUpdateTask requestUpdateTask) throws NotFoundException, AuthorizationException {
         Task findTask = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException(new Throwable(String.valueOf(taskId))));
 
-        List<RequestIssueForTask> requestIssueForTasks = requestUpdateUser.getIssueList();
+        User updater = userRepository.findById(requestUpdateTask.getUpdaterUuid())
+                .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(requestUpdateTask.getUpdaterUuid()))));
+
+        List<RequestIssueForTask> requestIssueForTasks = requestUpdateTask.getIssueList();
         List<Issue> issueList = new ArrayList<>();
 
-        findTask.updateTask(requestUpdateUser);
+        findTask.updateTask(requestUpdateTask, updater);
 
         ResponseGetTask responseTask = new ResponseGetTask(findTask);
         return responseTask;

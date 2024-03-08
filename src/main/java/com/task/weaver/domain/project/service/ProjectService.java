@@ -3,6 +3,7 @@ package com.task.weaver.domain.project.service;
 import com.task.weaver.common.exception.BusinessException;
 import com.task.weaver.domain.project.dto.request.RequestCreateProject;
 import com.task.weaver.domain.project.dto.request.RequestPageProject;
+import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
 import com.task.weaver.domain.project.dto.response.ResponseGetProject;
 import com.task.weaver.domain.project.dto.response.ResponseGetProjectList;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
@@ -41,7 +42,9 @@ public interface ProjectService {
 
     UUID addProject(RequestCreateProject dto) throws BusinessException;
 
-    void updateProject(UUID projectId, RequestCreateProject dto) throws BusinessException;
+    void updateProject(UUID projectId, RequestUpdateProject dto) throws BusinessException;
+
+    void updateMainProject(UUID projectId) throws BusinessException;
 
     void deleteProject(UUID projectId) throws BusinessException;
 

@@ -10,6 +10,7 @@ import lombok.Builder;
 @Builder
 public record RequestCreateProject(@NotEmpty String projectName,
                                    @NotEmpty String projectContent,
+                                   @NotEmpty UUID writerUuid,
                                    LocalDateTime startDate,
                                    LocalDateTime endDate,
                                    boolean isPublic,

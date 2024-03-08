@@ -66,9 +66,18 @@ public class ProjectController {
         UUID aLong = projectService.addProject(project);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.CREATED, "프로젝트 추가 성공", aLong), HttpStatus.CREATED);
     }
+
+    @Operation(summary = "메인 프로젝트 변경", description = "메인 프로젝트를 변경합니다.")
+    @Parameter(name = "projectId" , description = "프로젝트 uuid", in = ParameterIn.PATH)
+    @PutMapping("main-project/{projectId}")
+    public ResponseEntity<DataResponse<UUID>> updateMainProject(@PathVariable("projectId") UUID projectId){
+        projectService.updateMainProject(projectId);
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "메인 프로젝트 변경 완료", projectId), HttpStatus.OK);
+    }
+
     @Operation(summary = "프로젝트 업데이트", description = "프로젝트 정보 수정")
     @PutMapping("/{projectId}")
-    @Parameter(name = "projectId", description = "프로젝트 id", in = ParameterIn.PATH)
+    @Parameter(name = "projectId", description = "프로젝트 uuid", in = ParameterIn.PATH)
     public ResponseEntity<MessageResponse> updateProject(@PathVariable("projectId") UUID projectId, @RequestBody RequestCreateProject project) {
         projectService.updateProject(projectId, project);
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "프로젝트 업데이트 성공"), HttpStatus.OK);

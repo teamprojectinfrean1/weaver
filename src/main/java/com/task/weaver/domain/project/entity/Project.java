@@ -1,6 +1,8 @@
 package com.task.weaver.domain.project.entity;
 
 import com.task.weaver.domain.BaseEntity;
+import com.task.weaver.domain.project.dto.request.RequestCreateProject;
+import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.user.entity.User;
@@ -50,12 +52,25 @@ public class Project extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE)
     private List<Task> taskList = new ArrayList<>();
+
+    @OneToOne
+    @JoinColumn(name = "last_update_user_id")
+    private User modifier;
+
     public void changeName(String name) {
         this.name = name;
     }
 
     public void changeDetail(String detail) {
         this.detail = detail;
+    }
+
+    public void updateProject(RequestUpdateProject requestUpdateProject, User updater){
+        this.name = requestUpdateProject.projectName();
+        this.detail = requestUpdateProject.projectContent();
+        this.startDate = requestUpdateProject.startDate();
+        this.endDate = requestUpdateProject.endDate();
+        this.modifier = updater;
     }
 
 //    public void changePublic() {
