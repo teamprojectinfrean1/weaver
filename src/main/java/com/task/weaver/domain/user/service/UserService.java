@@ -15,8 +15,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 public interface UserService {
     ResponseUser getUser(UUID userId);
     ResponseUser getUser(String email);
-    Boolean checkMail(String email);
-    Boolean checkId(String id);
+//    Boolean checkMail(String email);
+//    Boolean checkId(String id);
 
     List<ResponseGetUserList> getUsers(UUID projectId);
     List<ResponseUser> getUsers(Project project); //프로젝트에 연괸된 사람들

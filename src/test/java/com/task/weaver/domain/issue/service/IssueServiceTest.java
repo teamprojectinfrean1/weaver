@@ -22,7 +22,7 @@ import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.issue.repository.IssueRepository;
 import com.task.weaver.domain.issue.service.IssueService;
 import com.task.weaver.domain.project.entity.Project;
-import com.task.weaver.domain.status.entity.StatusTag;
+import com.task.weaver.domain.status.entity.Status;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.repository.TaskRepository;
 import com.task.weaver.domain.user.entity.User;

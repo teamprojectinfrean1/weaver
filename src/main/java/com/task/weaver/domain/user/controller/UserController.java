@@ -36,18 +36,18 @@ public class UserController {
         ResponseUser responseUser = userService.getUser(userId);
         return ResponseEntity.status(HttpStatus.OK).body(responseUser);
     }
-    @Operation(summary = "이메일 중복 체크", description = "이메일 중복을 체크")
-    @GetMapping("/checkMail")
-    @Parameter(name = "email", description = "이메일 입력", in = ParameterIn.QUERY)
-    public ResponseEntity<Boolean> checkMail(@RequestParam("email") String email){
-        return ResponseEntity.ok().body(userService.checkMail(email));
-    }
-    @Operation(summary = "아이디 중복 체크", description = "아이디 중복을 체크")
-    @GetMapping("/checkId")
-    @Parameter(name = "id", description = "아이디 입력", in = ParameterIn.QUERY)
-    public ResponseEntity<Boolean> checkId(@RequestParam("id") String id){
-        return ResponseEntity.ok().body(userService.checkId(id));
-    }
+//    @Operation(summary = "이메일 중복 체크", description = "이메일 중복을 체크")
+//    @GetMapping("/checkMail")
+//    @Parameter(name = "email", description = "이메일 입력", in = ParameterIn.QUERY)
+//    public ResponseEntity<Boolean> checkMail(@RequestParam("email") String email){
+//        return ResponseEntity.ok().body(userService.checkMail(email));
+//    }
+//    @Operation(summary = "아이디 중복 체크", description = "아이디 중복을 체크")
+//    @GetMapping("/checkId")
+//    @Parameter(name = "id", description = "아이디 입력", in = ParameterIn.QUERY)
+//    public ResponseEntity<Boolean> checkId(@RequestParam("id") String id){
+//        return ResponseEntity.ok().body(userService.checkId(id));
+//    }
     @Operation(summary = "회원가입", description = "사용자가 회원가입")
     @PostMapping("/join")
     public ResponseEntity<ResponseUser> addUser(@RequestBody RequestCreateUser requestCreateUser){

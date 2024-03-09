@@ -19,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @Tag(name = "Task Controller", description = "태스크 관련 컨트롤러")
 @RestController
 @RequestMapping("/api/v1/task")
@@ -27,7 +29,7 @@ public class TaskController {
     private final TaskService taskService;
     @Operation(summary = "프로젝트 태스크 상세 조회", description = "태스크 하나를 조회합니다.")
     @GetMapping("/{taskId}")
-    public ResponseEntity<DataResponse<ResponseGetTask>> getTask(@RequestBody Long taskId){
+    public ResponseEntity<DataResponse<ResponseGetTask>> getTask(@RequestBody UUID taskId){
         ResponseGetTask responseTask = taskService.getTask(taskId);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "태스크 상세 조회 성공", responseTask), HttpStatus.OK);
     }
@@ -46,14 +48,14 @@ public class TaskController {
     }
     @Operation(summary = "태스크 수정", description = "태스크 하나의 정보를 수정합니다.")
     @PutMapping()
-    public ResponseEntity<DataResponse<ResponseGetTask>> updateTask(@RequestParam Long taskId,
+    public ResponseEntity<DataResponse<ResponseGetTask>> updateTask(@RequestParam UUID taskId,
                                                    @RequestBody RequestUpdateTask requestUpdateTask){
         ResponseGetTask responseTask = taskService.updateTask(taskId, requestUpdateTask);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "태스크 수정 성공", responseTask), HttpStatus.OK);
     }
     @Operation(summary = "태스크 삭제", description = "태스크 하나를 삭제합니다.")
     @DeleteMapping()
-    public ResponseEntity<MessageResponse> deleteTask(@RequestParam Long taskId){
+    public ResponseEntity<MessageResponse> deleteTask(@RequestParam UUID taskId){
         taskService.deleteTask(taskId);
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "태스크 삭제 성공" ), HttpStatus.OK);
     }

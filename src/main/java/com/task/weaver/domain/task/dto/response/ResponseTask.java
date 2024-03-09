@@ -1,7 +1,7 @@
 package com.task.weaver.domain.task.dto.response;
 
 import com.task.weaver.domain.project.entity.Project;
-import com.task.weaver.domain.status.entity.StatusTag;
+import com.task.weaver.domain.status.entity.Status;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.user.entity.User;
 import lombok.AllArgsConstructor;
@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -18,9 +19,9 @@ import java.time.LocalDateTime;
 @Builder
 public class ResponseTask {
 
-    private Long taskId;
+    private UUID taskId;
     private Project project;
-    private StatusTag statusTag;
+    private Status statusTag;
     private User user;
     private String title;
     private String content;
@@ -35,6 +36,6 @@ public class ResponseTask {
         this.title = task.getTaskTitle();
         this.content = task.getTaskContent();
         this.startDate = task.getStartDate();
-        this.startDate = task.getEndDate();
+        this.endDate = task.getEndDate();
     }
 }

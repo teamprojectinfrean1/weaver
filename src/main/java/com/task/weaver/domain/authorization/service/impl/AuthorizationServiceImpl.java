@@ -1,5 +1,6 @@
 package com.task.weaver.domain.authorization.service.impl;
 
+import com.task.weaver.domain.user.repository.UserRepository;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -32,6 +33,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 	private final JwtTokenProvider jwtTokenProvider;
 
 	private final UserService userService;
+	private final UserRepository userRepository;
 	private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
 	@Override
@@ -132,4 +134,26 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
 		refreshTokenRedisRepository.deleteById(authentication.getName());
 	}
+
+	@Override
+	public Boolean checkMail(String email) {
+		if(userRepository.findByEmail(email).isPresent())
+			return false;
+		return true;
+	}
+
+	@Override
+	public Boolean checkId(String id) {
+		if(userRepository.findByUserId(id).isPresent())
+			return false;
+		return true;
+	}
+
+	@Override
+	public Boolean checkNickname(String nickname) {
+		if(userRepository.findByNickname(nickname).isPresent())
+			return false;
+		return true;
+	}
+
 }

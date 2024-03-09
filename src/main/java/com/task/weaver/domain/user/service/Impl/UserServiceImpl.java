@@ -57,19 +57,19 @@ public class UserServiceImpl implements UserService {
         return new ResponseUser(findUser);
     }
 
-    @Override
-    public Boolean checkMail(String email) {
-        if(userRepository.findByEmail(email).isPresent())
-            return false;
-        return true;
-    }
-
-    @Override
-    public Boolean checkId(String id) {
-        if(userRepository.findByUserId(id).isPresent())
-            return false;
-        return true;
-    }
+//    @Override
+//    public Boolean checkMail(String email) {
+//        if(userRepository.findByEmail(email).isPresent())
+//            return false;
+//        return true;
+//    }
+//
+//    @Override
+//    public Boolean checkId(String id) {
+//        if(userRepository.findByUserId(id).isPresent())
+//            return false;
+//        return true;
+//    }
 
     @Override
     public List<ResponseGetUserList> getUsers(UUID projectId) throws BusinessException{
