@@ -42,7 +42,7 @@ public class AuthorizationController {
 		ResponseCookie cookie = ResponseCookie.from("refresh-token", responseToken.refreshToken())
 			.maxAge(60 * 60 * 24 * 15)
 			.httpOnly(true)
-			.secure(true)
+			// .secure(true)
 			.domain("")
 			.path("/")
 			.sameSite("None")
@@ -57,20 +57,16 @@ public class AuthorizationController {
 
 	@Operation(summary = "reissue", description = "refresh token 재발급")
 	@GetMapping("/reissue")
-	public ResponseEntity<?> reissue(@RequestHeader("Refresh-Token") String accessToken, @CookieValue(value = "refresh-token", required = false) Cookie cookie, HttpServletResponse res) {
+	public ResponseEntity<?> reissue(@CookieValue(value = "refresh-token", required = false) Cookie cookie, HttpServletResponse res) {
 		log.info("reissue controller - cookie : " + cookie.getValue());
 
-		ResponseToken responseToken = authorizationService.reissue(
-			RequestToken.builder()
-				.accessToken(accessToken)
-				.refreshToken(cookie.getValue())
-				.build());
+		ResponseToken responseToken = authorizationService.reissue(cookie.getValue());
 
 		// refresh token cookie에 담기
 		ResponseCookie newCookie = ResponseCookie.from("refresh-token", responseToken.refreshToken())
 			.maxAge(60 * 60 * 24 * 15)
 			.httpOnly(true)
-			.secure(true)
+			// .secure(true)
 			.domain("")
 			.path("/")
 			.sameSite("None")
