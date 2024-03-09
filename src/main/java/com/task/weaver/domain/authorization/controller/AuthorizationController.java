@@ -45,7 +45,7 @@ public class AuthorizationController {
 			// .secure(true)
 			.domain("")
 			.path("/")
-			.sameSite("None")
+			// .sameSite("None")
 			.build();
 
 		res.setHeader("Set-Cookie", cookie.toString());
@@ -69,7 +69,7 @@ public class AuthorizationController {
 			// .secure(true)
 			.domain("")
 			.path("/")
-			.sameSite("None")
+			// .sameSite("None")
 			.build();
 
 		res.setHeader("Set-Cookie", newCookie.toString());
