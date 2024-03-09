@@ -62,6 +62,7 @@ public class IssueServiceImpl implements IssueService {
 		Pageable pageable = getIssuePageRequest.getPageable(Sort.by("issueId").descending());
 
 		for (Task task : project.getTaskList()) {
+			// status 확인 해야함
 			for(Issue issue : task.getIssueList()){
 				issueList.add(new GetIssueListResponse(issue.getIssueId(),
 					issue.getTitle(),
