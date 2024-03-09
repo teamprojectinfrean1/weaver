@@ -1,7 +1,7 @@
 package com.task.weaver.domain.task.dto.response;
 
 import com.task.weaver.domain.project.entity.Project;
-import com.task.weaver.domain.status.entity.StatusTag;
+import com.task.weaver.domain.status.entity.Status;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.user.entity.User;
 import lombok.AllArgsConstructor;
@@ -20,7 +20,7 @@ public class ResponseTask {
 
     private Long taskId;
     private Project project;
-    private StatusTag statusTag;
+    private Status statusTag;
     private User user;
     private String title;
     private String content;

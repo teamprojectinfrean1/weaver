@@ -4,8 +4,7 @@ import com.task.weaver.common.exception.AuthorizationException;
 import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
-import com.task.weaver.domain.project.entity.Project;
-import com.task.weaver.domain.status.entity.StatusTag;
+import com.task.weaver.domain.status.entity.Status;
 import com.task.weaver.domain.task.dto.request.RequestCreateTask;
 import com.task.weaver.domain.task.dto.request.RequestGetTaskPage;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
@@ -26,7 +25,7 @@ public interface TaskService {
 
     ResponsePageResult<ResponseGetTaskList, Task> getTasks(RequestGetTaskPage requestGetTaskPage)
             throws NotFoundException, AuthorizationException;
-    Page<Task> getTasks(StatusTag statusTag, Pageable pageable)
+    Page<Task> getTasks(Status statusTag, Pageable pageable)
             throws NotFoundException, AuthorizationException;
 //    Page<Task> getTasks(User user, Pageable pageable)
 //            throws NotFoundException, AuthorizationException;

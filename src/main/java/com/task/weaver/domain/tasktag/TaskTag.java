@@ -1,7 +1,7 @@
 package com.task.weaver.domain.tasktag;
 
 import com.task.weaver.domain.BaseEntity;
-import com.task.weaver.domain.status.entity.StatusTag;
+import com.task.weaver.domain.status.entity.Status;
 import com.task.weaver.domain.task.entity.Task;
 import jakarta.persistence.*;
 import jdk.jshell.Snippet;
@@ -28,7 +28,7 @@ public class TaskTag extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "status_id")
-    private StatusTag statusTag;
+    private Status statusTag;
 
 //    @Column(name = "tag", length = 10)
 //    private String tag;
