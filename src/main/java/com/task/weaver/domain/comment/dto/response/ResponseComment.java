@@ -9,9 +9,9 @@ import java.time.LocalDateTime;
 public record ResponseComment(
         Long commentId,
         String body,
-        LocalDateTime create_date
+        LocalDateTime date
 ) {
     public ResponseComment(Comment comment) {
-       this(comment.getComment_id(),comment.getBody(),comment.getCreate_date());
+       this(comment.getComment_id(),comment.getBody(),comment.getDate());
     }
 }

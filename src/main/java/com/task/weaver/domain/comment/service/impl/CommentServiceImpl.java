@@ -1,7 +1,9 @@
 package com.task.weaver.domain.comment.service.impl;
 
 import com.task.weaver.common.exception.NotFoundException;
+import com.task.weaver.domain.comment.dto.request.CommentPageRequest;
 import com.task.weaver.domain.comment.dto.request.RequestCreateComment;
+import com.task.weaver.domain.comment.dto.request.RequestUpdateComment;
 import com.task.weaver.domain.comment.dto.response.CommentListResponse;
 import com.task.weaver.domain.comment.dto.response.ResponseComment;
 import com.task.weaver.domain.comment.entity.Comment;
@@ -33,8 +35,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Page<CommentListResponse> getComments() throws NotFoundException {
-//        User writer = userRepository.findById()
+    public Page<CommentListResponse> getComments(CommentPageRequest commentPageRequest) throws NotFoundException {
         return null;
     }
 
@@ -48,7 +49,7 @@ public class CommentServiceImpl implements CommentService {
                 .user(writer)
                 .issue(issue)
                 .body(requestComment.body())
-                .create_date(requestComment.create_date())
+                .date(requestComment.date())
                 .build();
         return commentRepository.save(comment).getComment_id();
     }
@@ -64,12 +65,31 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment updateComment(Comment originalComment, Comment newComment) throws NotFoundException {
-        return null;
+    public ResponseComment updateComment(Long originalCommentId, RequestUpdateComment requestUpdateComment) throws NotFoundException {
+        Comment comment = commentRepository.findById(originalCommentId)
+                .orElseThrow(() -> new IllegalArgumentException(""));
+        User updater = userRepository.findById(requestUpdateComment.getUpdaterUUID())
+                .orElseThrow(() -> new IllegalArgumentException(""));
+        if(!validate(comment.getUser(),updater)){
+            throw new NotFoundException();
+        }
+        Issue issue = issueRepository.findById(requestUpdateComment.getIssueId())
+                .orElseThrow(() -> new IllegalArgumentException(""));
+        comment.updateComment(requestUpdateComment, issue);
+        ResponseComment responseComment
+                = ResponseComment
+                .builder()
+                .commentId(comment.getComment_id())
+                .date(requestUpdateComment.getDate())
+                .body(requestUpdateComment.getCommentBody())
+                .build();
+        return responseComment;
     }
 
-    @Override
-    public Comment updateComment(Long originalCommentId, Comment newComment) throws NotFoundException {
-        return null;
+    private boolean validate(User user, User updater) {
+        if(user.getUserId() != updater.getUserId()){
+            return false;
+        }
+        return true;
     }
 }

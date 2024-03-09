@@ -11,6 +11,6 @@ public record RequestCreateComment
                 UUID writerId,
                 Long issueId,
                 String body,
-                LocalDateTime create_date
+                LocalDateTime date
         ) {
 }

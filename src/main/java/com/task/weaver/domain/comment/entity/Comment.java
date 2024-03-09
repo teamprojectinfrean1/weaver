@@ -1,6 +1,7 @@
 package com.task.weaver.domain.comment.entity;
 
 import com.task.weaver.domain.BaseEntity;
+import com.task.weaver.domain.comment.dto.request.RequestUpdateComment;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -34,8 +35,13 @@ public class Comment extends BaseEntity {
 
     private String body;
 
-    @CreatedDate
     @Column(name = "create_date")
-    private LocalDateTime create_date;
+    private LocalDateTime date;
 
+
+    public void updateComment(RequestUpdateComment requestUpdateComment, Issue issue) {
+        this.issue = issue;
+        this.body = requestUpdateComment.getCommentBody();
+        this.date = requestUpdateComment.getDate();
+    }
 }

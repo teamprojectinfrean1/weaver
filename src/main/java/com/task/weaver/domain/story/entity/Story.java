@@ -1,12 +1,10 @@
 package com.task.weaver.domain.story.entity;
 
 import com.task.weaver.domain.BaseEntity;
-import com.task.weaver.domain.comment.entity.Comment;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.story.dto.UpdateStory;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.user.entity.User;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +13,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity(name = "STORY")
 @AllArgsConstructor
