@@ -12,6 +12,7 @@ import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.common.model.Status;
 import com.task.weaver.domain.issue.dto.request.CreateIssueRequest;
 import com.task.weaver.domain.issue.dto.request.GetIssuePageRequest;
+import com.task.weaver.domain.issue.dto.request.UpdateIssueRequest;
 import com.task.weaver.domain.issue.dto.response.GetIssueListResponse;
 import com.task.weaver.domain.issue.dto.response.IssueResponse;
 import com.task.weaver.domain.issue.entity.Issue;
@@ -45,7 +46,7 @@ public class IssueServiceImpl implements IssueService {
 	private final ProjectRepository projectRepository;
 
 	@Override
-	public IssueResponse getIssue(Long issueId) throws NotFoundException, AuthorizationException {
+	public IssueResponse getIssue(UUID issueId) throws NotFoundException, AuthorizationException {
 		Issue issue = issueRepository.findById(issueId).orElseThrow(() -> new IllegalArgumentException(""));
 		return new IssueResponse(issue);
 	}
@@ -62,15 +63,17 @@ public class IssueServiceImpl implements IssueService {
 		Pageable pageable = getIssuePageRequest.getPageable(Sort.by("issueId").descending());
 
 		for (Task task : project.getTaskList()) {
-			// status 확인 해야함
 			for(Issue issue : task.getIssueList()){
-				issueList.add(new GetIssueListResponse(issue.getIssueId(),
-					issue.getTitle(),
-					task.getTaskId(),
-					task.getTaskTitle(),
-					issue.getManager().getId(),
-					issue.getManager().getNickname(),
-					issue.getManager().getProfileImage()));
+				// status 확인
+				if(issue.getStatus().equals(Status.valueOf(status))){
+					issueList.add(new GetIssueListResponse(issue.getIssueId(),
+						issue.getTitle(),
+						task.getTaskId(),
+						task.getTaskTitle(),
+						issue.getManager().getId(),
+						issue.getManager().getNickname(),
+						issue.getManager().getProfileImage()));
+				}
 			}
 		}
 
@@ -84,7 +87,77 @@ public class IssueServiceImpl implements IssueService {
 	}
 
 	@Override
-	public Long addIssue(CreateIssueRequest createIssueRequest) throws AuthorizationException {
+	public Page<GetIssueListResponse> getSearchIssues(String status, String filter, String word,
+		GetIssuePageRequest getIssuePageRequest) throws NotFoundException, AuthorizationException {
+
+		Project project = projectRepository.findById(getIssuePageRequest.projectId())
+			.orElseThrow(() -> new IllegalArgumentException(""));
+
+		List<GetIssueListResponse> issueList = new ArrayList<>();
+
+		Pageable pageable = getIssuePageRequest.getPageable(Sort.by("issueId").descending());
+
+		switch (filter){
+			case "MANAGER":
+				for (Task task : project.getTaskList()) {
+					for(Issue issue : task.getIssueList()){
+						// manager 확인
+						if(issue.getManager().getNickname().contains(word)){
+							issueList.add(new GetIssueListResponse(issue.getIssueId(),
+								issue.getTitle(),
+								task.getTaskId(),
+								task.getTaskTitle(),
+								issue.getManager().getId(),
+								issue.getManager().getNickname(),
+								issue.getManager().getProfileImage()));
+						}
+					}
+				}
+				break;
+			case "TASK":
+				for (Task task : project.getTaskList()) {
+					if(task.getTaskTitle().contains(word)){
+						for(Issue issue : task.getIssueList()){
+							issueList.add(new GetIssueListResponse(issue.getIssueId(),
+								issue.getTitle(),
+								task.getTaskId(),
+								task.getTaskTitle(),
+								issue.getManager().getId(),
+								issue.getManager().getNickname(),
+								issue.getManager().getProfileImage()));
+						}
+					}
+				}
+				break;
+			case "ISSUE":
+				for (Task task : project.getTaskList()) {
+					for(Issue issue : task.getIssueList()){
+						// issue title 확인
+						if(issue.getTitle().contains(word)){
+							issueList.add(new GetIssueListResponse(issue.getIssueId(),
+								issue.getTitle(),
+								task.getTaskId(),
+								task.getTaskTitle(),
+								issue.getManager().getId(),
+								issue.getManager().getNickname(),
+								issue.getManager().getProfileImage()));
+						}
+					}
+				}
+				break;
+		}
+
+		// paging 처리
+		PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+		int start = (int) pageable.getOffset();
+		int end = Math.min((start + pageable.getPageSize()), issueList.size());
+		Page<GetIssueListResponse> issuePage = new PageImpl<>(issueList.subList(start, end), pageRequest, issueList.size());
+
+		return issuePage;
+	}
+
+	@Override
+	public UUID addIssue(CreateIssueRequest createIssueRequest) throws AuthorizationException {
 		Task task = taskRepository.findById(createIssueRequest.taskId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
 		User creator = userRepository.findById(createIssueRequest.creatorId())
@@ -100,20 +173,29 @@ public class IssueServiceImpl implements IssueService {
 			.content(createIssueRequest.content())
 			.startDate(createIssueRequest.startDate())
 			.endDate(createIssueRequest.endDate())
-			.visible(false)
 			.status(Status.valueOf(createIssueRequest.status()))
 			.build();
 		return issueRepository.save(issue).getIssueId();
 	}
 
 	@Override
-	public Issue updateIssue(Issue originalIssue, Issue newIssue) throws NotFoundException, AuthorizationException {
-		return null;
-	}
+	@Transactional
+	public IssueResponse updateIssue(UUID issueId, UpdateIssueRequest updateIssueRequest) throws
+		NotFoundException,
+		AuthorizationException {
 
-	@Override
-	public Issue updateIssue(Long originalIssueId, Issue newIssue) throws NotFoundException, AuthorizationException {
-		return null;
+		Issue issue = issueRepository.findById(issueId)
+			.orElseThrow(() -> new IllegalArgumentException(""));
+		Task task = taskRepository.findById(updateIssueRequest.taskId())
+			.orElseThrow(() -> new IllegalArgumentException(""));
+		User modifier = userRepository.findById(updateIssueRequest.modifierId())
+			.orElseThrow(() -> new IllegalArgumentException(""));
+		User manager = userRepository.findById(updateIssueRequest.managerId())
+			.orElseThrow(() -> new IllegalArgumentException(""));
+
+		issue.updateIssue(updateIssueRequest, task, modifier, manager);
+
+		return new IssueResponse(issue);
 	}
 
 	@Override
@@ -122,7 +204,7 @@ public class IssueServiceImpl implements IssueService {
 	}
 
 	@Override
-	public void deleteIssue(Long issueId) throws NotFoundException, AuthorizationException {
+	public void deleteIssue(UUID issueId) throws NotFoundException, AuthorizationException {
 		issueRepository.deleteById(issueId);
 	}
 }

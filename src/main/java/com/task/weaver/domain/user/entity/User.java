@@ -58,10 +58,10 @@ public class User extends BaseEntity implements UserDetails {
     @JoinColumn(name = "main_Project_id")
     private Project mainProject;
 
-    @OneToMany(mappedBy = "creator")
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.REMOVE)
     private List<Issue> creatorIssueList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "manager")
+    @OneToMany(mappedBy = "manager", cascade = CascadeType.REMOVE)
     private List<Issue> managerIssueList = new ArrayList<>();
 
     public void updateUser(RequestUpdateUser requestUpdateUser){
