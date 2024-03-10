@@ -12,19 +12,21 @@ import com.task.weaver.domain.comment.repository.CommentRepository;
 import com.task.weaver.domain.comment.service.CommentService;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.issue.repository.IssueRepository;
-import com.task.weaver.domain.project.repository.ProjectRepository;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
-    private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final IssueRepository issueRepository;
 
@@ -36,8 +38,25 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Page<CommentListResponse> getComments(CommentPageRequest commentPageRequest) throws NotFoundException {
-        return null;
+    public Page<CommentListResponse> getComments(UUID issueId, CommentPageRequest commentPageRequest) throws NotFoundException {
+        if(issueId != commentPageRequest.issueId()) throw new NotFoundException();
+        Issue issue = issueRepository.findById(issueId)
+                .orElseThrow(() -> new IllegalArgumentException(""));
+        List<CommentListResponse> commentList = new ArrayList<>();
+        Pageable pageable = commentPageRequest.getPageable(Sort.by("comment_id").descending());
+        for(Comment comment : issue.getComments()){
+            commentList
+                    .add( new CommentListResponse(
+                            comment.getComment_id(),
+                            comment.getBody(),
+                            comment.getIssue().getIssueId()
+                            )
+                    );
+        }
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), commentList.size());
+        return new PageImpl<>(commentList.subList(start,end), pageRequest, commentList.size());
     }
 
     @Override
@@ -88,10 +107,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private boolean validate(User user, User updater) {
-        if(user.getUserId() != updater.getUserId()){
-            return false;
-        }
-        return true;
+        return user.getUserId() == updater.getUserId();
     }
 
     @Override

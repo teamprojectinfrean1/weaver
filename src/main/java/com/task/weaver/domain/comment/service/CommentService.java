@@ -10,10 +10,12 @@ import com.task.weaver.domain.comment.dto.response.ResponseComment;
 import com.task.weaver.domain.comment.entity.Comment;
 import org.springframework.data.domain.Page;
 
+import java.util.UUID;
+
 public interface CommentService {
     ResponseComment getComment(Long id) throws NotFoundException;
 
-    Page<CommentListResponse> getComments(CommentPageRequest commentPageRequest) throws NotFoundException;
+    Page<CommentListResponse> getComments(UUID issueId, CommentPageRequest commentPageRequest) throws NotFoundException;
 
     Long addComment (RequestCreateComment requestComment) throws NotFoundException;
 
