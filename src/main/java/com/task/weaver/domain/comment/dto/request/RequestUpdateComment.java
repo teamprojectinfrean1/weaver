@@ -14,7 +14,7 @@ import java.util.UUID;
 @Builder
 public class RequestUpdateComment {
     private UUID updaterUUID;
-    private Long issueId;
+    private UUID issueId;
     private String commentBody;
     private LocalDateTime date;
 }

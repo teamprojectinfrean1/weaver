@@ -9,7 +9,7 @@ import java.util.UUID;
 public record RequestCreateComment
         (
                 UUID writerId,
-                Long issueId,
+                UUID issueId,
                 String body,
                 LocalDateTime date
         ) {
