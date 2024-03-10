@@ -10,13 +10,14 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class ResponseGetTask {
-    private Long taskId;
+    private UUID taskId;
     private String taskTitle;
     private String taskContent;
     private LocalDateTime startDate;

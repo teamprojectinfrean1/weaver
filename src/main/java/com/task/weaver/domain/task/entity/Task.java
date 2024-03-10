@@ -9,6 +9,7 @@ import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
 import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,9 +25,10 @@ import java.util.UUID;
 public class Task extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "task_id")
-    private Long taskId;
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID taskId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "projectId")
@@ -54,22 +56,23 @@ public class Task extends BaseEntity {
     private LocalDateTime startDate;
     @Column(name = "endDate")
     private LocalDateTime endDate;
+    @Column(name = "editDeletePermission")
     private String editDeletePermission;
 
     public String getTitle() {
         return this.taskTitle;
     }
 
-    public Task(Long taskId, Project project, Status statusTag, User user, String taskName, String detail, LocalDateTime startDate, LocalDateTime endDate) {
-        this.taskId = taskId;
-        this.project = project;
-        this.statusTag = statusTag;
-        this.user = user;
-        this.taskTitle = taskName;
-        this.taskContent = detail;
-        this.startDate = startDate;
-        this.endDate = endDate;
-    }
+//    public Task(UUID taskId, Project project, Status statusTag, User user, String taskName, String detail, LocalDateTime startDate, LocalDateTime endDate) {
+//        this.taskId = taskId;
+//        this.project = project;
+//        this.statusTag = statusTag;
+//        this.user = user;
+//        this.taskTitle = taskName;
+//        this.taskContent = detail;
+//        this.startDate = startDate;
+//        this.endDate = endDate;
+//    }
 
     public void updateTask(Task newTask) {
         this.project = newTask.getProject();

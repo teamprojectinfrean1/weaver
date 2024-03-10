@@ -8,4 +8,7 @@ public interface AuthorizationService {
 	ResponseToken login (RequestSignIn requestSignIn);
 	ResponseToken reissue (String refreshToken);
 	void logout(String refreshToken);
+	Boolean checkMail(String email);
+	Boolean checkId(String id);
+	Boolean checkNickname(String nickname);
 }

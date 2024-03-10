@@ -4,6 +4,9 @@ import com.task.weaver.common.exception.AuthorizationException;
 import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
+
+import com.task.weaver.domain.project.entity.Project;
+
 import com.task.weaver.domain.status.entity.Status;
 import com.task.weaver.domain.task.dto.request.RequestCreateTask;
 import com.task.weaver.domain.task.dto.request.RequestGetTaskPage;
@@ -15,10 +18,12 @@ import com.task.weaver.domain.task.entity.Task;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.UUID;
+
 
 public interface TaskService {
 
-    ResponseGetTask getTask(Long taskId)
+    ResponseGetTask getTask(UUID taskId)
             throws NotFoundException, AuthorizationException;
     ResponseTask getTask(Issue issue)
             throws NotFoundException, AuthorizationException;
@@ -38,13 +43,13 @@ public interface TaskService {
 
     void deleteTask(Task task)
             throws NotFoundException, AuthorizationException;
-    void deleteTask(Long taskId)
+    void deleteTask(UUID taskId)
             throws NotFoundException, AuthorizationException;
 
     ResponseGetTask updateTask(Task originalTask, Task newTask)
             throws NotFoundException, AuthorizationException;
-    ResponseGetTask updateTask(Long originalTaskId, Task newTask)
+    ResponseGetTask updateTask(UUID originalTaskId, Task newTask)
             throws NotFoundException, AuthorizationException;
-    ResponseGetTask updateTask(Long taskId, RequestUpdateTask requestUpdateUser)
+    ResponseGetTask updateTask(UUID taskId, RequestUpdateTask requestUpdateUser)
             throws NotFoundException, AuthorizationException;
 }

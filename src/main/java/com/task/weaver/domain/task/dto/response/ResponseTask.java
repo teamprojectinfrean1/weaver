@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
 @Builder
 public class ResponseTask {
 
-    private Long taskId;
+    private UUID taskId;
     private Project project;
     private Status statusTag;
     private User user;
@@ -35,6 +36,6 @@ public class ResponseTask {
         this.title = task.getTaskTitle();
         this.content = task.getTaskContent();
         this.startDate = task.getStartDate();
-        this.startDate = task.getEndDate();
+        this.endDate = task.getEndDate();
     }
 }

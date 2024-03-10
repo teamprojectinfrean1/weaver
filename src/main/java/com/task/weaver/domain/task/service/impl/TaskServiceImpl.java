@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 
 
@@ -45,7 +46,7 @@ public class TaskServiceImpl implements TaskService {
     private final UserRepository userRepository;
 
     @Override
-    public ResponseGetTask getTask(Long taskId) throws NotFoundException, AuthorizationException {
+    public ResponseGetTask getTask(UUID taskId) throws NotFoundException, AuthorizationException {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException(new Throwable(String.valueOf(taskId))));
 
@@ -124,7 +125,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void deleteTask(Long taskId) throws NotFoundException, AuthorizationException {
+    public void deleteTask(UUID taskId) throws NotFoundException, AuthorizationException {
         taskRepository.deleteById(taskId);
     }
 
@@ -136,7 +137,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public ResponseGetTask updateTask(Long originalTaskId, Task newTask) throws NotFoundException, AuthorizationException {
+    public ResponseGetTask updateTask(UUID originalTaskId, Task newTask) throws NotFoundException, AuthorizationException {
         Task task = taskRepository.findById(originalTaskId)
                 .orElseThrow(() -> new TaskNotFoundException(new Throwable(String.valueOf(originalTaskId))));
 
@@ -146,7 +147,7 @@ public class TaskServiceImpl implements TaskService {
 
 
     @Override
-    public ResponseGetTask updateTask(Long taskId, RequestUpdateTask requestUpdateTask) throws NotFoundException, AuthorizationException {
+    public ResponseGetTask updateTask(UUID taskId, RequestUpdateTask requestUpdateTask) throws NotFoundException, AuthorizationException {
         Task findTask = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException(new Throwable(String.valueOf(taskId))));
 

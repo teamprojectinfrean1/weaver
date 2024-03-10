@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-public interface TaskRepository extends JpaRepository<Task, Long>, TaskRepositoryDsl {
+public interface TaskRepository extends JpaRepository<Task, UUID>, TaskRepositoryDsl {
     Page<Task> findByProject(Project project, Pageable pageable);
     Page<Task> findByStatusTag(Status statusTag, Pageable pageable);
     Page<Task> findByUser(User user, Pageable pageable);
