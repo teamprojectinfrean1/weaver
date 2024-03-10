@@ -1,6 +1,7 @@
 package com.task.weaver.domain.comment.controller;
 
 import com.task.weaver.common.response.DataResponse;
+import com.task.weaver.domain.comment.dto.request.RequestCommentReaction;
 import com.task.weaver.domain.comment.dto.request.RequestCreateComment;
 import com.task.weaver.domain.comment.dto.request.RequestUpdateComment;
 import com.task.weaver.domain.comment.dto.response.ResponseComment;
@@ -37,5 +38,12 @@ public class CommentController {
                                                                     @RequestBody RequestUpdateComment comment) {
         ResponseComment responseComment = commentService.updateComment(commentId, comment);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "코멘트 수정 성공",responseComment), HttpStatus.OK);
+    }
+    @Operation(summary = "코멘트 이모지로 반응", description = "코멘트 이모지로 반응")
+    @PostMapping("/{commentId}/reaction")
+    public ResponseEntity<DataResponse<String>> updateReaction(@PathVariable Long commentId,
+                                                               @RequestBody RequestCommentReaction reaction){
+        String storedReaction = commentService.addReaction(commentId, reaction);
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "이모지 등록 성공",storedReaction),HttpStatus.OK);
     }
 }

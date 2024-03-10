@@ -7,7 +7,7 @@ import lombok.Builder;
 @Builder
 public record GetIssueListResponse(UUID issueId,
 								   String issueTitle,
-								   Long taskId,
+								   UUID taskId,
 								   String taskTitle,
 								   String managerId,
 								   String managerNickname,

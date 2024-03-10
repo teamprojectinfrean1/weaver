@@ -2,6 +2,7 @@ package com.task.weaver.domain.comment.service.impl;
 
 import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.domain.comment.dto.request.CommentPageRequest;
+import com.task.weaver.domain.comment.dto.request.RequestCommentReaction;
 import com.task.weaver.domain.comment.dto.request.RequestCreateComment;
 import com.task.weaver.domain.comment.dto.request.RequestUpdateComment;
 import com.task.weaver.domain.comment.dto.response.CommentListResponse;
@@ -91,5 +92,13 @@ public class CommentServiceImpl implements CommentService {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String addReaction(Long commentId, RequestCommentReaction reaction) throws NotFoundException {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException(""));
+        comment.updateReaction(reaction.reaction());
+        return reaction.reaction();
     }
 }

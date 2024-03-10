@@ -2,6 +2,7 @@ package com.task.weaver.domain.comment.service;
 
 import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.domain.comment.dto.request.CommentPageRequest;
+import com.task.weaver.domain.comment.dto.request.RequestCommentReaction;
 import com.task.weaver.domain.comment.dto.request.RequestCreateComment;
 import com.task.weaver.domain.comment.dto.request.RequestUpdateComment;
 import com.task.weaver.domain.comment.dto.response.CommentListResponse;
@@ -19,4 +20,5 @@ public interface CommentService {
     void deleteComment (Comment comment) throws NotFoundException;
     void deleteComment (Long commentId) throws NotFoundException;
     ResponseComment updateComment(Long originalCommentId, RequestUpdateComment requestUpdateComment) throws NotFoundException;
+    String addReaction(Long commentId, RequestCommentReaction reaction) throws NotFoundException;
 }
