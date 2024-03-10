@@ -97,7 +97,7 @@ public class TaskServiceImpl implements TaskService {
 
 
     @Override
-    public ResponseGetTask addTask(RequestCreateTask request) throws AuthorizationException {
+    public UUID addTask(RequestCreateTask request) throws AuthorizationException {
         User writer = userRepository.findById(request.getWriterUuid())
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(request.getProjectId()))));
 
@@ -109,8 +109,7 @@ public class TaskServiceImpl implements TaskService {
 
         Task save = taskRepository.save(entity);
 
-        ResponseGetTask responseTask = new ResponseGetTask(save);
-        return responseTask;
+        return save.getTaskId();
     }
 
     @Override

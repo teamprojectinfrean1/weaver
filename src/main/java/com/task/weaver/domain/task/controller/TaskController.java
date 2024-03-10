@@ -42,9 +42,9 @@ public class TaskController {
 
     @Operation(summary = "태스크 생성", description = "프로젝트에 태스크 하나를 생성합니다.")
     @PostMapping()
-    public ResponseEntity<DataResponse<ResponseGetTask>> addTask(@RequestBody RequestCreateTask requestCreateTask){
-        ResponseGetTask responseTask = taskService.addTask(requestCreateTask);
-        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "태스크 생성 성공", responseTask), HttpStatus.OK);
+    public ResponseEntity<DataResponse<UUID>> addTask(@RequestBody RequestCreateTask requestCreateTask){
+        UUID taskId = taskService.addTask(requestCreateTask);
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "태스크 생성 성공", taskId), HttpStatus.OK);
     }
     @Operation(summary = "태스크 수정", description = "태스크 하나의 정보를 수정합니다.")
     @PutMapping()

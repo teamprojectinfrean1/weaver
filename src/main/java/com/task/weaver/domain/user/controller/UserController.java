@@ -62,12 +62,12 @@ public class UserController {
     }
     @Operation(summary = "프로젝트 구성원 조회", description = "프로젝트에 소속된 인원들 조회")
     @Parameter(name = "projectId", description = "프로젝트 id", in = ParameterIn.PATH)
-    @GetMapping("/list")
+    @GetMapping("/project/user-list")
     public ResponseEntity<DataResponse<ResponsePageResult<ResponseGetUserList, User>>> getUsersFromProject(@RequestBody RequestGetUserPage requestGetUserPage){
         ResponsePageResult<ResponseGetUserList, User> responseGetUserLists = userService.getUsers(requestGetUserPage);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트 구성원 조회 성공", responseGetUserLists), HttpStatus.OK);
     }
-    @Operation(summary = "프로젝트 구성원 조회", description = "프로젝트에 소속된 인원들 조회")
+    @Operation(summary = "토큰 기반 유저 조회", description = "로그인 직후, 토큰 기반으로 유저 정보 조회")
     @Parameter(name = "access token", description = "토큰", in = ParameterIn.HEADER)
     @GetMapping()
     public ResponseEntity<DataResponse<ResponseUser>> getUsersFromToken(HttpServletRequest request){

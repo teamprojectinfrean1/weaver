@@ -35,7 +35,7 @@ public interface TaskService {
 //    Page<Task> getTasks(User user, Pageable pageable)
 //            throws NotFoundException, AuthorizationException;
 
-    ResponseGetTask addTask(RequestCreateTask request)
+    UUID addTask(RequestCreateTask request)
             throws AuthorizationException;
 
     ResponseTask addTask(Task task)
