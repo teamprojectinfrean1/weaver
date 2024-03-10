@@ -1,23 +1,22 @@
 package com.task.weaver.domain.comment.service;
 
+import com.task.weaver.common.exception.NotFoundException;
+import com.task.weaver.domain.comment.dto.request.CommentPageRequest;
+import com.task.weaver.domain.comment.dto.request.RequestCreateComment;
 import com.task.weaver.domain.comment.dto.request.RequestUpdateComment;
+import com.task.weaver.domain.comment.dto.response.CommentListResponse;
 import com.task.weaver.domain.comment.dto.response.ResponseComment;
 import com.task.weaver.domain.comment.entity.Comment;
-import com.task.weaver.domain.project.entity.Project;
-import com.task.weaver.domain.story.entity.Story;
-import com.task.weaver.domain.user.entity.User;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 public interface CommentService {
-    ResponseComment getComment(Long id);
+    ResponseComment getComment(Long id) throws NotFoundException;
 
-    Comment addComment (String content, Story story, User user);
+    Page<CommentListResponse> getComments(CommentPageRequest commentPageRequest) throws NotFoundException;
 
-    void deleteComment (User deleter, Comment comment);
-    void deleteComment (User deleter, Long commentId);
+    Long addComment (RequestCreateComment requestComment) throws NotFoundException;
 
-    ResponseComment updateComment(User updater, Comment originalComment, RequestUpdateComment newComment);
-
-    ResponseComment updateComment(User updater, Long originalCommentId, RequestUpdateComment newComment);
+    void deleteComment (Comment comment) throws NotFoundException;
+    void deleteComment (Long commentId) throws NotFoundException;
+    ResponseComment updateComment(Long originalCommentId, RequestUpdateComment requestUpdateComment) throws NotFoundException;
 }

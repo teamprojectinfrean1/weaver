@@ -2,7 +2,7 @@ package com.task.weaver.domain.comment.entity;
 
 import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.comment.dto.request.RequestUpdateComment;
-import com.task.weaver.domain.story.entity.Story;
+import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity(name = "COMMENT")
 @AllArgsConstructor
@@ -26,8 +26,8 @@ public class Comment extends BaseEntity {
     private Long comment_id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "story_id")
-    private Story story;
+    @JoinColumn(name = "issue_id")
+    private Issue issue;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -36,10 +36,12 @@ public class Comment extends BaseEntity {
     private String body;
 
     @Column(name = "create_date")
-    @CreatedDate
-    private LocalDate create_date;
+    private LocalDateTime date;
 
-    public void updateComment(RequestUpdateComment requestUpdateComment){
+
+    public void updateComment(RequestUpdateComment requestUpdateComment, Issue issue) {
+        this.issue = issue;
         this.body = requestUpdateComment.getCommentBody();
+        this.date = requestUpdateComment.getDate();
     }
 }
