@@ -1,6 +1,8 @@
 package com.task.weaver.domain.issue.entity;
 
 import com.task.weaver.common.model.Status;
+import com.task.weaver.domain.BaseEntity;
+import com.task.weaver.domain.issue.dto.request.UpdateIssueRequest;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -10,7 +12,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.LastModifiedDate;
 
 @Entity
@@ -18,12 +22,13 @@ import org.springframework.data.annotation.LastModifiedDate;
 @NoArgsConstructor
 @Getter
 @Builder
-public class Issue {
+public class Issue extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "issue_id")
-    private Long issueId;
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID issueId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id")
@@ -43,9 +48,9 @@ public class Issue {
     @Column(name = "content")
     private String content;
 
-    @LastModifiedDate
-    @Column(name = "modify_date")
-    private LocalDateTime modDate;
+    // @LastModifiedDate
+    // @Column(name = "modify_date")
+    // private LocalDateTime modDate;
 
     @Column(name = "start_date")
     private LocalDateTime startDate;
@@ -53,16 +58,19 @@ public class Issue {
     @Column(name = "end_date")
     private LocalDateTime endDate;
 
-    @Column(name = "visible")
-    private boolean visible;
-
     @Enumerated(EnumType.STRING)
     private Status status;
 
 
 
-    // public Issue from(CreateIssueRequest issueRequest, Task task, User user) {
-    //     return Issue.builder().task(task).Id(user).managerId(user).title(issueRequest.issueName()).issueType(
-    //         issueRequest.issueType()).issueText(issueRequest.issueText()).build();
-    // }
+    public void updateIssue(UpdateIssueRequest updateIssueRequest, Task task, User modifier, User manager) {
+        this.task = task;
+        this.creator = modifier;
+        this.manager = manager;
+        this.title = updateIssueRequest.title();
+        this.content = updateIssueRequest.content();
+        this.startDate = updateIssueRequest.startDate();
+        this.endDate = updateIssueRequest.endDate();
+        this.status = Status.valueOf(updateIssueRequest.status());
+    }
 }

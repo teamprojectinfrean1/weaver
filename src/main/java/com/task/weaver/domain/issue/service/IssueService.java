@@ -6,6 +6,7 @@ import com.task.weaver.common.exception.AuthorizationException;
 import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.domain.issue.dto.request.CreateIssueRequest;
 import com.task.weaver.domain.issue.dto.request.GetIssuePageRequest;
+import com.task.weaver.domain.issue.dto.request.UpdateIssueRequest;
 import com.task.weaver.domain.issue.dto.response.GetIssueListResponse;
 import com.task.weaver.domain.issue.dto.response.IssueResponse;
 import com.task.weaver.domain.issue.entity.Issue;
@@ -17,17 +18,17 @@ import org.springframework.data.domain.Pageable;
 
 public interface IssueService {
 
-    IssueResponse getIssue (Long issueId) throws NotFoundException, AuthorizationException;
+    IssueResponse getIssue (UUID issueId) throws NotFoundException, AuthorizationException;
 
     Page<GetIssueListResponse> getIssues(String status, GetIssuePageRequest getIssuePageRequest) throws NotFoundException, AuthorizationException;
 
-    Long addIssue(CreateIssueRequest issueRequest) throws AuthorizationException;
+    UUID addIssue(CreateIssueRequest issueRequest) throws AuthorizationException;
 
 
-    Issue updateIssue (Issue originalIssue, Issue newIssue) throws NotFoundException, AuthorizationException;
-    Issue updateIssue (Long originalIssueId, Issue newIssue) throws NotFoundException, AuthorizationException;
+    IssueResponse updateIssue (UUID issueId, UpdateIssueRequest updateIssueRequest) throws NotFoundException, AuthorizationException;
 
     void deleteIssue (Issue issue) throws NotFoundException, AuthorizationException;
-    void deleteIssue (Long issueId) throws NotFoundException, AuthorizationException;
+    void deleteIssue (UUID issueId) throws NotFoundException, AuthorizationException;
 
+    Page<GetIssueListResponse> getSearchIssues(String status, String filter, String word, GetIssuePageRequest getIssuePageRequest) throws NotFoundException, AuthorizationException;
 }

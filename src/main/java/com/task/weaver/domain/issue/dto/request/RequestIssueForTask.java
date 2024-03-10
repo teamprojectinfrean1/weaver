@@ -1,5 +1,7 @@
 package com.task.weaver.domain.issue.dto.request;
 
+import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class RequestIssueForTask {
-    private String issueId;
+    private UUID issueId;
     private String issueName;
 }
