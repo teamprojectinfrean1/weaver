@@ -7,10 +7,13 @@ import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.user.ExistingEmailException;
 import com.task.weaver.common.exception.user.UserNotFoundException;
+import com.task.weaver.domain.authorization.util.JwtTokenProvider;
+import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
 import com.task.weaver.domain.story.entity.Story;
 import com.task.weaver.domain.user.dto.request.RequestCreateUser;
+import com.task.weaver.domain.user.dto.request.RequestGetUserPage;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
 import com.task.weaver.domain.user.dto.response.ResponseUser;
@@ -21,10 +24,15 @@ import com.task.weaver.domain.user.service.UserService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,6 +40,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.swing.*;
+import javax.xml.transform.TransformerException;
 
 @Slf4j
 @Service
@@ -40,6 +49,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ProjectRepository projectRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     public ResponseUser getUser(UUID userId) {
@@ -57,6 +67,15 @@ public class UserServiceImpl implements UserService {
         return new ResponseUser(findUser);
     }
 
+    @Override
+    public ResponseUser getUserFromToken(HttpServletRequest request) {
+        String userId = jwtTokenProvider.getUsername(request);
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(userId))));
+        ResponseUser responseUser = new ResponseUser(user);
+        return responseUser;
+    }
+
 //    @Override
 //    public Boolean checkMail(String email) {
 //        if(userRepository.findByEmail(email).isPresent())
@@ -72,19 +91,24 @@ public class UserServiceImpl implements UserService {
 //    }
 
     @Override
-    public List<ResponseGetUserList> getUsers(UUID projectId) throws BusinessException{
+    public ResponsePageResult<ResponseGetUserList, User> getUsers(RequestGetUserPage requestGetUserPage) throws BusinessException{
+        UUID projectId = requestGetUserPage.getProjectId();
+
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(projectId))));
 
-        List<User> users = userRepository.findUsersForProject(projectId)
-                .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(projectId))));
+        Pageable pageable = requestGetUserPage.getPageable(Sort.by("userId").descending());
 
-        List<ResponseGetUserList> responseGetUserLists = new ArrayList<>();
+        Page<User> users = userRepository.findUsersForProject(projectId, pageable);
 
-        for (User user : users)
-            responseGetUserLists.add(new ResponseGetUserList(user));
+        Function<User, ResponseGetUserList> fn = ((User) -> new ResponseGetUserList(User));
 
-        return responseGetUserLists;
+        return new ResponsePageResult<>(users, fn);
+    }
+
+    @Override
+    public ResponsePageResult<ResponseGetUserList, User> getUsersForSearch(String nickname) {
+        return null;
     }
 
     @Override

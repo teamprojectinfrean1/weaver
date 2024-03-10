@@ -1,15 +1,19 @@
 package com.task.weaver.domain.user.controller;
 
 import com.task.weaver.common.response.DataResponse;
+import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.user.dto.request.RequestCreateUser;
+import com.task.weaver.domain.user.dto.request.RequestGetUserPage;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
 import com.task.weaver.domain.user.dto.response.ResponseUser;
+import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,8 +35,8 @@ public class UserController {
     private final UserService userService;
     @Operation(summary = "사용자 한 명 조회", description = "사용자 한명을 조회")
     @Parameter(name = "userId", description = "사용자 id", in = ParameterIn.QUERY)
-    @GetMapping()
-    public ResponseEntity<ResponseUser> getUser(@RequestParam("userId") UUID userId){
+    @GetMapping("/{userId}")
+    public ResponseEntity<ResponseUser> getUser(@PathVariable("userId") UUID userId){
         ResponseUser responseUser = userService.getUser(userId);
         return ResponseEntity.status(HttpStatus.OK).body(responseUser);
     }
@@ -56,13 +60,19 @@ public class UserController {
         log.info("controller - join - after");
         return ResponseEntity.status(HttpStatus.OK).body(responseUser);
     }
-
     @Operation(summary = "프로젝트 구성원 조회", description = "프로젝트에 소속된 인원들 조회")
     @Parameter(name = "projectId", description = "프로젝트 id", in = ParameterIn.PATH)
-    @GetMapping("/{projectId}")
-    public ResponseEntity<DataResponse<List<ResponseGetUserList>>> getUsersForProject(@PathVariable("projectId") UUID projectId){
-        List<ResponseGetUserList> responseGetUserLists = userService.getUsers(projectId);
+    @GetMapping("/list")
+    public ResponseEntity<DataResponse<ResponsePageResult<ResponseGetUserList, User>>> getUsersFromProject(@RequestBody RequestGetUserPage requestGetUserPage){
+        ResponsePageResult<ResponseGetUserList, User> responseGetUserLists = userService.getUsers(requestGetUserPage);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트 구성원 조회 성공", responseGetUserLists), HttpStatus.OK);
+    }
+    @Operation(summary = "프로젝트 구성원 조회", description = "프로젝트에 소속된 인원들 조회")
+    @Parameter(name = "access token", description = "토큰", in = ParameterIn.HEADER)
+    @GetMapping()
+    public ResponseEntity<DataResponse<ResponseUser>> getUsersFromToken(HttpServletRequest request){
+        ResponseUser responseUser = userService.getUserFromToken(request);
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "토큰 기반 유저 정보 반환 성공", responseUser), HttpStatus.OK);
     }
     @Operation(summary = "사용자 정보 수정", description = "사용자의 정보를 수정")
     @Parameter(name = "userId", description = "사용자 id", in = ParameterIn.QUERY)

@@ -8,6 +8,9 @@ import com.task.weaver.domain.user.entity.QUser;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.dsl.UserRepositoryDsl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,13 +23,22 @@ public class UserRepositoryImpl implements UserRepositoryDsl {
     QUser qUser = QUser.user;
     QProject qProject = QProject.project;
     @Override
-    public Optional<List<User>> findUsersForProject(UUID projectId) {
+    public Page<User> findUsersForProject(UUID projectId, Pageable pageable) {
         List<User> result = jpaQueryFactory
                 .selectFrom(qUser)
                 .join(qUser.projectMemberList, qProjectMember)
                 .where(qProjectMember.project.projectId.eq(projectId))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
-        return Optional.of(result);
+        Long count = jpaQueryFactory
+                .select(qUser.count())
+                .from(qUser)
+                .join(qUser.projectMemberList, qProjectMember)
+                .where(qProjectMember.project.projectId.eq(projectId))
+                .fetchOne();
+
+        return PageableExecutionUtils.getPage(result, pageable, () -> count);
     }
 }

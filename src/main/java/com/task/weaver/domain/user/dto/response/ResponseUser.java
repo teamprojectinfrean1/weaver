@@ -14,6 +14,7 @@ import java.util.UUID;
 @Builder
 public class ResponseUser {
     private UUID userId;
+    private String id;
     private String userNickname;
     private String email;
     private String password;
@@ -21,6 +22,7 @@ public class ResponseUser {
 
     public ResponseUser(User user){
         this.userId = user.getUserId();
+        this.id = user.getId();
         this.userNickname = user.getNickname();
         this.email = user.getEmail();
         this.password = user.getPassword();

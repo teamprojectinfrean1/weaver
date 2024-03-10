@@ -5,6 +5,7 @@ import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -40,7 +41,7 @@ public class JwtTokenProvider {
 	private final Long REFRESH_TOKEN_VALID_TIME = 7 * 24 * 60 * 60 * 1000L;
 
 	private final CustomUserDetailsService customUserDetailsService;
-
+	private static final String AUTHORIZATION_HEADER = "Authorization";
 	/**
 	 * 객체 초기화, secretKey를 Base64로 인코딩
 	 */
@@ -129,5 +130,16 @@ public class JwtTokenProvider {
 		log.info("claims.getId : " + claims.getId() + ", claims.getSubject : " + claims.getSubject());
 		UserDetails userDetails = customUserDetailsService.loadUserByUsername(claims.getSubject());
 		return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+	}
+
+	public String getUsername(HttpServletRequest request){
+		String token = request.getHeader(AUTHORIZATION_HEADER);
+
+		String info = Jwts.parserBuilder().setSigningKey(key).build()
+				.parseClaimsJws(token)
+				.getBody()
+				.getSubject();
+
+		return info;
 	}
 }

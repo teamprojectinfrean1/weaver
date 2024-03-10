@@ -78,6 +78,7 @@ public class TaskServiceImpl implements TaskService {
 
         Pageable pageable = requestGetTaskPage.getPageable(Sort.by("taskId").descending());
         Page<Task> taskPage = taskRepository.findByProject(project, pageable);
+
         Function<Task, ResponseGetTaskList> fn = Task -> (new ResponseGetTaskList(Task));
         return new ResponsePageResult<>(taskPage, fn);
     }
