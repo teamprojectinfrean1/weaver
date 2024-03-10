@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public interface TaskRepository extends JpaRepository<Task, UUID>, TaskRepositoryDsl {
@@ -19,5 +20,4 @@ public interface TaskRepository extends JpaRepository<Task, UUID>, TaskRepositor
     Page<Task> findByTaskTitle(String taskName, Pageable pageable);
     Page<Task> findByTaskContent(String detail, Pageable pageable);
 //    Page<Task> findBystartDate(LocalDateTime startDate, Pageable pageable);
-
 }

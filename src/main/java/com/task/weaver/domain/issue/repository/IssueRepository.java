@@ -1,6 +1,8 @@
 package com.task.weaver.domain.issue.repository;
 
 
+import java.util.List;
+
 import com.task.weaver.domain.task.entity.Task;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

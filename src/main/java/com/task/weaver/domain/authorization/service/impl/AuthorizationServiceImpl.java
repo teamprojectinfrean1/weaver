@@ -79,14 +79,12 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 		return passwordEncoder.matches(requestSignIn.password(), user.getPassword()); // 암호화된 비밀번호가 뒤로 와야 한다 순서
 	}
 
-	public ResponseToken reissue(RequestToken requestToken) {
-
-		String resolvedToken = resolveToken(requestToken.refreshToken());
+	public ResponseToken reissue(String refreshToken) {
 
 		// refresh token 유효성 검증
-		jwtTokenProvider.validateToken(resolvedToken);
+		jwtTokenProvider.validateToken(refreshToken);
 
-		Authentication authentication = jwtTokenProvider.getAuthentication(resolvedToken);
+		Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
 
 		// log.info("resolvedToken : " + resolvedToken);
 		log.info("authentication.getName() : " + authentication.getName());
@@ -96,9 +94,9 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 			.orElseThrow(() -> new RuntimeException("")); // 예외 처리 추후 수정
 
 		// refresh token, redis 에 저장된 것과 일치하는지 검증
-		log.info("resolvedToken : " + resolvedToken);
+		log.info("resolvedToken : " + refreshToken);
 		log.info("findrefreshtoken : " + findTokenEntity.getRefreshToken());
-		if(!resolvedToken.equals(findTokenEntity.getRefreshToken()))
+		if(!refreshToken.equals(findTokenEntity.getRefreshToken()))
 			throw new IllegalArgumentException(""); // 예외 처리 추후 수정
 
 		// accessToken과 refreshToken 모두 재발행
