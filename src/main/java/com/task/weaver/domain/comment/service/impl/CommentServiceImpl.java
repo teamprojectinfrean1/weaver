@@ -39,7 +39,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Page<CommentListResponse> getComments(UUID issueId, CommentPageRequest commentPageRequest) throws NotFoundException {
-        if(issueId != commentPageRequest.issueId()) throw new NotFoundException();
+        if(issueId.equals(commentPageRequest.issueId())) throw new NotFoundException();
         Issue issue = issueRepository.findById(issueId)
                 .orElseThrow(() -> new IllegalArgumentException(""));
         List<CommentListResponse> commentList = new ArrayList<>();
@@ -47,9 +47,9 @@ public class CommentServiceImpl implements CommentService {
         for(Comment comment : issue.getComments()){
             commentList
                     .add( new CommentListResponse(
-                            comment.getComment_id(),
-                            comment.getBody(),
-                            comment.getIssue().getIssueId()
+                                    comment.getComment_id(),
+                                    comment.getBody(),
+                                    comment.getIssue().getIssueId()
                             )
                     );
         }
@@ -107,7 +107,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private boolean validate(User user, User updater) {
-        return user.getUserId() == updater.getUserId();
+        return user.getUserId().equals(updater.getUserId());
     }
 
     @Override
