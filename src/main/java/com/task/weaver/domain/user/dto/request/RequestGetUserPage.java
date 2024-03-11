@@ -16,6 +16,7 @@ public class RequestGetUserPage {
     private int page;
     private int size;
     private UUID projectId;
+    private String nickname = "";
 
     public RequestGetUserPage() {
         this.page = 1;

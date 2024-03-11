@@ -10,5 +10,5 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface UserRepositoryDsl {
-    Page<User> findUsersForProject(UUID projectId, Pageable pageable);
+    Page<User> findUsersForProject(UUID projectId, String nickname, Pageable pageable);
 }

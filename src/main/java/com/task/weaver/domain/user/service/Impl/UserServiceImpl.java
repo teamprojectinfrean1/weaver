@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService {
 
         Pageable pageable = requestGetUserPage.getPageable(Sort.by("userId").descending());
 
-        Page<User> users = userRepository.findUsersForProject(projectId, pageable);
+        Page<User> users = userRepository.findUsersForProject(projectId, requestGetUserPage.getNickname(), pageable);
 
         Function<User, ResponseGetUserList> fn = ((User) -> new ResponseGetUserList(User));
 

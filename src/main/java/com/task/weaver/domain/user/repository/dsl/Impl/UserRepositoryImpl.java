@@ -1,5 +1,6 @@
 package com.task.weaver.domain.user.repository.dsl.Impl;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.task.weaver.domain.project.entity.QProject;
 import com.task.weaver.domain.projectmember.entity.QProjectMember;
@@ -23,11 +24,11 @@ public class UserRepositoryImpl implements UserRepositoryDsl {
     QUser qUser = QUser.user;
     QProject qProject = QProject.project;
     @Override
-    public Page<User> findUsersForProject(UUID projectId, Pageable pageable) {
+    public Page<User> findUsersForProject(UUID projectId, String nickname, Pageable pageable) {
         List<User> result = jpaQueryFactory
                 .selectFrom(qUser)
                 .join(qUser.projectMemberList, qProjectMember)
-                .where(qProjectMember.project.projectId.eq(projectId))
+                .where(qProjectMember.project.projectId.eq(projectId), NicknameEq(nickname))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -40,5 +41,9 @@ public class UserRepositoryImpl implements UserRepositoryDsl {
                 .fetchOne();
 
         return PageableExecutionUtils.getPage(result, pageable, () -> count);
+    }
+
+    BooleanExpression NicknameEq(String nickname){
+        return nickname.isBlank() != true ? qUser.nickname.contains(nickname) : null;
     }
 }
