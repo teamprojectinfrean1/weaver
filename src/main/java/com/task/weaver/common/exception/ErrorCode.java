@@ -25,6 +25,8 @@ public enum ErrorCode {
     // Authorization
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "A001", "패스워드가 일치하지 않습니다."),
 
+    //Task
+    TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "T001", "해당 task를 찾을 수 업습니다."),
     // Chatting Room
     CHATTINGROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CHR001", "해당 채팅룸을 찾을 수 없습니다."),
 

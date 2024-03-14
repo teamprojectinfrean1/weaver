@@ -7,11 +7,15 @@ import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.user.UnableSendMailException;
 import com.task.weaver.domain.authorization.service.impl.RedisService;
 import com.task.weaver.domain.mail.service.impl.MailServiceImpl;
+import com.task.weaver.common.exception.project.ProjectNotFoundException;
+import com.task.weaver.common.exception.user.UserNotFoundException;
 import com.task.weaver.domain.project.entity.Project;
+import com.task.weaver.domain.project.repository.ProjectRepository;
 import com.task.weaver.domain.story.entity.Story;
 import com.task.weaver.domain.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.user.dto.response.EmailVerificationResult;
+import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
 import com.task.weaver.domain.user.dto.response.ResponseUser;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.UserRepository;
@@ -19,7 +23,9 @@ import com.task.weaver.domain.user.service.UserService;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import java.util.Optional;
 import java.util.Random;
@@ -37,6 +43,7 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
     private static final String AUTH_CODE_PREFIX = "AuthCode ";
     private final UserRepository userRepository;
+    private final ProjectRepository projectRepository;
     private final PasswordEncoder passwordEncoder;
     private final MailServiceImpl mailService;
     private final RedisService redisService;
@@ -89,8 +96,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseUser getUser(Long user_id) {
-        User user = userRepository.findById(user_id)
+    public ResponseUser getUser(UUID userId) {
+        User user = userRepository.findById(userId)
             .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
         return new ResponseUser(user);
     }
@@ -104,9 +111,34 @@ public class UserServiceImpl implements UserService {
         return new ResponseUser(findUser);
     }
 
+//    @Override
+//    public Boolean checkMail(String email) {
+//        if(userRepository.findByEmail(email).isPresent())
+//            return false;
+//        return true;
+//    }
+//
+//    @Override
+//    public Boolean checkId(String id) {
+//        if(userRepository.findByUserId(id).isPresent())
+//            return false;
+//        return true;
+//    }
+
     @Override
-    public List<ResponseUser> getUsers(Long project_id) {
-        return null;
+    public List<ResponseGetUserList> getUsers(UUID projectId) throws BusinessException{
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(projectId))));
+
+        List<User> users = userRepository.findUsersForProject(projectId)
+                .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(projectId))));
+
+        List<ResponseGetUserList> responseGetUserLists = new ArrayList<>();
+
+        for (User user : users)
+            responseGetUserLists.add(new ResponseGetUserList(user));
+
+        return responseGetUserLists;
     }
 
     @Override
@@ -130,13 +162,15 @@ public class UserServiceImpl implements UserService {
         isExistEmail(requestCreateUser.getEmail());
 
         User user = User.builder()
-            .name(requestCreateUser.getName())
-            .email(requestCreateUser.getEmail())
-            .password(passwordEncoder.encode(requestCreateUser.getPassword()))
-            .build();
+                .id(requestCreateUser.getId())
+                .nickname(requestCreateUser.getNickname())
+                .email(requestCreateUser.getEmail())
+                .password(passwordEncoder.encode(requestCreateUser.getPassword()))
+                .build();
 
         User savedUser = userRepository.save(user);
 
+        log.info("user uuid : " + savedUser.getUserId());
         return new ResponseUser(savedUser);
     }
 
@@ -149,16 +183,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseUser updateUser(Long user_id, RequestUpdateUser requestUpdateUser) {
-        User findUser = userRepository.findById(user_id).get();
+    public ResponseUser updateUser(UUID userId, RequestUpdateUser requestUpdateUser) {
+        User findUser = userRepository.findById(userId).get();
         findUser.updateUser(requestUpdateUser);
 
         return new ResponseUser(findUser);
     }
 
     @Override
-    public void deleteUser(Long user_id) {
-        userRepository.deleteById(user_id);
+    public void deleteUser(UUID userId) {
+        userRepository.deleteById(userId);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.task.weaver.domain.websocket;
 import com.task.weaver.domain.user.service.UserService;
-import com.task.weaver.domain.websocket.dto.ChattingRoomResponse;
+import com.task.weaver.domain.websocket.dto.response.ResponseCreateChattingRoom;
 import com.task.weaver.domain.websocket.service.ChattingService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +19,9 @@ public class WebSocketTest {
         this.chattingService = chattingService;
     }
 
-    @Test
-    public void test() {
-        ChattingRoomResponse chattingRoom = chattingService.createChattingRoom(1L);
-        System.out.println(chattingRoom.getChattingRoomId());
-    }
+//    @Test
+//    public void test() {
+//        ResponseCreateChattingRoom chattingRoom = chattingService.createChattingRoom(1L);
+//        System.out.println(chattingRoom.getChattingRoomId());
+//    }
 }

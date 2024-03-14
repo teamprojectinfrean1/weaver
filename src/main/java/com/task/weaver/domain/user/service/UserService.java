@@ -4,16 +4,20 @@ import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.story.entity.Story;
 import com.task.weaver.domain.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
+import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
 import com.task.weaver.domain.user.dto.response.ResponseUser;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.dto.response.EmailVerificationResult;
 import java.util.List;
+import java.util.UUID;
 
 public interface UserService {
-    ResponseUser getUser(Long user_id);
+    ResponseUser getUser(UUID userId);
     ResponseUser getUser(String email);
+//    Boolean checkMail(String email);
+//    Boolean checkId(String id);
 
-    List<ResponseUser> getUsers(Long project_id);
+    List<ResponseGetUserList> getUsers(UUID projectId);
     List<ResponseUser> getUsers(Project project); //프로젝트에 연괸된 사람들
     List<ResponseUser> getUsers(User user);  //본인과 연결된 다른 사람들
     //Optional<List<User>> getUsers(Task task); //task와 연결된 사람들
@@ -21,8 +25,8 @@ public interface UserService {
 
     ResponseUser addUser(RequestCreateUser requestCreateUser);
 
-    ResponseUser updateUser(Long user_id, RequestUpdateUser requestUpdateUser);
-    void deleteUser(Long user_id);
+    ResponseUser updateUser(UUID userId, RequestUpdateUser requestUpdateUser);
+    void deleteUser(UUID userId);
     void deleteUser(User user);
 
     void sendCodeToEmail(String toEmail);

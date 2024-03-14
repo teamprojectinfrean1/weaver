@@ -6,6 +6,9 @@ import com.task.weaver.domain.authorization.dto.response.ResponseToken;
 
 public interface AuthorizationService {
 	ResponseToken login (RequestSignIn requestSignIn);
-	ResponseToken reissue (RequestToken requestToken);
+	ResponseToken reissue (String refreshToken);
 	void logout(String refreshToken);
+	Boolean checkMail(String email);
+	Boolean checkId(String id);
+	Boolean checkNickname(String nickname);
 }

@@ -38,10 +38,11 @@ public class SecurityConfig {
 		// "/user/kakao/callback/**",
 		"/api/v1/auth/login",
 		"/api/v1/auth/reissue",
-		"/api/v1/user/join",
+		"/api/v1/users/join",
 		"/user/logout",
-		"/v3/api-docs/**",
-		"/swagger-ui.html",
+		"/api-docs/**",
+		"/swagger-ui/**",
+    "/swagger-resources/**",
 		"/webjars/**",
 		"/favicon.com"
 	};
@@ -141,4 +142,6 @@ public class SecurityConfig {
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
 	}
+
+
 }

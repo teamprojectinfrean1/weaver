@@ -7,9 +7,10 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+@DataJpaTest
 class ProjectRepositoryTest {
 
     @Autowired
@@ -19,14 +20,15 @@ class ProjectRepositoryTest {
     public void 데이터_삽입_테스트() {
         IntStream.rangeClosed(1, 100).forEach( i -> {
             LocalDateTime now = LocalDateTime.now();
-            LocalDateTime dueDate = now.plusWeeks(1);
+            LocalDateTime startDate = now.plusWeeks(1);
 
             Project project = Project.builder()
                     .customUrl("Custom URL..." + i)
                     .bannerUrl("Banner URL..." + i)
                     .detail("Detail..." + i)
                     .created(now)
-                    .dueDate(dueDate)
+                    .startDate(now)
+                    .startDate(startDate)
                     .name("Project Name..." + i)
                     .isPublic(true)
                     .build();

@@ -6,18 +6,22 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ResponseUser {
-    private Long user_id;
-    private String name;
+    private UUID userId;
+    private String userNickname;
     private String email;
     private String password;
+    private String profileImage;
 
     public ResponseUser(User user){
-        this.user_id = user.getUserId();
-        this.name = user.getName();
+        this.userId = user.getUserId();
+        this.userNickname = user.getNickname();
         this.email = user.getEmail();
         this.password = user.getPassword();
     }

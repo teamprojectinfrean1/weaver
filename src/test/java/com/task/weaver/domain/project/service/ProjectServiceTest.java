@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.domain.project.dto.request.RequestCreateProject;
 import com.task.weaver.domain.project.dto.request.RequestPageProject;
+import com.task.weaver.domain.project.dto.response.ResponseGetProject;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
@@ -30,7 +31,7 @@ class ProjectServiceTest {
     void getProjects() {
         RequestPageProject requestPageProject = RequestPageProject.builder().page(1).size(10).build();
         ResponsePageResult<RequestCreateProject, Project> projects = projectService.getProjects(requestPageProject);
-        List<RequestCreateProject> dtoList = projects.getDtoList();
+        List<RequestCreateProject> dtoList = projects.getDataList();
 
         assertThat(dtoList)
                 .hasSize(10)
@@ -42,29 +43,30 @@ class ProjectServiceTest {
 
     @Test
     void getProject() {
-        RequestCreateProject project = projectService.getProject(99L);
+        ResponseGetProject project = projectService.getProject(99L);
         assertThat(project).isNotNull();
-        assertThat(project.projectId()).isEqualTo(99L);
+        assertThat(project.getProjectId()).isEqualTo(99L);
     }
 
     @Test
     void addProject() {
         RequestCreateProject dto = RequestCreateProject.builder()
-                .customUrl("new Custom URL")
-                .bannerUrl("new Banner URL")
+//                .customUrl("new Custom URL")
+//                .bannerUrl("new Banner URL")
                 .name("new Project Name")
                 .detail("new Project Detail")
-                .hasPublic(true)
+//                .hasPublic(true)
                 .created(LocalDateTime.now())
-                .dueDate(LocalDateTime.now().plusWeeks(1))
+                .startDate(LocalDateTime.now())
+                .startDate(LocalDateTime.now().plusWeeks(1))
                 .build();
 
         projectService.addProject(dto);
 
-        RequestCreateProject project = projectService.getProject(101L);
+        ResponseGetProject project = projectService.getProject(101L);
 
         assertThat(project).isNotNull();
-        assertThat(project.name()).isEqualTo("new Project Name");
+        assertThat(project.getProjectName()).isEqualTo("new Project Name");
     }
 
     @Test
@@ -73,9 +75,9 @@ class ProjectServiceTest {
         Project project = result.get();
         project.changeName("update Project");
         project.changeDetail("update Detail");
-        project.changePublic();
+//        project.changePublic();
         RequestCreateProject requestCreateProject = projectService.entityToDto(project);
-        projectService.updateProject(requestCreateProject);
+        projectService.updateProject(101L, requestCreateProject);
     }
 
     @Test

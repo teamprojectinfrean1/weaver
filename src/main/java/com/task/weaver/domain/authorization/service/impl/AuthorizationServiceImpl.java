@@ -1,5 +1,6 @@
 package com.task.weaver.domain.authorization.service.impl;
 
+import com.task.weaver.domain.user.repository.UserRepository;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -32,6 +33,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 	private final JwtTokenProvider jwtTokenProvider;
 
 	private final UserService userService;
+	private final UserRepository userRepository;
 	private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
 	@Override
@@ -64,8 +66,8 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
 		// accessToken, refreshToken 리턴
 		return ResponseToken.builder()
-			.accessToken("Bearer-" + accessToken)
-			.refreshToken("Bearer-" + refreshToken)
+			.accessToken("Bearer " + accessToken)
+			.refreshToken(refreshToken)
 			.build();
 	}
 
@@ -77,14 +79,12 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 		return passwordEncoder.matches(requestSignIn.password(), user.getPassword()); // 암호화된 비밀번호가 뒤로 와야 한다 순서
 	}
 
-	public ResponseToken reissue(RequestToken requestToken) {
-
-		String resolvedToken = resolveToken(requestToken.refreshToken());
+	public ResponseToken reissue(String refreshToken) {
 
 		// refresh token 유효성 검증
-		jwtTokenProvider.validateToken(resolvedToken);
+		jwtTokenProvider.validateToken(refreshToken);
 
-		Authentication authentication = jwtTokenProvider.getAuthentication(resolvedToken);
+		Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
 
 		// log.info("resolvedToken : " + resolvedToken);
 		log.info("authentication.getName() : " + authentication.getName());
@@ -94,9 +94,9 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 			.orElseThrow(() -> new RuntimeException("")); // 예외 처리 추후 수정
 
 		// refresh token, redis 에 저장된 것과 일치하는지 검증
-		log.info("resolvedToken : " + resolvedToken);
+		log.info("resolvedToken : " + refreshToken);
 		log.info("findrefreshtoken : " + findTokenEntity.getRefreshToken());
-		if(!resolvedToken.equals(findTokenEntity.getRefreshToken()))
+		if(!refreshToken.equals(findTokenEntity.getRefreshToken()))
 			throw new IllegalArgumentException(""); // 예외 처리 추후 수정
 
 		// accessToken과 refreshToken 모두 재발행
@@ -107,8 +107,8 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 		refreshTokenRedisRepository.save(new RefreshToken(authentication.getName(), newRefreshToken));
 
 		return ResponseToken.builder()
-			.accessToken("Bearer-"+newAccessToken)
-			.refreshToken("Bearer-"+newRefreshToken)
+			.accessToken("Bearer "+newAccessToken)
+			.refreshToken(newRefreshToken)
 			.build();
 	}
 
@@ -118,7 +118,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 	 * @return
 	 */
 	private String resolveToken(String accessToken) {
-		if(accessToken.startsWith("Bearer-"))
+		if(accessToken.startsWith("Bearer "))
 			return accessToken.substring(7);
 		// 예외 처리 추후 수정
 		throw new RuntimeException("not valid refresh token");
@@ -132,4 +132,26 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
 		refreshTokenRedisRepository.deleteById(authentication.getName());
 	}
+
+	@Override
+	public Boolean checkMail(String email) {
+		if(userRepository.findByEmail(email).isPresent())
+			return false;
+		return true;
+	}
+
+	@Override
+	public Boolean checkId(String id) {
+		if(userRepository.findByUserId(id).isPresent())
+			return false;
+		return true;
+	}
+
+	@Override
+	public Boolean checkNickname(String nickname) {
+		if(userRepository.findByNickname(nickname).isPresent())
+			return false;
+		return true;
+	}
+
 }
