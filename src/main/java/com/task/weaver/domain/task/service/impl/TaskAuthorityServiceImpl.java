@@ -2,16 +2,13 @@ package com.task.weaver.domain.task.service.impl;
 
 import com.task.weaver.common.exception.AuthorizationException;
 import com.task.weaver.common.exception.NotFoundException;
-import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.task.dto.request.RequestCreateTaskAuthority;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTaskAuthority;
-import com.task.weaver.domain.task.dto.response.ResponseTask;
 import com.task.weaver.domain.task.dto.response.ResponseTaskAuthority;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.entity.TaskAuthority;
 import com.task.weaver.domain.task.repository.TaskAuthorityRepository;
 import com.task.weaver.domain.task.service.TaskAuthorityService;
-import com.task.weaver.domain.taskmember.entity.TaskManager;
 import com.task.weaver.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,11 +29,6 @@ public class TaskAuthorityServiceImpl implements TaskAuthorityService {
         ResponseTaskAuthority responseTaskAuthority = new ResponseTaskAuthority(taskAuthority);
 
         return responseTaskAuthority;
-    }
-
-    @Override
-    public ResponseTaskAuthority getTaskAuthority(Project project, Task task, TaskManager taskManager) throws NotFoundException, AuthorizationException {
-        return null;
     }
 
     @Override
