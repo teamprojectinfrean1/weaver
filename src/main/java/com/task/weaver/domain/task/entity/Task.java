@@ -34,11 +34,11 @@ public class Task extends BaseEntity {
     @JoinColumn(name = "projectId")
     private Project project;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "status_tag_id")
     private Status statusTag;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_user_id")
     private User user;
 

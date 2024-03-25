@@ -9,14 +9,17 @@ import com.task.weaver.domain.authorization.service.impl.RedisService;
 import com.task.weaver.domain.mail.service.impl.MailServiceImpl;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.user.UserNotFoundException;
+import com.task.weaver.domain.authorization.util.JwtTokenProvider;
+import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
 import com.task.weaver.domain.story.entity.Story;
 import com.task.weaver.domain.user.dto.request.RequestCreateUser;
+import com.task.weaver.domain.user.dto.request.RequestGetUserPage;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.user.dto.response.EmailVerificationResult;
 import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
-import com.task.weaver.domain.user.dto.response.ResponseUser;
+import com.task.weaver.domain.user.dto.response.ResponseGetUser;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.UserRepository;
 import com.task.weaver.domain.user.service.UserService;
@@ -26,6 +29,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 
 import java.util.Optional;
 import java.util.Random;
@@ -33,6 +37,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Value;
+import jakarta.servlet.http.HttpServletRequest;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -95,20 +104,31 @@ public class UserServiceImpl implements UserService {
         return EmailVerificationResult.of(authResult);
     }
 
+    private final JwtTokenProvider jwtTokenProvider;
+
     @Override
-    public ResponseUser getUser(UUID userId) {
+    public ResponseGetUser getUser(UUID userId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
-        return new ResponseUser(user);
+        return new ResponseGetUser(user);
     }
 
     @Override
-    public ResponseUser getUser(String email) {
+    public ResponseGetUser getUser(String email) {
         // 예외처리
         User findUser = userRepository.findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
 
-        return new ResponseUser(findUser);
+        return new ResponseGetUser(findUser);
+    }
+
+    @Override
+    public ResponseGetUser getUserFromToken(HttpServletRequest request) {
+        String userId = jwtTokenProvider.getUsername(request);
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(userId))));
+        ResponseGetUser responseGetUser = new ResponseGetUser(user);
+        return responseGetUser;
     }
 
 //    @Override
@@ -126,38 +146,55 @@ public class UserServiceImpl implements UserService {
 //    }
 
     @Override
-    public List<ResponseGetUserList> getUsers(UUID projectId) throws BusinessException{
+    public ResponsePageResult<ResponseGetUserList, User> getUsers(RequestGetUserPage requestGetUserPage) throws BusinessException{
+        UUID projectId = requestGetUserPage.getProjectId();
+
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(projectId))));
 
-        List<User> users = userRepository.findUsersForProject(projectId)
-                .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(projectId))));
+        Pageable pageable = requestGetUserPage.getPageable(Sort.by("userId").descending());
 
-        List<ResponseGetUserList> responseGetUserLists = new ArrayList<>();
+        Page<User> users = userRepository.findUsersForProject(projectId, requestGetUserPage.getNickname(), pageable);
 
-        for (User user : users)
-            responseGetUserLists.add(new ResponseGetUserList(user));
+        Function<User, ResponseGetUserList> fn = ((User) -> new ResponseGetUserList(User));
 
-        return responseGetUserLists;
+        return new ResponsePageResult<>(users, fn);
     }
 
     @Override
-    public List<ResponseUser> getUsers(Project project) {
+    public List<ResponseGetUser> getUsersForTest() {
+        List<User> users = userRepository.findAll();
+        List<ResponseGetUser> responseGetUsers = new ArrayList<>();
+
+        for (User user : users) {
+            ResponseGetUser responseGetUser = new ResponseGetUser(user);
+            responseGetUsers.add(responseGetUser);
+        }
+        return responseGetUsers;
+    }
+
+    @Override
+    public ResponsePageResult<ResponseGetUserList, User> getUsersForSearch(String nickname) {
         return null;
     }
 
     @Override
-    public List<ResponseUser> getUsers(User user) {
+    public List<ResponseGetUser> getUsers(Project project) {
         return null;
     }
 
     @Override
-    public List<ResponseUser> getUsers(Story story) {
+    public List<ResponseGetUser> getUsers(User user) {
         return null;
     }
 
     @Override
-    public ResponseUser addUser(RequestCreateUser requestCreateUser) throws BusinessException {
+    public List<ResponseGetUser> getUsers(Story story) {
+        return null;
+    }
+
+    @Override
+    public ResponseGetUser addUser(RequestCreateUser requestCreateUser) throws BusinessException {
 
         isExistEmail(requestCreateUser.getEmail());
 
@@ -171,7 +208,7 @@ public class UserServiceImpl implements UserService {
         User savedUser = userRepository.save(user);
 
         log.info("user uuid : " + savedUser.getUserId());
-        return new ResponseUser(savedUser);
+        return new ResponseGetUser(savedUser);
     }
 
     private void isExistEmail(String email) {
@@ -183,11 +220,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseUser updateUser(UUID userId, RequestUpdateUser requestUpdateUser) {
+    public ResponseGetUser updateUser(UUID userId, RequestUpdateUser requestUpdateUser) {
         User findUser = userRepository.findById(userId).get();
         findUser.updateUser(requestUpdateUser);
 
-        return new ResponseUser(findUser);
+        return new ResponseGetUser(findUser);
     }
 
     @Override

@@ -61,6 +61,18 @@ public class ProjectServiceImplDummy implements ProjectService {
     }
 
     @Override
+    public List<ResponseGetProject> getProjectsForTest() {
+        List<Project> projects = projectRepository.findAll();
+        List<ResponseGetProject> projectList = new ArrayList<>();
+
+        for (Project project : projects) {
+            ResponseGetProject responseGetProject = new ResponseGetProject(project);
+            projectList.add(responseGetProject);
+        }
+        return projectList;
+    }
+
+    @Override
     public List<ResponseGetProjectList> getProejctsForMain(UUID userId) throws BusinessException {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(userId))));

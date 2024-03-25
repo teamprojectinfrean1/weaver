@@ -2,6 +2,8 @@ package com.task.weaver.domain.authorization.controller;
 
 import com.task.weaver.common.response.DataResponse;
 import com.task.weaver.common.response.MessageResponse;
+import com.task.weaver.domain.user.dto.request.RequestCreateUser;
+import com.task.weaver.domain.user.dto.response.ResponseGetUser;
 import com.task.weaver.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -31,6 +33,15 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthorizationController {
 	private final AuthorizationService authorizationService;
 	private final UserService userService;
+
+	@Operation(summary = "회원가입", description = "사용자가 회원가입")
+	@PostMapping("/join")
+	public ResponseEntity<ResponseGetUser> addUser(@RequestBody RequestCreateUser requestCreateUser){
+		log.info("controller - join - before");
+		ResponseGetUser responseGetUser = userService.addUser(requestCreateUser);
+		log.info("controller - join - after");
+		return ResponseEntity.status(HttpStatus.OK).body(responseGetUser);
+	}
 
 	@Operation(summary = "로그인", description = "로그인")
 	@PostMapping("/login")
