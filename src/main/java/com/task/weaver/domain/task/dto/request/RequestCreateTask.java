@@ -30,7 +30,7 @@ public class RequestCreateTask {
     private List<String> taskTagList;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private List<RequestIssueForTask> issueList;
+//    private List<RequestIssueForTask> issueList;
     private String editDeletePermission;
 
     public Task toEntity(User user, Project project) {

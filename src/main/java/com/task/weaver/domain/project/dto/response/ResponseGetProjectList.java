@@ -15,11 +15,12 @@ import java.util.UUID;
 @Builder
 public class ResponseGetProjectList {
     private UUID projectId;
-    private String name;
+    private String projectName;
     private Boolean isMainProject;
 
     public ResponseGetProjectList(Project project){
         this.projectId = project.getProjectId();
-        this.name = project.getName();
+        this.projectName = project.getName();
+        this.isMainProject = false;
     }
 }

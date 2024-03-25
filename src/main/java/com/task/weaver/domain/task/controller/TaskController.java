@@ -12,6 +12,7 @@ import com.task.weaver.domain.task.dto.response.ResponseTask;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.bridge.Message;
@@ -29,13 +30,13 @@ public class TaskController {
     private final TaskService taskService;
     @Operation(summary = "프로젝트 태스크 상세 조회", description = "태스크 하나를 조회합니다.")
     @GetMapping("/{taskId}")
-    public ResponseEntity<DataResponse<ResponseGetTask>> getTask(@RequestBody UUID taskId){
+    public ResponseEntity<DataResponse<ResponseGetTask>> getTask(@PathVariable("taskId") UUID taskId){
         ResponseGetTask responseTask = taskService.getTask(taskId);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "태스크 상세 조회 성공", responseTask), HttpStatus.OK);
     }
     @Operation(summary = "프로젝트 태스크 다수 조회", description = "프로젝트에 생성된 태스크들을 조회합니다.")
     @GetMapping()
-    public ResponseEntity<DataResponse<ResponsePageResult<ResponseGetTaskList, Task>>> getTasks(@RequestBody RequestGetTaskPage requestGetTaskPage) {
+    public ResponseEntity<DataResponse<ResponsePageResult<ResponseGetTaskList, Task>>> getTasks(RequestGetTaskPage requestGetTaskPage) {
         ResponsePageResult responsePageResult = taskService.getTasks(requestGetTaskPage);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트에 연결된 태스크들 조회 성공", responsePageResult), HttpStatus.OK);
     }

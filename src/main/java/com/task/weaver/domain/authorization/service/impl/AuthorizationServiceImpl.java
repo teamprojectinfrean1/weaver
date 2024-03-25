@@ -11,13 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.task.weaver.common.exception.authorization.InvalidPasswordException;
 import com.task.weaver.domain.authorization.dto.request.RequestSignIn;
-import com.task.weaver.domain.authorization.dto.request.RequestToken;
 import com.task.weaver.domain.authorization.dto.response.ResponseToken;
 import com.task.weaver.domain.authorization.redis.RefreshToken;
 import com.task.weaver.domain.authorization.redis.RefreshTokenRedisRepository;
 import com.task.weaver.domain.authorization.service.AuthorizationService;
 import com.task.weaver.domain.authorization.util.JwtTokenProvider;
-import com.task.weaver.domain.user.dto.response.ResponseUser;
+import com.task.weaver.domain.user.dto.response.ResponseGetUser;
 import com.task.weaver.domain.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -40,7 +39,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 	@Transactional(readOnly = true)
 	public ResponseToken login(RequestSignIn requestSignIn) {
 		// userId check
-		ResponseUser user = userService.getUser(requestSignIn.email());
+		ResponseGetUser user = userService.getUser(requestSignIn.email());
 
 		// password check
 		if(!isCheckPassword(requestSignIn)){
@@ -72,7 +71,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 	}
 
 	private boolean isCheckPassword(RequestSignIn requestSignIn) {
-		ResponseUser user = userService.getUser(requestSignIn.email());
+		ResponseGetUser user = userService.getUser(requestSignIn.email());
 		log.info(user.getPassword());
 		log.info(requestSignIn.password());
 		log.info(passwordEncoder.matches(requestSignIn.password(), user.getPassword()) ? "true" : "false");
