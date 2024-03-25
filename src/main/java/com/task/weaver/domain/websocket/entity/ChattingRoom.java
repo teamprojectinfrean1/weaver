@@ -20,16 +20,21 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChattingRoom extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
+
     @Builder.Default
     @OneToMany(mappedBy = "chattingRoom", cascade = CascadeType.ALL)
     private final List<Chatting> chattings = new ArrayList<>();
+
     @Builder.Default
     @OneToMany(mappedBy = "chattingRoom", cascade = CascadeType.REMOVE)
     private List<ChattingRoomMember> chattingRoomMemberList = new ArrayList<>();
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "projectId")
     private Project project;

@@ -31,6 +31,7 @@ import java.util.UUID;
 @Tag(name = "User Controller", description = "사용자 관련 컨트롤러")
 public class UserController {
     private final UserService userService;
+
     @Operation(summary = "사용자 한 명 조회", description = "사용자 한명을 조회")
     @Parameter(name = "userId", description = "사용자 id", in = ParameterIn.QUERY)
     @GetMapping()
@@ -50,6 +51,7 @@ public class UserController {
 //    public ResponseEntity<Boolean> checkId(@RequestParam("id") String id){
 //        return ResponseEntity.ok().body(userService.checkId(id));
 //    }
+
     @Operation(summary = "회원가입", description = "사용자가 회원가입")
     @PostMapping("/join")
     public ResponseEntity<ResponseUser> addUser(@RequestBody RequestCreateUser requestCreateUser){

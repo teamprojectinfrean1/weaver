@@ -41,38 +41,33 @@ public class Task extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "creator_user_id")
     private User user;
+
     @OneToMany(mappedBy = "task")
     @Builder.Default
     private List<Issue> issueList = new ArrayList<>();
+
     @OneToOne
     @JoinColumn(name = "last_update_user_id")
     private User modifier;
 
     @Column(name = "taskTitle", length = 100)
     private String taskTitle;
+
     @Column(name = "taskContent")
     private String taskContent;
+
     @Column(name = "startDate")
     private LocalDateTime startDate;
+
     @Column(name = "endDate")
     private LocalDateTime endDate;
+
     @Column(name = "editDeletePermission")
     private String editDeletePermission;
 
     public String getTitle() {
         return this.taskTitle;
     }
-
-//    public Task(UUID taskId, Project project, Status statusTag, User user, String taskName, String detail, LocalDateTime startDate, LocalDateTime endDate) {
-//        this.taskId = taskId;
-//        this.project = project;
-//        this.statusTag = statusTag;
-//        this.user = user;
-//        this.taskTitle = taskName;
-//        this.taskContent = detail;
-//        this.startDate = startDate;
-//        this.endDate = endDate;
-//    }
 
     public void updateTask(Task newTask) {
         this.project = newTask.getProject();
@@ -85,9 +80,6 @@ public class Task extends BaseEntity {
     }
 
     public void updateTask(RequestUpdateTask requestUpdateTask, User updater) {
-//        this.project = requestUpdateTask.getProject();
-//        this.statusTag = requestUpdateTask.getStatusTag();
-//        this.user = requestUpdateTask.getUser();
         this.taskTitle = requestUpdateTask.getTaskTitle();
         this.taskContent = requestUpdateTask.getTaskContent();
         this.startDate = requestUpdateTask.getStartDate().atStartOfDay();
