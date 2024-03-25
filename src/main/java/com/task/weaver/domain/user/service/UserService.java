@@ -2,7 +2,6 @@ package com.task.weaver.domain.user.service;
 
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
-import com.task.weaver.domain.story.entity.Story;
 import com.task.weaver.domain.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.user.dto.request.RequestGetUserPage;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
@@ -27,7 +26,6 @@ public interface UserService {
     List<ResponseGetUser> getUsers(Project project); //프로젝트에 연괸된 사람들
     List<ResponseGetUser> getUsers(User user);  //본인과 연결된 다른 사람들
     //Optional<List<User>> getUsers(Task task); //task와 연결된 사람들
-    List<ResponseGetUser> getUsers(Story story); //story에 연괸된 사람들
 
     ResponseGetUser addUser(RequestCreateUser requestCreateUser);
 

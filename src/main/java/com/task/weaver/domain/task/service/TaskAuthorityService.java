@@ -6,13 +6,10 @@ import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.domain.project.entity.Project;
 
 import com.task.weaver.domain.task.dto.request.RequestCreateTaskAuthority;
-import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTaskAuthority;
-import com.task.weaver.domain.task.dto.response.ResponseTask;
 import com.task.weaver.domain.task.dto.response.ResponseTaskAuthority;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.entity.TaskAuthority;
-import com.task.weaver.domain.taskmember.entity.TaskManager;
 import com.task.weaver.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 
@@ -21,8 +18,6 @@ import java.awt.print.Pageable;
 public interface TaskAuthorityService {
 
     ResponseTaskAuthority getTaskAuthority(Long taskAuthorityId)
-            throws NotFoundException, AuthorizationException;
-    ResponseTaskAuthority getTaskAuthority(Project project, Task task, TaskManager taskManager)
             throws NotFoundException, AuthorizationException;
 
     Page<TaskAuthority> getTaskAuthorities(Task task, Pageable pageable)

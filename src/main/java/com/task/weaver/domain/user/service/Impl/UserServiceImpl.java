@@ -13,7 +13,6 @@ import com.task.weaver.domain.authorization.util.JwtTokenProvider;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
-import com.task.weaver.domain.story.entity.Story;
 import com.task.weaver.domain.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.user.dto.request.RequestGetUserPage;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
@@ -185,11 +184,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<ResponseGetUser> getUsers(User user) {
-        return null;
-    }
-
-    @Override
-    public List<ResponseGetUser> getUsers(Story story) {
         return null;
     }
 
