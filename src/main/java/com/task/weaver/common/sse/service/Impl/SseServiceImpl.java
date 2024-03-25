@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+
 @Service
 @RequiredArgsConstructor
 public class SseServiceImpl implements SseService {
@@ -19,14 +20,16 @@ public class SseServiceImpl implements SseService {
     private final SseRepository sseRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final Logger log = LoggerFactory.getLogger(SseServiceImpl.class);
+
     @Override
     public SseEmitter subscribe(String username, Object data) { //username을 key값으로, emitter를 찾아낸 후 그 user에게 data를 보낸다.
 
         SseEmitter emitter = sseRepository.get(username);
-        sendToClient(username,data);
+        sendToClient(username, data);
 
         return emitter;
     }
+
     @Override
     public void sendToClient(String username, Object data) {
         SseEmitter emitter = sseRepository.get(username);
@@ -41,13 +44,14 @@ public class SseServiceImpl implements SseService {
                 sseRepository.deleteById(username);
                 emitter.completeWithError(exception);
             }
-        }
-        else if(emitter == null){
+        } else if (emitter == null) {
             log.info("sseEmitter is null");
         }
     }
+
     @Override
-    public SseEmitter createEmitter(HttpServletRequest request) {  //emitter 생성. user가 실시간 알림을 받아야할 시점에 호출되는 메서드. (ex. 로그인 직후)
+    public SseEmitter createEmitter(
+            HttpServletRequest request) {  //emitter 생성. user가 실시간 알림을 받아야할 시점에 호출되는 메서드. (ex. 로그인 직후)
 
         String username = "";    //이 부분은 나중에 결정해야함. 무엇을 key값으로 해야할까?
         SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
@@ -78,7 +82,7 @@ public class SseServiceImpl implements SseService {
 
     //로그아웃 시 호출
     @Override
-    public void closeEmitter(String username){
+    public void closeEmitter(String username) {
         sseRepository.deleteById(username);
     }
 }

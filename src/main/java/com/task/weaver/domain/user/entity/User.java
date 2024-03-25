@@ -35,6 +35,7 @@ public class User extends BaseEntity implements UserDetails {
 
     @Column(name = "id", length = 30)
     private String id;
+
     @Column(name = "nickname", length = 20)
     private String nickname;
 
@@ -47,10 +48,13 @@ public class User extends BaseEntity implements UserDetails {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "password")
     private String password;
+
     @Column(name = "profileImage")
     private String profileImage;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<ChattingRoomMember> chattingRoomMemberList;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<ProjectMember> projectMemberList;
 

@@ -9,6 +9,7 @@ import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
 import com.task.weaver.domain.user.dto.response.ResponseGetUser;
 import com.task.weaver.domain.user.entity.User;
+import com.task.weaver.domain.user.dto.response.EmailVerificationResult;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,4 +35,8 @@ public interface UserService {
     void deleteUser(UUID userId);
     void deleteUser(User user);
 
+    void sendCodeToEmail(String toEmail);
+    void checkDuplicatedEmail(String email);
+    String createCode();
+    EmailVerificationResult verifiedCode(String email, String authCode);
 }

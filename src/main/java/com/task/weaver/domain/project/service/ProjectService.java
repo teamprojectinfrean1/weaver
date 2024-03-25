@@ -36,11 +36,14 @@ public interface ProjectService {
             throws BusinessException;
 
     List<ResponseGetProject> getProjectsForTest();
+
     List<ResponseGetProjectList> getProejctsForMain(UUID userId) throws BusinessException;
 
     ResponseGetProject getProject(UUID projectId) throws BusinessException;
 
     UUID addProject(RequestCreateProject dto) throws BusinessException;
+
+    void updateProjectView(Long projectId) throws BusinessException;
 
     void updateProject(UUID projectId, RequestUpdateProject dto) throws BusinessException;
 

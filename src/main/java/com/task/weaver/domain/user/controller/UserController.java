@@ -2,7 +2,6 @@ package com.task.weaver.domain.user.controller;
 
 import com.task.weaver.common.response.DataResponse;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
-import com.task.weaver.domain.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.user.dto.request.RequestGetUserPage;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
@@ -30,7 +29,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Tag(name = "User Controller", description = "사용자 관련 컨트롤러")
 public class UserController {
+
     private final UserService userService;
+
     @Operation(summary = "사용자 한 명 조회", description = "사용자 한명을 조회")
     @Parameter(name = "userId", description = "사용자 id", in = ParameterIn.QUERY)
     @GetMapping("/{userId}")
@@ -39,7 +40,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(responseGetUser);
     }
 
-//    @Operation(summary = "회원가입", description = "사용자가 회원가입")
+    //    @Operation(summary = "회원가입", description = "사용자가 회원가입")
 //    @PostMapping("/join")
 //    public ResponseEntity<ResponseGetUser> addUser(@RequestBody RequestCreateUser requestCreateUser){
 //        log.info("controller - join - before");
@@ -47,6 +48,7 @@ public class UserController {
 //        log.info("controller - join - after");
 //        return ResponseEntity.status(HttpStatus.OK).body(responseGetUser);
 //    }
+
     @Operation(summary = "프로젝트 구성원 조회", description = "프로젝트에 소속된 인원들 조회")
     @Parameter(name = "projectId", description = "프로젝트 id", in = ParameterIn.PATH)
     @GetMapping("/project/user-list")

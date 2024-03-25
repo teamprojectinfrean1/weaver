@@ -26,29 +26,38 @@ public class Project extends BaseEntity {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "BINARY(16)")
+    @Column(columnDefinition = "BINARY(16)", name = "project_id")
     private UUID projectId;
+
 //    @Column(name = "custom_url")
 //    private String customUrl;
+
 //    @Column(name = "banner_url")
 //    private String bannerUrl;
+
     @Column(name = "name")
     private String name;
+
     @Column(name = "detail")
     private String detail;
+
     @Column(name = "startDate")
     private LocalDateTime startDate;
+
     @Column(name = "endDate")
     private LocalDateTime endDate;
+
     @Column(name = "created")
     private LocalDateTime created;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
     private User user;
+
     @Builder.Default
     @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE)
     private List<ProjectMember> projectMemberList = new ArrayList<>();
+
     @Builder.Default
     @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE)
     private List<Task> taskList = new ArrayList<>();

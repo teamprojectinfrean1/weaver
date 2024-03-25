@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChattingRoomMember extends BaseEntity {
+
     @Id
     @Column(name = "chattingRoom_member_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

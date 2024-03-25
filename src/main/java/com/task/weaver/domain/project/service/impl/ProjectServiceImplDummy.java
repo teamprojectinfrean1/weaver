@@ -148,6 +148,11 @@ public class ProjectServiceImplDummy implements ProjectService {
     }
 
     @Override
+    public void updateProjectView(final Long projectId) throws BusinessException {
+
+    }
+
+    @Override
     public void updateProject(UUID projectId, final RequestUpdateProject dto) throws BusinessException {
         Optional<Project> result = projectRepository.findById(projectId);
 
