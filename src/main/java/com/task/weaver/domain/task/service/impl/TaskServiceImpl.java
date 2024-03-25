@@ -24,6 +24,7 @@ import com.task.weaver.domain.task.service.TaskService;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -37,6 +38,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService {
@@ -78,6 +80,7 @@ public class TaskServiceImpl implements TaskService {
 
         Pageable pageable = requestGetTaskPage.getPageable(Sort.by("taskId").descending());
         Page<Task> taskPage = taskRepository.findByProject(project, pageable);
+
         Function<Task, ResponseGetTaskList> fn = Task -> (new ResponseGetTaskList(Task));
         return new ResponsePageResult<>(taskPage, fn);
     }
@@ -96,20 +99,21 @@ public class TaskServiceImpl implements TaskService {
 
 
     @Override
-    public ResponseGetTask addTask(RequestCreateTask request) throws AuthorizationException {
+    public UUID addTask(RequestCreateTask request) throws AuthorizationException {
         User writer = userRepository.findById(request.getWriterUuid())
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(request.getProjectId()))));
 
         Project project = projectRepository.findById(request.getProjectId())
                 .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(request.getProjectId()))));
 
+        log.info("writer id : " + request.getWriterUuid());
+        log.info("project id : " + request.getProjectId());
+
         Task entity = request.toEntity(writer, project);
-        entity.setModifier(writer);
 
         Task save = taskRepository.save(entity);
 
-        ResponseGetTask responseTask = new ResponseGetTask(save);
-        return responseTask;
+        return save.getTaskId();
     }
 
     @Override

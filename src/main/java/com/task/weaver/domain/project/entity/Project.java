@@ -53,7 +53,7 @@ public class Project extends BaseEntity {
     @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE)
     private List<Task> taskList = new ArrayList<>();
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "last_update_user_id")
     private User modifier;
 

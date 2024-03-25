@@ -24,7 +24,6 @@ public class TaskRepositoryImpl implements TaskRepositoryDsl {
     public Page<Task> findByProject(Project project, Pageable pageable) {
         List<Task> content = jpaQueryFactory.selectFrom(qTask)
                 .where(qTask.project.eq(project))
-                .orderBy(qTask.taskId.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

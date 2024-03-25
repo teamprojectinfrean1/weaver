@@ -35,7 +35,7 @@ public interface ProjectService {
     ResponsePageResult<RequestCreateProject, Project> getProjects(RequestPageProject requestPageProject)
             throws BusinessException;
 
-
+    List<ResponseGetProject> getProjectsForTest();
     List<ResponseGetProjectList> getProejctsForMain(UUID userId) throws BusinessException;
 
     ResponseGetProject getProject(UUID projectId) throws BusinessException;

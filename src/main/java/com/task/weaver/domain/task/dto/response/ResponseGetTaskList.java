@@ -6,18 +6,20 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class ResponseGetTaskList {
-    private String taskId;
+    private UUID taskId;
     private String taskTitle;
     private String taskContent;
     private String taskStatus;
 
     public ResponseGetTaskList(Task task){
-//        this.taskId = task.getTaskId();
+        this.taskId = task.getTaskId();
         this.taskTitle = task.getTaskTitle();
         this.taskContent = task.getTaskContent();
 

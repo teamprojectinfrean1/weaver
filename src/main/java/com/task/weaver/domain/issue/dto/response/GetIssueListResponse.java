@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import lombok.Builder;
 
+import java.util.UUID;
+
 @Builder
 public record GetIssueListResponse(UUID issueId,
 								   String issueTitle,
