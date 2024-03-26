@@ -15,6 +15,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -44,8 +45,7 @@ public class SecurityConfig {
 		"/swagger-ui/**",
     	"/swagger-resources/**",
 		"/webjars/**",
-		"/favicon.com",
-		"/api/v1/users/emails/**"
+		"/favicon.com"
 	};
 
 	/**
@@ -92,6 +92,14 @@ public class SecurityConfig {
 		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
 	}
 
+	@Bean
+	public WebSecurityCustomizer configure() {
+		return (web) -> web.ignoring()
+				.requestMatchers(new AntPathRequestMatcher("/h2-console/**"))
+				.requestMatchers(new AntPathRequestMatcher("/favicon.ico"))
+				.requestMatchers(new AntPathRequestMatcher("/api/v1/emails/**"));
+	}
+
 	/**
 	 * HttpSecurity 설정
 	 * WebSecurity에서 제외된 리소스 외의 부분에 Security 설정
@@ -100,7 +108,7 @@ public class SecurityConfig {
 	 * @throws Exception
 	 */
 	@Bean
-	protected SecurityFilterChain configure(HttpSecurity httpSecurity) throws Exception {
+	protected SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity
 			.csrf(CsrfConfigurer::disable) // rest api이므로 기본 설정 미사용
 			.httpBasic(HttpBasicConfigurer::disable) // header에 id, pw가 아닌 jwt 달고감. 따라서 basic 아닌 bearer 사용

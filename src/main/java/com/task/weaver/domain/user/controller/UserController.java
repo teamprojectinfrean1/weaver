@@ -1,14 +1,11 @@
 package com.task.weaver.domain.user.controller;
 
 import com.task.weaver.common.response.DataResponse;
-import com.task.weaver.common.response.MessageResponse;
-import com.task.weaver.domain.mail.annotation.CustomEmail;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.user.dto.request.RequestGetUserPage;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
-import com.task.weaver.domain.user.dto.response.EmailVerificationResult;
-import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
 import com.task.weaver.domain.user.dto.response.ResponseGetUser;
+import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,16 +13,20 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
@@ -60,12 +61,14 @@ public class UserController {
         ResponsePageResult<ResponseGetUserList, User> responseGetUserLists = userService.getUsers(requestGetUserPage);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트 구성원 조회 성공", responseGetUserLists), HttpStatus.OK);
     }
+
     @Operation(summary = "개발자용 유저 리스트 확인 api", description = "생성된 유저 전부 조회")
     @GetMapping("/list/test")
     public ResponseEntity<DataResponse<List<ResponseGetUser>>> getUsersForTest(){
         List<ResponseGetUser> responseGetUsers = userService.getUsersForTest();
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "유저 리스트 전부 조회", responseGetUsers), HttpStatus.OK);
     }
+
     @Operation(summary = "토큰 기반 유저 조회", description = "로그인 직후, 토큰 기반으로 유저 정보 조회")
     @Parameter(name = "access token", description = "토큰", in = ParameterIn.HEADER)
     @GetMapping("/token")
@@ -73,6 +76,7 @@ public class UserController {
         ResponseGetUser responseGetUser = userService.getUserFromToken(request);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "토큰 기반 유저 정보 반환 성공", responseGetUser), HttpStatus.OK);
     }
+
     @Operation(summary = "사용자 정보 수정", description = "사용자의 정보를 수정")
     @Parameter(name = "userId", description = "사용자 id", in = ParameterIn.QUERY)
     @PutMapping()
@@ -81,26 +85,12 @@ public class UserController {
         ResponseGetUser responseGetUser = userService.updateUser(userId, requestUpdateUser);
         return ResponseEntity.status(HttpStatus.OK).body(responseGetUser);
     }
+
     @Operation(summary = "사용자 삭제", description = "사용자 정보 삭제, 사용자는 사용 불가")
     @Parameter(name = "userId", description = "사용자 id", in = ParameterIn.QUERY)
     @DeleteMapping()
     public ResponseEntity<String> deleteUser(@RequestParam("userId") UUID userId){
         userService.deleteUser(userId);
         return ResponseEntity.status(HttpStatus.OK).body("user deleted");
-    }
-
-    @PostMapping("/emails/verification-requests")
-    public ResponseEntity<MessageResponse> sendMessage(@RequestParam("email") @Valid @CustomEmail String email) {
-        userService.sendCodeToEmail(email);
-
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "이메일 인증 요청"), HttpStatus.OK);
-    }
-
-    @GetMapping("/emails/verifications")
-    public ResponseEntity<DataResponse<EmailVerificationResult>> verificationEmail(@RequestParam("email") @Valid @CustomEmail String email,
-                                            @RequestParam("code") String authCode) {
-        EmailVerificationResult response = userService.verifiedCode(email, authCode);
-
-        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "이메일 인증 요청 성공", response), HttpStatus.OK);
     }
 }
