@@ -18,8 +18,10 @@ public class Chatting extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "chatting_id")
     private Long id;
 
+    @Column
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)

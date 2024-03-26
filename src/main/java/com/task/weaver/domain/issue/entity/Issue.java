@@ -29,7 +29,7 @@ public class Issue extends BaseEntity {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "BINARY(16)")
+    @Column(columnDefinition = "BINARY(16)", name = "issue_id")
     private UUID issueId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -65,8 +65,6 @@ public class Issue extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private Status status;
-
-
 
     public void updateIssue(UpdateIssueRequest updateIssueRequest, Task task, User modifier, User manager) {
         this.task = task;

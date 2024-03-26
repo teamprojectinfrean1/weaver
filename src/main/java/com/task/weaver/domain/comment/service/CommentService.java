@@ -22,5 +22,4 @@ public interface CommentService {
     void deleteComment (Comment comment) throws NotFoundException;
     void deleteComment (Long commentId) throws NotFoundException;
     ResponseComment updateComment(Long originalCommentId, RequestUpdateComment requestUpdateComment) throws NotFoundException;
-    String addReaction(Long commentId, RequestCommentReaction reaction) throws NotFoundException;
 }

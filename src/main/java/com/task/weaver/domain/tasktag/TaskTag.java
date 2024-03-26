@@ -30,10 +30,9 @@ public class TaskTag extends BaseEntity {
     @JoinColumn(name = "status_id")
     private Status statusTag;
 
-//    @Column(name = "tag", length = 10)
-//    private String tag;
+    @Column(name = "tag", length = 10)
+    private String tag;
 //
 //    @Column(name = "hex_code", length = 100)
 //    private String hexCode;
-
 }

@@ -23,8 +23,10 @@ public class ChattingRoom extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "chatting_room_id")
     private Long id;
 
+    @Column
     private String name;
 
     @Builder.Default
@@ -38,6 +40,7 @@ public class ChattingRoom extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "projectId")
     private Project project;
+
     public void createChatting(Chatting chatting) {
         chattings.add(chatting);
     }
