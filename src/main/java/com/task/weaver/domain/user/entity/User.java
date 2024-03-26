@@ -30,16 +30,16 @@ public class User extends BaseEntity implements UserDetails {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "BINARY(16)")
+    @Column(columnDefinition = "BINARY(16)", name = "user_id")
     private UUID userId;
 
-    @Column(name = "id", length = 30)
+    @Column(length = 30)
     private String id;
 
     @Column(name = "nickname", length = 20)
     private String nickname;
 
-    @Column(name = "isOnline", length = 20)
+    @Column(name = "is_online", length = 20)
     private boolean isOnline;
 
     @Column(name = "email", length = 100)
@@ -49,7 +49,7 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "profileImage")
+    @Column(name = "profile_image")
     private String profileImage;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
@@ -59,7 +59,7 @@ public class User extends BaseEntity implements UserDetails {
     private List<ProjectMember> projectMemberList;
 
     @OneToOne
-    @JoinColumn(name = "main_Project_id")
+    @JoinColumn(name = "main_project_id")
     private Project mainProject;
 
     @OneToMany(mappedBy = "creator", cascade = CascadeType.REMOVE)

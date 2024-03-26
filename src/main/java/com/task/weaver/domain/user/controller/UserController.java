@@ -1,9 +1,12 @@
 package com.task.weaver.domain.user.controller;
 
 import com.task.weaver.common.response.DataResponse;
+import com.task.weaver.common.response.MessageResponse;
+import com.task.weaver.domain.mail.annotation.CustomEmail;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.user.dto.request.RequestGetUserPage;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
+import com.task.weaver.domain.user.dto.response.EmailVerificationResult;
 import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
 import com.task.weaver.domain.user.dto.response.ResponseGetUser;
 import com.task.weaver.domain.user.entity.User;
@@ -13,6 +16,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -83,5 +87,20 @@ public class UserController {
     public ResponseEntity<String> deleteUser(@RequestParam("userId") UUID userId){
         userService.deleteUser(userId);
         return ResponseEntity.status(HttpStatus.OK).body("user deleted");
+    }
+
+    @PostMapping("/emails/verification-requests")
+    public ResponseEntity<MessageResponse> sendMessage(@RequestParam("email") @Valid @CustomEmail String email) {
+        userService.sendCodeToEmail(email);
+
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "이메일 인증 요청"), HttpStatus.OK);
+    }
+
+    @GetMapping("/emails/verifications")
+    public ResponseEntity<DataResponse<EmailVerificationResult>> verificationEmail(@RequestParam("email") @Valid @CustomEmail String email,
+                                            @RequestParam("code") String authCode) {
+        EmailVerificationResult response = userService.verifiedCode(email, authCode);
+
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "이메일 인증 요청 성공", response), HttpStatus.OK);
     }
 }

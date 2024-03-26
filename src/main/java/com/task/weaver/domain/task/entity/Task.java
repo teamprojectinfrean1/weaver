@@ -1,6 +1,5 @@
 package com.task.weaver.domain.task.entity;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.entity.Project;
@@ -27,11 +26,11 @@ public class Task extends BaseEntity {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "BINARY(16)")
+    @Column(columnDefinition = "BINARY(16)", name = "task_id")
     private UUID taskId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "projectId")
+    @JoinColumn(name = "project_id")
     private Project project;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -50,19 +49,19 @@ public class Task extends BaseEntity {
     @JoinColumn(name = "last_update_user_id")
     private User modifier;
 
-    @Column(name = "taskTitle", length = 100)
+    @Column(name = "task_title", length = 100)
     private String taskTitle;
 
-    @Column(name = "taskContent")
+    @Column(name = "task_content")
     private String taskContent;
 
-    @Column(name = "startDate")
+    @Column(name = "start_date")
     private LocalDateTime startDate;
 
-    @Column(name = "endDate")
+    @Column(name = "end_date")
     private LocalDateTime endDate;
 
-    @Column(name = "editDeletePermission")
+    @Column(name = "edit_delete_permission")
     private String editDeletePermission;
 
     public String getTitle() {

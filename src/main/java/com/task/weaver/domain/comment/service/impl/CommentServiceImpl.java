@@ -2,7 +2,6 @@ package com.task.weaver.domain.comment.service.impl;
 
 import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.domain.comment.dto.request.CommentPageRequest;
-import com.task.weaver.domain.comment.dto.request.RequestCommentReaction;
 import com.task.weaver.domain.comment.dto.request.RequestCreateComment;
 import com.task.weaver.domain.comment.dto.request.RequestUpdateComment;
 import com.task.weaver.domain.comment.dto.response.CommentListResponse;
@@ -14,13 +13,16 @@ import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.issue.repository.IssueRepository;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -69,7 +71,6 @@ public class CommentServiceImpl implements CommentService {
                 .user(writer)
                 .issue(issue)
                 .body(requestComment.body())
-                .date(requestComment.date())
                 .build();
         return commentRepository.save(comment).getComment_id();
     }
@@ -100,7 +101,6 @@ public class CommentServiceImpl implements CommentService {
                 = ResponseComment
                 .builder()
                 .commentId(comment.getComment_id())
-                .date(requestUpdateComment.getDate())
                 .body(requestUpdateComment.getCommentBody())
                 .build();
         return responseComment;
@@ -108,13 +108,5 @@ public class CommentServiceImpl implements CommentService {
 
     private boolean validate(User user, User updater) {
         return user.getUserId().equals(updater.getUserId());
-    }
-
-    @Override
-    public String addReaction(Long commentId, RequestCommentReaction reaction) throws NotFoundException {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException(""));
-        comment.updateReaction(reaction.reaction());
-        return reaction.reaction();
     }
 }

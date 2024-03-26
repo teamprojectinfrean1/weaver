@@ -33,20 +33,11 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(name = "content")
     private String body;
-
-    @Column(name = "create_date")
-    private LocalDateTime date;
-    @Nullable
-    private String reaction;
-
 
     public void updateComment(RequestUpdateComment requestUpdateComment, Issue issue) {
         this.issue = issue;
         this.body = requestUpdateComment.getCommentBody();
-        this.date = requestUpdateComment.getDate();
-    }
-    public void updateReaction(String reaction){
-        this.reaction = reaction;
     }
 }
