@@ -1,7 +1,6 @@
 package com.task.weaver.domain.comment.entity;
 
 import com.task.weaver.domain.BaseEntity;
-import com.task.weaver.domain.comment.entity.Comment;
 import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,11 +10,12 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-@Entity(name = "COMMENT_CHECK_TABLE")
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
+@Entity
 @Builder
+@Table(name = "COMMENT_CHECK_TABLE")
 public class CommentCheckTable extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

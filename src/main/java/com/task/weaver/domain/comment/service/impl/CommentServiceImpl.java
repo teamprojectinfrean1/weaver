@@ -1,11 +1,14 @@
 package com.task.weaver.domain.comment.service.impl;
 
+import com.task.weaver.common.exception.AuthorizationException;
 import com.task.weaver.common.exception.NotFoundException;
+import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.domain.comment.dto.request.CommentPageRequest;
 import com.task.weaver.domain.comment.dto.request.RequestCreateComment;
 import com.task.weaver.domain.comment.dto.request.RequestUpdateComment;
-import com.task.weaver.domain.comment.dto.response.CommentListResponse;
 import com.task.weaver.domain.comment.dto.response.ResponseComment;
+import com.task.weaver.domain.comment.dto.response.ResponseCommentList;
+import com.task.weaver.domain.comment.dto.response.ResponsePageComment;
 import com.task.weaver.domain.comment.entity.Comment;
 import com.task.weaver.domain.comment.repository.CommentRepository;
 import com.task.weaver.domain.comment.service.CommentService;
@@ -13,19 +16,19 @@ import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.issue.repository.IssueRepository;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.UserRepository;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+
+import java.util.function.Function;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
+@Service
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
@@ -33,35 +36,26 @@ public class CommentServiceImpl implements CommentService {
     private final IssueRepository issueRepository;
 
     @Override
-    public ResponseComment getComment(Long id) throws NotFoundException{
+    public ResponseComment getComment(Long id) throws NotFoundException {
         Comment comment = commentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("")); //예외추가
         return new ResponseComment(comment);
 
     }
 
     @Override
-    public Page<CommentListResponse> getComments(UUID issueId, CommentPageRequest commentPageRequest) throws NotFoundException {
-        if(issueId.equals(commentPageRequest.issueId())) throw new NotFoundException();
-        Issue issue = issueRepository.findById(issueId)
-                .orElseThrow(() -> new IllegalArgumentException(""));
-        List<CommentListResponse> commentList = new ArrayList<>();
-        Pageable pageable = commentPageRequest.getPageable(Sort.by("comment_id").descending());
-        for(Comment comment : issue.getComments()){
-            commentList
-                    .add( new CommentListResponse(
-                                    comment.getComment_id(),
-                                    comment.getBody(),
-                                    comment.getIssue().getIssueId()
-                            )
-                    );
-        }
-        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), commentList.size());
-        return new PageImpl<>(commentList.subList(start,end), pageRequest, commentList.size());
+    public ResponsePageComment<ResponseCommentList, Comment> getComments(CommentPageRequest commentPageRequest) throws NotFoundException, AuthorizationException {
+        Issue issue = issueRepository.findById(commentPageRequest.getIssueId())
+                .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(commentPageRequest.getIssueId()))));
+        Pageable pageable = commentPageRequest.getPageable(Sort.by("issue_id").descending());
+        Page<Comment> commentPage = commentRepository.findByIssue(issue, pageable);
+
+        Function<Comment, ResponseCommentList> fn = Comment -> (new ResponseCommentList(Comment));
+        return new ResponsePageComment<>(commentPage, fn);
+
     }
 
     @Override
+    @Transactional
     public Long addComment(RequestCreateComment requestComment) throws NotFoundException {
         User writer = userRepository.findById(requestComment.writerId())
                 .orElseThrow(() -> new IllegalArgumentException(""));
@@ -86,12 +80,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public ResponseComment updateComment(Long originalCommentId, RequestUpdateComment requestUpdateComment) throws NotFoundException {
         Comment comment = commentRepository.findById(originalCommentId)
                 .orElseThrow(() -> new IllegalArgumentException(""));
         User updater = userRepository.findById(requestUpdateComment.getUpdaterUUID())
                 .orElseThrow(() -> new IllegalArgumentException(""));
-        if(!validate(comment.getUser(),updater)){
+        if (!validate(comment.getUser(), updater)) {
             throw new NotFoundException();
         }
         Issue issue = issueRepository.findById(requestUpdateComment.getIssueId())
