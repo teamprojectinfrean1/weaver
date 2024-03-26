@@ -8,6 +8,23 @@ spring:
     password: 1234
     driver-class-name: org.mariadb.jdbc.Driver
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: jcjk0302@likelion.org
+    password: fcgt imdj chhe iluf
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+    auth-code-expiration-millis: 1800000  # 30 * 60 * 1000 == 30분
+
   jpa:
     hibernate:
       ddl-auto: none
