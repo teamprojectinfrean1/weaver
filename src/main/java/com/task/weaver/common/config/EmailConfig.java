@@ -55,12 +55,17 @@ public class EmailConfig {
 
     private Properties getMailProperties() {
         Properties properties = new Properties();
+        properties.put("mail.transport.protocol", "smtp");
         properties.put("mail.smtp.auth", auth);
         properties.put("mail.smtp.starttls.enable", starttlsEnable);
         properties.put("mail.smtp.starttls.required", starttlsRequired);
         properties.put("mail.smtp.connectiontimeout", connectionTimeout);
         properties.put("mail.smtp.timeout", timeout);
         properties.put("mail.smtp.writetimeout", writeTimeout);
+        properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");//SSL 소켓 팩토리 클래스 사용
+        properties.put("mail.debug", "true");//디버깅 정보 출력
+        properties.put("mail.smtp.ssl.trust", "smtp.google.com");//smtp 서버의 ssl 인증서 신뢰
+        properties.put("mail.smtp.ssl.protocols", "TLSv1.2");//사용할 ssl 프로토콜 버젼
 
         return properties;
     }

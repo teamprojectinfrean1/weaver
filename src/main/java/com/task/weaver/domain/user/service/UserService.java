@@ -32,9 +32,4 @@ public interface UserService {
     ResponseGetUser updateUser(UUID userId, RequestUpdateUser requestUpdateUser);
     void deleteUser(UUID userId);
     void deleteUser(User user);
-
-    void sendCodeToEmail(String toEmail);
-    void checkDuplicatedEmail(String email);
-    String createCode();
-    EmailVerificationResult verifiedCode(String email, String authCode);
 }
