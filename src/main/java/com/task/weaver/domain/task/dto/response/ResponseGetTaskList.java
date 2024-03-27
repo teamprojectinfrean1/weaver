@@ -22,6 +22,6 @@ public class ResponseGetTaskList {
         this.taskId = task.getTaskId();
         this.taskTitle = task.getTaskTitle();
         this.taskContent = task.getTaskContent();
-
+        this.taskStatus = task.getStatus();
     }
 }

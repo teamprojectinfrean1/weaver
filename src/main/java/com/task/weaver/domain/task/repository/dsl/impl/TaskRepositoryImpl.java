@@ -35,6 +35,4 @@ public class TaskRepositoryImpl implements TaskRepositoryDsl {
 
         return PageableExecutionUtils.getPage(content, pageable, () -> count);
     }
-
-
 }

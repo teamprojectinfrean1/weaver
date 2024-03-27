@@ -43,6 +43,7 @@ public class RequestCreateTask {
                 .startDate(startDate)
                 .endDate(endDate)
                 .editDeletePermission(editDeletePermission)
+                .status("진행 중")
                 .build();
     }
 
