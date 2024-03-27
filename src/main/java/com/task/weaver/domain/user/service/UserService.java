@@ -5,18 +5,19 @@ import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.user.dto.request.RequestGetUserPage;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
-import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
 import com.task.weaver.domain.user.dto.response.ResponseGetUser;
+import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
 import com.task.weaver.domain.user.entity.User;
-import com.task.weaver.domain.user.dto.response.EmailVerificationResult;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.UUID;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 public interface UserService {
     ResponseGetUser getUser(UUID userId);
+
     ResponseGetUser getUser(String email);
+
+    ResponseGetUser getUser(String email, Boolean checked);
 
     ResponseGetUser getUserFromToken(HttpServletRequest request);
 

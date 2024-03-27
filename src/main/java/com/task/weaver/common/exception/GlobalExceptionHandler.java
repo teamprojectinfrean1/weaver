@@ -48,6 +48,6 @@ public class GlobalExceptionHandler {
         log.warn("BusinessException", e);
         final ErrorCode errorCode = e.getErrorCode();
         final ErrorResponse response = ErrorResponse.of(errorCode);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
+        return ResponseEntity.status(HttpStatus.valueOf(errorCode.getStatus())).body(response);
     }
 }

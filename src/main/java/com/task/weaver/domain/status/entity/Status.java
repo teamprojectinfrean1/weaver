@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "STATUS_TAG")
+@Table(name = "STATUS")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -17,7 +17,7 @@ public class Status extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "status_id")
+	@Column(name = "status__id")
 	private Long statusId;
 
 	@Column(name = "content", length = 20)

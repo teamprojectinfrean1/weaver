@@ -1,11 +1,11 @@
 package com.task.weaver.domain.mail.service;
 
+import com.task.weaver.common.exception.user.UnableSendMailException;
 import com.task.weaver.domain.authorization.redis.RedisEmailUtil;
 import java.util.Random;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -65,6 +65,7 @@ public class MailSendService {
             mailSender.send(message);
         } catch (MessagingException e) {
             e.printStackTrace();
+            throw new UnableSendMailException(e);
         }
         redisEmailUtil.setDataExpire(Integer.toString(authNumber), toMail, Long.parseLong(authCodeExpirationMillis));
     }

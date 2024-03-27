@@ -1,9 +1,12 @@
 package com.task.weaver.domain.user.service.Impl;
 
+import static com.task.weaver.common.exception.ErrorCode.NO_SEARCH_EMAIL;
 import static com.task.weaver.common.exception.ErrorCode.USER_EMAIL_NOT_FOUND;
 
 import com.task.weaver.common.exception.BusinessException;
+import com.task.weaver.common.exception.ErrorResponse.FieldError;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
+import com.task.weaver.common.exception.user.UnableSendMailException;
 import com.task.weaver.common.exception.user.UserNotFoundException;
 import com.task.weaver.domain.authorization.util.JwtTokenProvider;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
@@ -49,11 +52,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseGetUser getUser(String email) {
-        // 예외처리
+    public ResponseGetUser getUser(final String email) {
+        User findUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
+        return new ResponseGetUser(findUser);
+    }
+
+    @Override
+    public ResponseGetUser getUser(String email, Boolean checked) {
+        if (!checked) {
+            throw new UnableSendMailException(NO_SEARCH_EMAIL, ": UserServiceImpl");
+        }
         User findUser = userRepository.findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
-
         return new ResponseGetUser(findUser);
     }
 
