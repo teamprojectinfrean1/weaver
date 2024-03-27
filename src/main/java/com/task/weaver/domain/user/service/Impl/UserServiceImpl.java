@@ -17,6 +17,7 @@ import com.task.weaver.domain.user.dto.request.RequestGetUserPage;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
+import com.task.weaver.domain.user.dto.response.ResponseUserIdNickname;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.UserRepository;
 import com.task.weaver.domain.user.service.UserService;
@@ -59,13 +60,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseGetUser getUser(String email, Boolean checked) {
+    public ResponseUserIdNickname getUser(String email, Boolean checked) {
         if (!checked) {
             throw new UnableSendMailException(NO_SEARCH_EMAIL, ": UserServiceImpl");
         }
         User findUser = userRepository.findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
-        return new ResponseGetUser(findUser);
+
+        return ResponseUserIdNickname.builder()
+                .id(findUser.getId())
+                .userNickname(findUser.getNickname())
+                .build();
     }
 
     @Override

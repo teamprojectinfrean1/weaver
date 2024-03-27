@@ -6,6 +6,7 @@ import com.task.weaver.domain.mail.dto.EmailCheckDto;
 import com.task.weaver.domain.mail.dto.EmailRequestDto;
 import com.task.weaver.domain.mail.service.MailSendService;
 import com.task.weaver.domain.user.dto.response.ResponseGetUser;
+import com.task.weaver.domain.user.dto.response.ResponseUserIdNickname;
 import com.task.weaver.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,14 +31,13 @@ public class MailController {
         log.info("이메일 인증 이메일 :" + emailDto.getEmail());
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, mailService.joinEmail(emailDto.getEmail())),
                 HttpStatus.OK);
-//        return new ResponseEntity<>(MessageResponse.of(HttpStatus.SERVICE_UNAVAILABLE, "Failed to send email"), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @PostMapping("/findId/verification/check")
-    public ResponseEntity<DataResponse<ResponseGetUser>> AuthCheckForId(
+    public ResponseEntity<DataResponse<ResponseUserIdNickname>> AuthCheckForId(
             @RequestBody @Valid EmailCheckDto emailCheckDto) {
         Boolean checked = mailService.CheckAuthNum(emailCheckDto.getEmail(), emailCheckDto.getVerificationCode());
-        ResponseGetUser targetUser = userService.getUser(emailCheckDto.getEmail(), checked);
+        ResponseUserIdNickname targetUser = userService.getUser(emailCheckDto.getEmail(), checked);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "해당 유저를 반환합니다.", targetUser), HttpStatus.OK);
     }
 
