@@ -2,9 +2,10 @@ package com.task.weaver.domain.user.service.Impl;
 
 import static com.task.weaver.common.exception.ErrorCode.NO_SEARCH_EMAIL;
 import static com.task.weaver.common.exception.ErrorCode.USER_EMAIL_NOT_FOUND;
+import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.task.weaver.common.exception.BusinessException;
-import com.task.weaver.common.exception.ErrorResponse.FieldError;
+import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.user.UnableSendMailException;
 import com.task.weaver.common.exception.user.UserNotFoundException;
@@ -14,6 +15,7 @@ import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
 import com.task.weaver.domain.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.user.dto.request.RequestGetUserPage;
+import com.task.weaver.domain.user.dto.request.RequestUpdatePassword;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
@@ -24,6 +26,7 @@ import com.task.weaver.domain.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +37,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -157,6 +161,14 @@ public class UserServiceImpl implements UserService {
         findUser.updateUser(requestUpdateUser);
 
         return new ResponseGetUser(findUser);
+    }
+
+    @Transactional
+    @Override
+    public void updateUser(final RequestUpdatePassword requestUpdatePassword) {
+        Optional<User> byUserId = userRepository.findByEmail(requestUpdatePassword.getEmail());
+        User user = byUserId.orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, ": 해당 유저를 찾을 수 없습니다."));
+        user.updatePassword(requestUpdatePassword);
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.user.dto.request.RequestGetUserPage;
+import com.task.weaver.domain.user.dto.request.RequestUpdatePassword;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
@@ -32,6 +33,7 @@ public interface UserService {
     ResponseGetUser addUser(RequestCreateUser requestCreateUser);
 
     ResponseGetUser updateUser(UUID userId, RequestUpdateUser requestUpdateUser);
+    void updateUser(RequestUpdatePassword requestUpdateUser);
     void deleteUser(UUID userId);
     void deleteUser(User user);
 }
