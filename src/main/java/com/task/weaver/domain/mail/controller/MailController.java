@@ -29,9 +29,8 @@ public class MailController {
 
     @PostMapping("/findId/verification/request")
     public ResponseEntity<MessageResponse> mailSendForId(@RequestBody @Valid EmailRequestDto emailDto) {
-        log.info("아이디 찾기 이메일 인증 :" + emailDto.getEmail());
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, mailService.joinEmail(emailDto.getEmail())),
-                HttpStatus.OK);
+        log.info("Find ID, verify email: {}", emailDto.getEmail());
+        return ResponseEntity.ok(MessageResponse.of(HttpStatus.OK, mailService.sendVerificationEmail(emailDto.getEmail())));
     }
 
     @PostMapping("/findId/verification/check")

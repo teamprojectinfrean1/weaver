@@ -106,6 +106,7 @@ public class AuthorizationController {
 	public ResponseEntity<DataResponse<Boolean>> checkMail(@RequestParam("email") String email){
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "중복 체크 동작", authorizationService.checkMail(email)), HttpStatus.OK);
 	}
+
 	@Operation(summary = "아이디 중복 체크", description = "아이디 중복을 체크")
 	@GetMapping("/checkId")
 	@Parameter(name = "id", description = "아이디 입력", in = ParameterIn.QUERY)

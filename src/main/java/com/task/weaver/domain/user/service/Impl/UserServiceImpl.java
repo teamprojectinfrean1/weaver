@@ -1,11 +1,11 @@
 package com.task.weaver.domain.user.service.Impl;
 
+import static com.task.weaver.common.exception.ErrorCode.NO_MATCHED_VERIFICATION_CODE;
 import static com.task.weaver.common.exception.ErrorCode.NO_SEARCH_EMAIL;
 import static com.task.weaver.common.exception.ErrorCode.USER_EMAIL_NOT_FOUND;
 import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.task.weaver.common.exception.BusinessException;
-import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.user.UnableSendMailException;
 import com.task.weaver.common.exception.user.UserNotFoundException;
@@ -59,21 +59,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseGetUser getUser(final String email) {
         User findUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new UserNotFoundException(USER_EMAIL_NOT_FOUND, ": 해당 이메일이 존재하지않습니다."));
         return new ResponseGetUser(findUser);
     }
 
     @Override
     public ResponseUserIdNickname getUser(String email, Boolean checked) {
         if (!checked) {
-            throw new UnableSendMailException(NO_SEARCH_EMAIL, ": UserServiceImpl");
+            throw new UnableSendMailException(NO_MATCHED_VERIFICATION_CODE, ": Redis to SMTP DATA", checked);
         }
+
         User findUser = userRepository.findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
 
         return ResponseUserIdNickname.builder()
+                .uuid(findUser.getUserId())
                 .id(findUser.getId())
                 .userNickname(findUser.getNickname())
+                .data(checked)
                 .build();
     }
 

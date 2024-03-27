@@ -97,7 +97,6 @@ public class TaskServiceImpl implements TaskService {
 //        return tasks;
 //    }
 
-
     @Override
     public UUID addTask(RequestCreateTask request) throws AuthorizationException {
         User writer = userRepository.findById(request.getWriterUuid())
