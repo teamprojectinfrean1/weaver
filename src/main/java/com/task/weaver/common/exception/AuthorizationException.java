@@ -1,4 +1,4 @@
 package com.task.weaver.common.exception;
 
-public class AuthorizationException extends RuntimeException {
+public class AuthorizationException extends RuntimeException{
 }

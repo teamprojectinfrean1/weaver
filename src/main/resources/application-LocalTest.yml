@@ -26,6 +26,7 @@ spring:
     auth-code-expiration-millis: 300000 # 5분
 
   jpa:
+    defer-datasource-initialization: true
     hibernate:
       ddl-auto: none
     properties:

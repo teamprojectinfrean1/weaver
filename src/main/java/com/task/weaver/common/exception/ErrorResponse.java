@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
@@ -21,6 +22,7 @@ public class ErrorResponse {
     private int status;
     private List<FieldError> errors;
     private String code;
+    private boolean data;
 
     private ErrorResponse(ErrorCode errorCode, List<FieldError> errors) {
         this.message = errorCode.getMessage();
@@ -34,6 +36,7 @@ public class ErrorResponse {
         this.status = errorCode.getStatus();
         this.code = errorCode.getCode();
         this.errors = new ArrayList<>();
+        this.data = errorCode.getData();
     }
 
     public static ErrorResponse of(ErrorCode errorCode, BindingResult bindingResult) {

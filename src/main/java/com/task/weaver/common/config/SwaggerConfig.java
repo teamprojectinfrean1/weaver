@@ -7,23 +7,12 @@ import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
-import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 
 @Configuration
-//@SecurityScheme(type = SecuritySchemeType.APIKEY, name = "Access-Token", in = SecuritySchemeIn.HEADER)
-//@OpenAPIDefinition(security = {@SecurityRequirement(name = "Access-Token")})
 public class SwaggerConfig {
-
-//    @Bean
-//    public GroupedOpenApi publicMemberApi() {
-//        return GroupedOpenApi.builder()
-//                .group("PROJECT")
-//                .pathsToMatch("/api/v1/project/**")
-//                .build();
-//    }
 
     @Bean
     public OpenAPI weaverOpenAPI() {

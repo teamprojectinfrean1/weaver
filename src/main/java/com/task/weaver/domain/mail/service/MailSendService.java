@@ -1,11 +1,13 @@
 package com.task.weaver.domain.mail.service;
 
+import com.task.weaver.common.exception.user.UnableSendMailException;
 import com.task.weaver.domain.authorization.redis.RedisEmailUtil;
+import com.task.weaver.domain.user.dto.response.ResponseGetUser;
+import com.task.weaver.domain.user.service.UserService;
 import java.util.Random;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -17,10 +19,16 @@ public class MailSendService {
 
     private final JavaMailSender mailSender;
     private final RedisEmailUtil redisEmailUtil;
+    private final UserService userService;
 
     @Value("${spring.mail.auth-code-expiration-millis}")
     private String authCodeExpirationMillis;
     public int authNumber;
+
+    public String sendVerificationEmail(final String email) {
+        ResponseGetUser user = userService.getUser(email);
+        return joinEmail(user.getEmail());
+    }
 
     public boolean CheckAuthNum(String email, String authNum) {
         if (redisEmailUtil.getData(authNum) == null) {
@@ -42,7 +50,6 @@ public class MailSendService {
     public String joinEmail(String email) {
         makeRandomNumber();
         String setFrom = "jcjk0302@likelion.org";
-        String toMail = email;
         String title = "Weaver 회원 가입 인증 이메일 입니다.";
         String content =
                 "Task Gram을 방문해주셔서 감사합니다." +
@@ -50,7 +57,7 @@ public class MailSendService {
                         "인증 번호는 " + authNumber + "입니다." +
                         "<br>" +
                         "웹 사이트에 인증번호를 입력해주세요";
-        mailSend(setFrom, toMail, title, content);
+        mailSend(setFrom, email, title, content);
         return Integer.toString(authNumber);
     }
 
@@ -65,6 +72,7 @@ public class MailSendService {
             mailSender.send(message);
         } catch (MessagingException e) {
             e.printStackTrace();
+            throw new UnableSendMailException(e, true);
         }
         redisEmailUtil.setDataExpire(Integer.toString(authNumber), toMail, Long.parseLong(authCodeExpirationMillis));
     }

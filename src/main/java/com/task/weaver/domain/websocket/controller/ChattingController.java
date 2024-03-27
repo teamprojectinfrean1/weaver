@@ -26,7 +26,6 @@ public class ChattingController {
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "채팅 조회 성공", responseGetChattingsList), HttpStatus.CREATED);
     }
 
-
     @DeleteMapping("/{chatting_Id}")
     public ResponseEntity<MessageResponse> deleteChatting(@PathVariable(name = "chatting_id") Long chatting_id){
         chattingService.deleteChatting(chatting_id);

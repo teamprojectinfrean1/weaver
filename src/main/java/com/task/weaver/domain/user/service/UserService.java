@@ -4,19 +4,22 @@ import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.user.dto.request.RequestGetUserPage;
+import com.task.weaver.domain.user.dto.request.RequestUpdatePassword;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
-import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
 import com.task.weaver.domain.user.dto.response.ResponseGetUser;
+import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
+import com.task.weaver.domain.user.dto.response.ResponseUserIdNickname;
 import com.task.weaver.domain.user.entity.User;
-import com.task.weaver.domain.user.dto.response.EmailVerificationResult;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.UUID;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 public interface UserService {
     ResponseGetUser getUser(UUID userId);
+
     ResponseGetUser getUser(String email);
+
+    ResponseUserIdNickname getUser(String email, Boolean checked);
 
     ResponseGetUser getUserFromToken(HttpServletRequest request);
 
@@ -30,6 +33,7 @@ public interface UserService {
     ResponseGetUser addUser(RequestCreateUser requestCreateUser);
 
     ResponseGetUser updateUser(UUID userId, RequestUpdateUser requestUpdateUser);
+    void updateUser(RequestUpdatePassword requestUpdateUser);
     void deleteUser(UUID userId);
     void deleteUser(User user);
 }

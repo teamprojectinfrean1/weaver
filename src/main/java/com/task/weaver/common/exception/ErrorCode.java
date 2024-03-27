@@ -35,11 +35,14 @@ public enum ErrorCode {
 
     // Email
     UNABLE_TO_SEND_EMAIL(HttpStatus.BAD_REQUEST, "M001", "메일을 보낼 수 없습니다."),
-    NO_SEARCH_ALGORITHM(HttpStatus.FORBIDDEN, "M002", "검색 알고리즘이 없습니다.");
+    NO_SEARCH_EMAIL(HttpStatus.BAD_REQUEST, "M002", "존재하지 않은 메일입니다."),
+    NO_SEARCH_ALGORITHM(HttpStatus.FORBIDDEN, "M003", "검색 알고리즘이 없습니다."),
+    NO_MATCHED_VERIFICATION_CODE(HttpStatus.FORBIDDEN, "M004", "인증 코드가 일치하지않습니다.");
 
     private final HttpStatus status;
     private final String code;
     private final String message;
+    private boolean data;
 
     ErrorCode(HttpStatus status, String code, String message) {
         this.status = status;
@@ -47,7 +50,18 @@ public enum ErrorCode {
         this.message = message;
     }
 
+    ErrorCode(HttpStatus status, String code, String message, boolean data) {
+        this.status = status;
+        this.code = code;
+        this.message = message;
+        this.data = data;
+    }
+
     public int getStatus() {
         return this.status.value();
+    }
+
+    public boolean getData() {
+        return this.data;
     }
 }

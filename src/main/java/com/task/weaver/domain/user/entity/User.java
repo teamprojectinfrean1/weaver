@@ -1,5 +1,6 @@
 package com.task.weaver.domain.user.entity;
 
+import com.task.weaver.domain.user.dto.request.RequestUpdatePassword;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -72,6 +73,10 @@ public class User extends BaseEntity implements UserDetails {
         this.nickname = requestUpdateUser.getNickname();
         this.email = requestUpdateUser.getEmail();
         this.password = requestUpdateUser.getPassword();
+    }
+
+    public void updatePassword(RequestUpdatePassword requestUpdatePassword) {
+        this.password = requestUpdatePassword.getPassword();
     }
 
     @Override
