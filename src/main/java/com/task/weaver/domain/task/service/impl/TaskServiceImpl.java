@@ -16,7 +16,6 @@ import com.task.weaver.domain.task.dto.request.RequestGetTaskPage;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
 import com.task.weaver.domain.task.dto.response.ResponseGetTask;
 import com.task.weaver.domain.task.dto.response.ResponseGetTaskList;
-import com.task.weaver.domain.task.dto.response.ResponseTask;
 import com.task.weaver.domain.task.dto.response.ResponseUpdateDetail;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.repository.TaskRepository;
@@ -67,10 +66,10 @@ public class TaskServiceImpl implements TaskService {
         return responseTask;
     }
 
-    @Override
-    public ResponseTask getTask(Issue issue) throws NotFoundException, AuthorizationException {
-        return null;
-    }
+//    @Override
+//    public ResponseTask getTask(Issue issue) throws NotFoundException, AuthorizationException {
+//        return null;
+//    }
 
     @Override
     public ResponsePageResult<ResponseGetTaskList, Task> getTasks(RequestGetTaskPage requestGetTaskPage) throws NotFoundException, AuthorizationException {
@@ -86,8 +85,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Page<Task> getTasks(Status statusTag, Pageable pageable) throws NotFoundException, AuthorizationException {
-        Page<Task> tasks = taskRepository.findByStatusTag(statusTag, pageable);
+    public Page<Task> getTasks(String status, Pageable pageable) throws NotFoundException, AuthorizationException {
+        Page<Task> tasks = taskRepository.findByStatus(status, pageable);
         return tasks;
     }
 
@@ -116,12 +115,12 @@ public class TaskServiceImpl implements TaskService {
         return save.getTaskId();
     }
 
-    @Override
-    public ResponseTask addTask(Task task) throws AuthorizationException {
-        Task save = taskRepository.save(task);
-        ResponseTask responseTask = new ResponseTask(save);
-        return responseTask;
-    }
+//    @Override
+//    public ResponseTask addTask(Task task) throws AuthorizationException {
+//        Task save = taskRepository.save(task);
+//        ResponseTask responseTask = new ResponseTask(save);
+//        return responseTask;
+//    }
 
     @Override
     public void deleteTask(Task task) throws NotFoundException, AuthorizationException {
@@ -165,5 +164,16 @@ public class TaskServiceImpl implements TaskService {
 
         ResponseGetTask responseTask = new ResponseGetTask(findTask);
         return responseTask;
+    }
+
+    @Override
+    public ResponseGetTask updateTaskStatus(UUID taskId, String status) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new TaskNotFoundException(new Throwable(String.valueOf(taskId))));
+
+        task.setStatus(status);
+
+        ResponseGetTask responseGetTask = new ResponseGetTask(task);
+        return responseGetTask;
     }
 }
