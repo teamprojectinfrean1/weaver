@@ -97,7 +97,12 @@ public class SecurityConfig {
 		return (web) -> web.ignoring()
 				.requestMatchers(new AntPathRequestMatcher("/h2-console/**"))
 				.requestMatchers(new AntPathRequestMatcher("/favicon.ico"))
-				.requestMatchers(new AntPathRequestMatcher("/api/v1/emails/**"));
+				.requestMatchers(new AntPathRequestMatcher("/api/v1/auth/findId/verification/request"))
+				.requestMatchers(new AntPathRequestMatcher("/api/v1/auth/findId/verification/check"))
+				.requestMatchers(new AntPathRequestMatcher("/api/v1/auth/findPassword/verification/request"))
+				.requestMatchers(new AntPathRequestMatcher("/api/v1/auth/findPassword/verification/check"))
+				.requestMatchers(new AntPathRequestMatcher("/api/v1/auth/findPassword/verification/update"))
+				.requestMatchers(new AntPathRequestMatcher("/api/v1/users/mypage/**"));
 	}
 
 	/**

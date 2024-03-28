@@ -42,7 +42,6 @@ public enum ErrorCode {
     private final HttpStatus status;
     private final String code;
     private final String message;
-    private boolean data;
 
     ErrorCode(HttpStatus status, String code, String message) {
         this.status = status;
@@ -50,18 +49,7 @@ public enum ErrorCode {
         this.message = message;
     }
 
-    ErrorCode(HttpStatus status, String code, String message, boolean data) {
-        this.status = status;
-        this.code = code;
-        this.message = message;
-        this.data = data;
-    }
-
     public int getStatus() {
         return this.status.value();
-    }
-
-    public boolean getData() {
-        return this.data;
     }
 }

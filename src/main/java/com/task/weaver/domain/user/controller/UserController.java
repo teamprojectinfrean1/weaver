@@ -6,6 +6,7 @@ import com.task.weaver.domain.user.dto.request.RequestGetUserPage;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
+import com.task.weaver.domain.user.dto.response.ResponseUserMypage;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,6 +54,15 @@ public class UserController {
 //        log.info("controller - join - after");
 //        return ResponseEntity.status(HttpStatus.OK).body(responseGetUser);
 //    }
+
+    @Operation(summary = "마이페이지", description = "특정 회원 정보 조회")
+    @Parameter(name = "UUID", description = "user pk", in = ParameterIn.PATH)
+    @GetMapping("/mypage")
+    public ResponseEntity<DataResponse<ResponseUserMypage>> getUserInfo(@RequestParam String userUuid) {
+        log.info("mypage 정보 조회 발생");
+        ResponseUserMypage user = userService.getUserInfo(userUuid);
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "유저 정보 조회 성공", user), HttpStatus.OK);
+    }
 
     @Operation(summary = "프로젝트 구성원 조회", description = "프로젝트에 소속된 인원들 조회")
     @Parameter(name = "projectId", description = "프로젝트 id", in = ParameterIn.PATH)

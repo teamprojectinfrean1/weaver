@@ -1,7 +1,6 @@
 package com.task.weaver.domain.user.service.Impl;
 
 import static com.task.weaver.common.exception.ErrorCode.NO_MATCHED_VERIFICATION_CODE;
-import static com.task.weaver.common.exception.ErrorCode.NO_SEARCH_EMAIL;
 import static com.task.weaver.common.exception.ErrorCode.USER_EMAIL_NOT_FOUND;
 import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
 
@@ -20,6 +19,7 @@ import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
 import com.task.weaver.domain.user.dto.response.ResponseUserIdNickname;
+import com.task.weaver.domain.user.dto.response.ResponseUserMypage;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.UserRepository;
 import com.task.weaver.domain.user.service.UserService;
@@ -65,9 +65,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseUserIdNickname getUser(String email, Boolean checked) {
-        if (!checked) {
-            throw new UnableSendMailException(NO_MATCHED_VERIFICATION_CODE, ": Redis to SMTP DATA", checked);
-        }
+        if (!checked)
+            throw new UnableSendMailException(NO_MATCHED_VERIFICATION_CODE, ": Redis to SMTP DATA");
 
         User findUser = userRepository.findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
@@ -76,7 +75,7 @@ public class UserServiceImpl implements UserService {
                 .uuid(findUser.getUserId())
                 .id(findUser.getId())
                 .userNickname(findUser.getNickname())
-                .data(checked)
+                .isSuccess(checked)
                 .build();
     }
 
@@ -87,6 +86,12 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(userId))));
         ResponseGetUser responseGetUser = new ResponseGetUser(user);
         return responseGetUser;
+    }
+
+    @Override
+    public ResponseUserMypage getUserInfo(final String userId) {
+        return userRepository.findUserInfoByUserId(userId)
+                .orElseThrow(() -> new UserNotFoundException(USER_EMAIL_NOT_FOUND, "해당 UUID로 사용자를 찾을 수 없습니다."));
     }
 
     @Override

@@ -9,6 +9,7 @@ import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
 import com.task.weaver.domain.user.dto.response.ResponseUserIdNickname;
+import com.task.weaver.domain.user.dto.response.ResponseUserMypage;
 import com.task.weaver.domain.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -22,6 +23,8 @@ public interface UserService {
     ResponseUserIdNickname getUser(String email, Boolean checked);
 
     ResponseGetUser getUserFromToken(HttpServletRequest request);
+
+    ResponseUserMypage getUserInfo(String userId);
 
     ResponsePageResult<ResponseGetUserList, User> getUsers(RequestGetUserPage requestGetUserPage);
     List<ResponseGetUser> getUsersForTest();
