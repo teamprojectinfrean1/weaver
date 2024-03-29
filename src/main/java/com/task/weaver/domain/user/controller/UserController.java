@@ -1,5 +1,6 @@
 package com.task.weaver.domain.user.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.task.weaver.common.response.DataResponse;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.user.dto.request.RequestGetUserPage;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -73,7 +75,8 @@ public class UserController {
     @Parameter(name = "userId", description = "사용자 id", in = ParameterIn.QUERY)
     @PutMapping("/update")
     public ResponseEntity<ResponseGetUser> updateUser(@RequestParam("userId") UUID userId,
-                                                      @RequestBody RequestUpdateUser requestUpdateUser) {
+                                                      @RequestBody RequestUpdateUser requestUpdateUser)
+            throws ParseException, JsonProcessingException {
         ResponseGetUser responseGetUser = userService.updateUser(userId, requestUpdateUser);
         return ResponseEntity.status(HttpStatus.OK).body(responseGetUser);
     }

@@ -21,6 +21,7 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "U001", "해당 유저를 찾을 수 없습니다."),
     EMAIL_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "U001", "이미 존재하는 이메일입니다."),
     USER_EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "U002", "사용자를 찾을 수 없습니다."),
+    MISMATCHED_PASSWORD(HttpStatus.NOT_MODIFIED, "U003", "입력 값이 일치하지않습니다."),
 
     // Authorization
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "A001", "패스워드가 일치하지 않습니다."),

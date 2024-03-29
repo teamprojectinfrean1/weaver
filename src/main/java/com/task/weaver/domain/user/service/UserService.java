@@ -1,5 +1,6 @@
 package com.task.weaver.domain.user.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.user.dto.request.RequestCreateUser;
@@ -14,6 +15,7 @@ import com.task.weaver.domain.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.UUID;
+import org.json.simple.parser.ParseException;
 
 public interface UserService {
     ResponseGetUser getUser(UUID userId);
@@ -35,7 +37,8 @@ public interface UserService {
 
     ResponseGetUser addUser(RequestCreateUser requestCreateUser);
 
-    ResponseGetUser updateUser(UUID userId, RequestUpdateUser requestUpdateUser);
+    ResponseGetUser updateUser(UUID userId, RequestUpdateUser requestUpdateUser)
+            throws JsonProcessingException, ParseException;
     void updateUser(RequestUpdatePassword requestUpdateUser);
     void deleteUser(UUID userId);
     void deleteUser(User user);

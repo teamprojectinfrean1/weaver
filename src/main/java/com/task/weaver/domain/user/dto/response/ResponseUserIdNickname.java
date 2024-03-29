@@ -13,7 +13,7 @@ public class ResponseUserIdNickname {
 
     private UUID uuid;
     private String id;
-    private String userNickname;
+    private String nickname;
     @JsonProperty("isSuccess")
     private boolean isSuccess;
 }

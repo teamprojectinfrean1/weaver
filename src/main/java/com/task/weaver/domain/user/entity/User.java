@@ -69,12 +69,6 @@ public class User extends BaseEntity implements UserDetails {
     @OneToMany(mappedBy = "manager", cascade = CascadeType.REMOVE)
     private List<Issue> managerIssueList = new ArrayList<>();
 
-    public void updateUser(RequestUpdateUser requestUpdateUser){
-        this.nickname = requestUpdateUser.getNickname();
-        this.email = requestUpdateUser.getEmail();
-        this.password = requestUpdateUser.getPassword();
-    }
-
     public void updateEmail(final String email) {
         this.email = email;
     }

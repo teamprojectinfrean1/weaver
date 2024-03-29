@@ -1,12 +1,13 @@
 package com.task.weaver.domain.user.service.Impl;
 
+import static com.task.weaver.common.exception.ErrorCode.MISMATCHED_PASSWORD;
 import static com.task.weaver.common.exception.ErrorCode.NO_MATCHED_VERIFICATION_CODE;
 import static com.task.weaver.common.exception.ErrorCode.USER_EMAIL_NOT_FOUND;
 import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.task.weaver.common.exception.BusinessException;
-import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
+import com.task.weaver.common.exception.user.MismatchedPassword;
 import com.task.weaver.common.exception.user.UnableSendMailException;
 import com.task.weaver.common.exception.user.UserNotFoundException;
 import com.task.weaver.domain.authorization.util.JwtTokenProvider;
@@ -26,12 +27,17 @@ import com.task.weaver.domain.user.repository.UserRepository;
 import com.task.weaver.domain.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -75,7 +81,7 @@ public class UserServiceImpl implements UserService {
         return ResponseUserIdNickname.builder()
                 .uuid(findUser.getUserId())
                 .id(findUser.getId())
-                .userNickname(findUser.getNickname())
+                .nickname(findUser.getNickname())
                 .isSuccess(checked)
                 .build();
     }
@@ -169,15 +175,29 @@ public class UserServiceImpl implements UserService {
         Optional<User> findUser = userRepository.findById(userId);
         if (findUser.isPresent()) {
             User user = findUser.get();
-            user.updateNickname(requestUpdateUser.getNickname());
-            user.updateEmail(requestUpdateUser.getEmail());
-            if (requestUpdateUser.getPassword() != null) {
-                user.updatePassword(requestUpdateUser.getPassword());
+            switch (requestUpdateUser.getType()) {
+                case "email" -> user.updateEmail((String) requestUpdateUser.getValue());
+                case "nickname" -> user.updateNickname((String) requestUpdateUser.getValue());
+                case "password" -> updatePassword(requestUpdateUser.getValue(), user);
             }
             userRepository.save(user);
             return new ResponseGetUser(user);
         }
         throw new UserNotFoundException(USER_NOT_FOUND, "해당 유저가 존재하지않습니다.");
+    }
+
+    private void updatePassword(final Object requestUpdateUser, final User user) {
+
+        if (requestUpdateUser instanceof LinkedHashMap) {
+            JSONObject jsonObject = new JSONObject((LinkedHashMap) requestUpdateUser);
+            String currentPassword = (String) jsonObject.get("currentPassword");
+            String updatePassword = (String) jsonObject.get("updatePassword");
+
+            if (!Objects.equals(user.getPassword(), currentPassword)) {
+                throw new MismatchedPassword(MISMATCHED_PASSWORD, "입력 값 확인이 필요합니다.");
+            }
+            user.updatePassword(updatePassword);
+        }
     }
 
     @Transactional
