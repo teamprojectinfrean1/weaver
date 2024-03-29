@@ -22,6 +22,7 @@ import com.task.weaver.domain.user.dto.response.ResponseGetUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
 import com.task.weaver.domain.user.dto.response.ResponseUserIdNickname;
 import com.task.weaver.domain.user.dto.response.ResponseUserMypage;
+import com.task.weaver.domain.user.dto.response.ResponseUuid;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.UserRepository;
 import com.task.weaver.domain.user.service.UserService;
@@ -36,8 +37,6 @@ import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -55,6 +54,20 @@ public class UserServiceImpl implements UserService {
     private final ProjectRepository projectRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+
+    @Override
+    public ResponseUuid getUuid(final String email, final Boolean checked) {
+        if (!checked)
+            throw new UnableSendMailException(NO_MATCHED_VERIFICATION_CODE, ": Redis to SMTP DATA");
+
+        User findUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
+
+        return ResponseUuid.builder()
+                .uuid(findUser.getUserId())
+                .isSuccess(checked)
+                .build();
+    }
 
     @Override
     public ResponseGetUser getUser(UUID userId) {
@@ -79,7 +92,6 @@ public class UserServiceImpl implements UserService {
             .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
 
         return ResponseUserIdNickname.builder()
-                .uuid(findUser.getUserId())
                 .id(findUser.getId())
                 .nickname(findUser.getNickname())
                 .isSuccess(checked)

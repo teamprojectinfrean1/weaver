@@ -11,6 +11,7 @@ import com.task.weaver.domain.user.dto.response.ResponseGetUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
 import com.task.weaver.domain.user.dto.response.ResponseUserIdNickname;
 import com.task.weaver.domain.user.dto.response.ResponseUserMypage;
+import com.task.weaver.domain.user.dto.response.ResponseUuid;
 import com.task.weaver.domain.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -18,6 +19,9 @@ import java.util.UUID;
 import org.json.simple.parser.ParseException;
 
 public interface UserService {
+
+    ResponseUuid getUuid(String email, Boolean checked);
+
     ResponseGetUser getUser(UUID userId);
 
     ResponseGetUser getUser(String email);

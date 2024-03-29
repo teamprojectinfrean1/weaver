@@ -10,6 +10,7 @@ import com.task.weaver.domain.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.user.dto.request.RequestUpdatePassword;
 import com.task.weaver.domain.user.dto.response.ResponseGetUser;
 import com.task.weaver.domain.user.dto.response.ResponseUserIdNickname;
+import com.task.weaver.domain.user.dto.response.ResponseUuid;
 import com.task.weaver.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -158,9 +159,9 @@ public class AuthorizationController {
 	@Operation(summary = "인증 번호 확인", description = "서버에 저장된 랜덤 번호와 사용자 입력 번호 검증")
 	@Parameter(name = "EmailCheckDto", description = "사용자 이메일, 인증 번호", in = ParameterIn.QUERY)
 	@PostMapping("/findPassword/verification/check")
-	public ResponseEntity<DataResponse<ResponseUserIdNickname>> AuthCheckForPassword(@RequestBody @Valid EmailCheckDto emailCheckDto) {
+	public ResponseEntity<DataResponse<ResponseUuid>> AuthCheckForPassword(@RequestBody @Valid EmailCheckDto emailCheckDto) {
 		Boolean checked = mailService.CheckAuthNum(emailCheckDto.email(), emailCheckDto.verificationCode());
-		ResponseUserIdNickname targetUser = userService.getUser(emailCheckDto.email(), checked);
+		ResponseUuid targetUser = userService.getUuid(emailCheckDto.email(), checked);
 		return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "verificationCode 인증 성공", targetUser));
 	}
 
