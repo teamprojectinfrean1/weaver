@@ -150,9 +150,10 @@ public class AuthorizationController {
 	}
 
 	@PostMapping("/findPassword/verification/check")
-	public ResponseEntity<MessageResponse> AuthCheckForPassword(@RequestBody @Valid EmailCheckDto emailCheckDto) {
+	public ResponseEntity<DataResponse<ResponseUserIdNickname>> AuthCheckForPassword(@RequestBody @Valid EmailCheckDto emailCheckDto) {
 		Boolean checked = mailService.CheckAuthNum(emailCheckDto.email(), emailCheckDto.verificationCode());
-		return ResponseEntity.ok(MessageResponse.of(HttpStatus.OK, "verificationCode 인증 성공"));
+		ResponseUserIdNickname targetUser = userService.getUser(emailCheckDto.email(), checked);
+		return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "verificationCode 인증 성공", targetUser));
 	}
 
 	@PutMapping("/findPassword/verification/update")

@@ -41,13 +41,13 @@ public class Project extends BaseEntity {
     @Column(name = "detail")
     private String detail;
 
-    @Column(name = "startDate")
+    @Column(name = "start_date")
     private LocalDateTime startDate;
 
-    @Column(name = "endDate")
+    @Column(name = "end_date")
     private LocalDateTime endDate;
 
-    @Column(name = "created")
+    @Column(name = "create_date")
     private LocalDateTime created;
 
     @ManyToOne(fetch = FetchType.LAZY)

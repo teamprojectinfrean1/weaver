@@ -15,7 +15,7 @@ public interface UserRepository extends JpaRepository<User, UUID>, UserRepositor
     Optional<User> findByNickname(String nickname);
     Optional<User> findByEmail(String email);
 
-    @Query("SELECT u FROM User AS u WHERE u.id = :id")
+    @Query("SELECT u.id FROM User u WHERE u.id = :id")
     Optional<User> findByUserId(@Param("id") String id);
 
     @Query("SELECT NEW com.task.weaver.domain.user.dto"

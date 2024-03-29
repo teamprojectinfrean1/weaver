@@ -174,7 +174,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void updateUser(final RequestUpdatePassword requestUpdatePassword) {
-        Optional<User> byUserId = userRepository.findByEmail(requestUpdatePassword.getEmail());
+        UUID uuid = UUID.fromString(requestUpdatePassword.getUuid());
+        Optional<User> byUserId = userRepository.findById(uuid);
         User user = byUserId.orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, ": 해당 유저를 찾을 수 없습니다."));
         user.updatePassword(requestUpdatePassword);
     }
