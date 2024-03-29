@@ -15,7 +15,6 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -35,8 +34,6 @@ public class SecurityConfig {
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
 	private static final String[] PERMIT_URL_ARRAY = {
-		/* KAKAO */
-		// "/user/kakao/callback/**",
 		"/api/v1/auth/login",
 		"/api/v1/auth/reissue",
 		"/api/v1/users/join",
@@ -45,8 +42,18 @@ public class SecurityConfig {
 		"/swagger-ui/**",
     	"/swagger-resources/**",
 		"/webjars/**",
-		"/favicon.com"
+		"/favicon.com",
+		"/h2-console/**",
+		"/favicon.ico",
+		"/api/v1/auth/findId/**",
+		"/api/v1/auth/findPassword/**"
 	};
+
+	@Bean
+	public WebSecurityCustomizer configure() {
+		return (web) -> web.ignoring()
+				.requestMatchers(PERMIT_URL_ARRAY);
+	}
 
 	/**
 	 * authenticationManager Bean 등록
@@ -63,26 +70,6 @@ public class SecurityConfig {
 	}
 
 	/**
-	 * WebSecurity 설정
-	 * Security 적용하지 않을 리소스 설정
-	 * Q. securityFilterChain에서 permitAll로 해주면 안되나?
-	 * 		-> WebSecurityCustomizer : FilterChainProxy에 대한 커스터마이징 담당
-	 * 		-> SecurityFilterChain : HttpSecurity 구성 담당
-	 * @return
-	 */
-	// web.ignoring()을 사용할 경우 spring security의 보호를 받을 수 없기 때문에 authorizeHttpRequests().permitAll 에 추가하여 설정하는 방식으로 변경
-	// @Bean
-	// public WebSecurityCustomizer webSecurityCustomizer() {
-	// 	return (web) -> web.ignoring()
-	// 		.requestMatchers(
-	// 			"/v3/api-docs/**",
-	// 			"/swagger-ui.html",
-	// 			"/webjars/**",
-	// 			"/favicon.com"
-	// 		);
-	// }
-
-	/**
 	 * PasswordEncoder
 	 * 		: 단방향 해쉬 알고리즘에 Salt 추가하여 Encoding
 	 * @return
@@ -90,19 +77,6 @@ public class SecurityConfig {
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-	}
-
-	@Bean
-	public WebSecurityCustomizer configure() {
-		return (web) -> web.ignoring()
-				.requestMatchers(new AntPathRequestMatcher("/h2-console/**"))
-				.requestMatchers(new AntPathRequestMatcher("/favicon.ico"))
-				.requestMatchers(new AntPathRequestMatcher("/api/v1/auth/findId/verification/request"))
-				.requestMatchers(new AntPathRequestMatcher("/api/v1/auth/findId/verification/check"))
-				.requestMatchers(new AntPathRequestMatcher("/api/v1/auth/findPassword/verification/request"))
-				.requestMatchers(new AntPathRequestMatcher("/api/v1/auth/findPassword/verification/check"))
-				.requestMatchers(new AntPathRequestMatcher("/api/v1/auth/findPassword/verification/update"))
-				.requestMatchers(new AntPathRequestMatcher("/api/v1/users/mypage/**"));
 	}
 
 	/**
@@ -119,9 +93,6 @@ public class SecurityConfig {
 			.httpBasic(HttpBasicConfigurer::disable) // header에 id, pw가 아닌 jwt 달고감. 따라서 basic 아닌 bearer 사용
 			// by default uses a Bean by the name of corsConfigurationSource
 			.cors(Customizer.withDefaults())
-			.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers(PERMIT_URL_ARRAY).permitAll()
-				.anyRequest().authenticated())
 			// 인증에 관한 예외처리
 			.exceptionHandling(handler -> handler
 				.authenticationEntryPoint(jwtAuthenticationEntryPoint))
@@ -137,7 +108,6 @@ public class SecurityConfig {
 
 	/**
 	 * CORS 설정
-	 * @return
 	 */
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
@@ -156,6 +126,4 @@ public class SecurityConfig {
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
 	}
-
-
 }

@@ -46,24 +46,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(responseGetUser);
     }
 
-    //    @Operation(summary = "회원가입", description = "사용자가 회원가입")
-//    @PostMapping("/join")
-//    public ResponseEntity<ResponseGetUser> addUser(@RequestBody RequestCreateUser requestCreateUser){
-//        log.info("controller - join - before");
-//        ResponseGetUser responseGetUser = userService.addUser(requestCreateUser);
-//        log.info("controller - join - after");
-//        return ResponseEntity.status(HttpStatus.OK).body(responseGetUser);
-//    }
-
-    @Operation(summary = "마이페이지", description = "특정 회원 정보 조회")
-    @Parameter(name = "UUID", description = "user pk", in = ParameterIn.PATH)
-    @GetMapping("/mypage")
-    public ResponseEntity<DataResponse<ResponseUserMypage>> getUserInfo(@RequestParam String userUuid) {
-        log.info("mypage 정보 조회 발생");
-        ResponseUserMypage user = userService.getUserInfo(userUuid);
-        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "유저 정보 조회 성공", user), HttpStatus.OK);
-    }
-
     @Operation(summary = "프로젝트 구성원 조회", description = "프로젝트에 소속된 인원들 조회")
     @Parameter(name = "projectId", description = "프로젝트 id", in = ParameterIn.PATH)
     @GetMapping("/project/user-list")
@@ -87,9 +69,9 @@ public class UserController {
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "토큰 기반 유저 정보 반환 성공", responseGetUser), HttpStatus.OK);
     }
 
-    @Operation(summary = "사용자 정보 수정", description = "사용자의 정보를 수정")
+    @Operation(summary = "사용자 정보 수정", description = "사용자의 정보 (프로필 이미지, 닉네임, 비밀번호) 업데이트")
     @Parameter(name = "userId", description = "사용자 id", in = ParameterIn.QUERY)
-    @PutMapping()
+    @PutMapping("/update")
     public ResponseEntity<ResponseGetUser> updateUser(@RequestParam("userId") UUID userId,
                                                       @RequestBody RequestUpdateUser requestUpdateUser) {
         ResponseGetUser responseGetUser = userService.updateUser(userId, requestUpdateUser);

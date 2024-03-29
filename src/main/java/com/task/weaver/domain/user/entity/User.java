@@ -75,8 +75,16 @@ public class User extends BaseEntity implements UserDetails {
         this.password = requestUpdateUser.getPassword();
     }
 
-    public void updatePassword(RequestUpdatePassword requestUpdatePassword) {
-        this.password = requestUpdatePassword.getPassword();
+    public void updateEmail(final String email) {
+        this.email = email;
+    }
+
+    public void updatePassword(String updatePassword) {
+        this.password = updatePassword;
+    }
+
+    public void updateNickname(final String nickname) {
+        this.nickname = nickname;
     }
 
     @Override

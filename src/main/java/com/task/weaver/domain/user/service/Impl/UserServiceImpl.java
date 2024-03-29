@@ -5,6 +5,7 @@ import static com.task.weaver.common.exception.ErrorCode.USER_EMAIL_NOT_FOUND;
 import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.task.weaver.common.exception.BusinessException;
+import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.user.UnableSendMailException;
 import com.task.weaver.common.exception.user.UserNotFoundException;
@@ -165,10 +166,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseGetUser updateUser(UUID userId, RequestUpdateUser requestUpdateUser) {
-        User findUser = userRepository.findById(userId).get();
-        findUser.updateUser(requestUpdateUser);
-
-        return new ResponseGetUser(findUser);
+        Optional<User> findUser = userRepository.findById(userId);
+        if (findUser.isPresent()) {
+            User user = findUser.get();
+            user.updateNickname(requestUpdateUser.getNickname());
+            user.updateEmail(requestUpdateUser.getEmail());
+            if (requestUpdateUser.getPassword() != null) {
+                user.updatePassword(requestUpdateUser.getPassword());
+            }
+            userRepository.save(user);
+            return new ResponseGetUser(user);
+        }
+        throw new UserNotFoundException(USER_NOT_FOUND, "해당 유저가 존재하지않습니다.");
     }
 
     @Transactional
@@ -177,7 +186,7 @@ public class UserServiceImpl implements UserService {
         UUID uuid = UUID.fromString(requestUpdatePassword.getUuid());
         Optional<User> byUserId = userRepository.findById(uuid);
         User user = byUserId.orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, ": 해당 유저를 찾을 수 없습니다."));
-        user.updatePassword(requestUpdatePassword);
+        user.updatePassword(requestUpdatePassword.getPassword());
     }
 
     @Override
