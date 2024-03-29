@@ -123,7 +123,6 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 		throw new RuntimeException("not valid refresh token");
 	}
 
-
 	@Override
 	public void logout(String refreshToken) {
 
@@ -152,5 +151,4 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 			return false;
 		return true;
 	}
-
 }

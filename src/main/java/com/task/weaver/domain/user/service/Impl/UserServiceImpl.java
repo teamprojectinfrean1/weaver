@@ -1,12 +1,13 @@
 package com.task.weaver.domain.user.service.Impl;
 
+import static com.task.weaver.common.exception.ErrorCode.MISMATCHED_PASSWORD;
 import static com.task.weaver.common.exception.ErrorCode.NO_MATCHED_VERIFICATION_CODE;
-import static com.task.weaver.common.exception.ErrorCode.NO_SEARCH_EMAIL;
 import static com.task.weaver.common.exception.ErrorCode.USER_EMAIL_NOT_FOUND;
 import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.task.weaver.common.exception.BusinessException;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
+import com.task.weaver.common.exception.user.MismatchedPassword;
 import com.task.weaver.common.exception.user.UnableSendMailException;
 import com.task.weaver.common.exception.user.UserNotFoundException;
 import com.task.weaver.domain.authorization.util.JwtTokenProvider;
@@ -20,17 +21,22 @@ import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
 import com.task.weaver.domain.user.dto.response.ResponseUserIdNickname;
+import com.task.weaver.domain.user.dto.response.ResponseUserMypage;
+import com.task.weaver.domain.user.dto.response.ResponseUuid;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.UserRepository;
 import com.task.weaver.domain.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -50,6 +56,20 @@ public class UserServiceImpl implements UserService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
+    public ResponseUuid getUuid(final String email, final Boolean checked) {
+        if (!checked)
+            throw new UnableSendMailException(NO_MATCHED_VERIFICATION_CODE, ": Redis to SMTP DATA");
+
+        User findUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
+
+        return ResponseUuid.builder()
+                .uuid(findUser.getUserId())
+                .isSuccess(checked)
+                .build();
+    }
+
+    @Override
     public ResponseGetUser getUser(UUID userId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
@@ -65,18 +85,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseUserIdNickname getUser(String email, Boolean checked) {
-        if (!checked) {
-            throw new UnableSendMailException(NO_MATCHED_VERIFICATION_CODE, ": Redis to SMTP DATA", checked);
-        }
+        if (!checked)
+            throw new UnableSendMailException(NO_MATCHED_VERIFICATION_CODE, ": Redis to SMTP DATA");
 
         User findUser = userRepository.findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
 
         return ResponseUserIdNickname.builder()
-                .uuid(findUser.getUserId())
                 .id(findUser.getId())
-                .userNickname(findUser.getNickname())
-                .data(checked)
+                .nickname(findUser.getNickname())
+                .isSuccess(checked)
                 .build();
     }
 
@@ -87,6 +105,12 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(userId))));
         ResponseGetUser responseGetUser = new ResponseGetUser(user);
         return responseGetUser;
+    }
+
+    @Override
+    public ResponseUserMypage getUserInfo(final String userId) {
+        return userRepository.findUserInfoByUserId(userId)
+                .orElseThrow(() -> new UserNotFoundException(USER_EMAIL_NOT_FOUND, "해당 UUID로 사용자를 찾을 수 없습니다."));
     }
 
     @Override
@@ -160,18 +184,41 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseGetUser updateUser(UUID userId, RequestUpdateUser requestUpdateUser) {
-        User findUser = userRepository.findById(userId).get();
-        findUser.updateUser(requestUpdateUser);
+        Optional<User> findUser = userRepository.findById(userId);
+        if (findUser.isPresent()) {
+            User user = findUser.get();
+            switch (requestUpdateUser.getType()) {
+                case "email" -> user.updateEmail((String) requestUpdateUser.getValue());
+                case "nickname" -> user.updateNickname((String) requestUpdateUser.getValue());
+                case "password" -> updatePassword(requestUpdateUser.getValue(), user);
+            }
+            userRepository.save(user);
+            return new ResponseGetUser(user);
+        }
+        throw new UserNotFoundException(USER_NOT_FOUND, "해당 유저가 존재하지않습니다.");
+    }
 
-        return new ResponseGetUser(findUser);
+    private void updatePassword(final Object requestUpdateUser, final User user) {
+
+        if (requestUpdateUser instanceof LinkedHashMap) {
+            JSONObject jsonObject = new JSONObject((LinkedHashMap) requestUpdateUser);
+            String currentPassword = (String) jsonObject.get("currentPassword");
+            String updatePassword = (String) jsonObject.get("updatePassword");
+
+            if (!Objects.equals(user.getPassword(), currentPassword)) {
+                throw new MismatchedPassword(MISMATCHED_PASSWORD, "입력 값 확인이 필요합니다.");
+            }
+            user.updatePassword(updatePassword);
+        }
     }
 
     @Transactional
     @Override
     public void updateUser(final RequestUpdatePassword requestUpdatePassword) {
-        Optional<User> byUserId = userRepository.findByEmail(requestUpdatePassword.getEmail());
+        UUID uuid = UUID.fromString(requestUpdatePassword.getUuid());
+        Optional<User> byUserId = userRepository.findById(uuid);
         User user = byUserId.orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, ": 해당 유저를 찾을 수 없습니다."));
-        user.updatePassword(requestUpdatePassword);
+        user.updatePassword(requestUpdatePassword.getPassword());
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.task.weaver.domain.user.repository;
 
+import com.task.weaver.domain.user.dto.response.ResponseUserMypage;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.dsl.UserRepositoryDsl;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,6 +15,10 @@ public interface UserRepository extends JpaRepository<User, UUID>, UserRepositor
     Optional<User> findByNickname(String nickname);
     Optional<User> findByEmail(String email);
 
-    @Query("SELECT u FROM User AS u WHERE u.id = :id")
+    @Query("SELECT u.id FROM User u WHERE u.id = :id")
     Optional<User> findByUserId(@Param("id") String id);
+
+    @Query("SELECT NEW com.task.weaver.domain.user.dto"
+            + ".response.ResponseUserMypage(u.nickname, u.email, u.profileImage) FROM User u WHERE u.id = :id")
+    Optional<ResponseUserMypage> findUserInfoByUserId(@Param("id") String id);
 }
