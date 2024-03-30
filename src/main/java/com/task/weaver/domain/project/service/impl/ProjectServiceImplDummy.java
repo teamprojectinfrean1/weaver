@@ -35,6 +35,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.swing.*;
 
@@ -128,6 +129,10 @@ public class ProjectServiceImplDummy implements ProjectService {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(userId))));
 
+            if(user.getMainProject() == null){
+                user.setMainProject(savedProject);
+            }
+
             ProjectMember projectMember = ProjectMember.builder()
                     .project(savedProject)
                     .user(user)
@@ -138,6 +143,7 @@ public class ProjectServiceImplDummy implements ProjectService {
         }
 
         savedProject.setProjectMemberList(projectMemberList);
+        savedProject.setWriter(writer);
         savedProject.setModifier(writer);
 
         log.info("project uuid : " + savedProject.getProjectId());
@@ -169,16 +175,24 @@ public class ProjectServiceImplDummy implements ProjectService {
     }
 
     @Override
+    @Transactional
     public void updateMainProject(UUID projectId) throws BusinessException {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(projectId))));
 
-        User writer = project.getUser();
+        UUID writerId = project.getWriter().getUserId();
+
+        User writer = userRepository.findById(writerId)
+                .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(writerId))));
+
         writer.setMainProject(project);
+
+        userRepository.save(writer);
         return ;
     }
 
     @Override
+    @Transactional
     public void deleteProject(final UUID projectId) throws BusinessException {
         Optional<Project> project = projectRepository.findById(projectId);
         if (project.isPresent()){

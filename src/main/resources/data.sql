@@ -1,9 +1,9 @@
 -- 더미 사용자 데이터 삽입
 INSERT INTO `USER` (user_id, id, nickname, is_online, email, `password`, profile_image, main_project_id, regdate, moddate)
 VALUES
-    (UNHEX(REPLACE(UUID(), '-', '')), 'user1', 'John Doe', 'yes', 'jcjk0302@gmail.com', 'password123', 'profile1.jpg', NULL, NOW(), NOW()),
-    (UNHEX(REPLACE(UUID(), '-', '')), 'user2', 'Jane Doe', 'no', 'jane@example.com', 'password456', 'profile2.jpg', NULL, NOW(), NOW()),
-    (UNHEX(REPLACE(UUID(), '-', '')), 'user3', 'Alice', 'yes', 'alice@example.com', 'password789', NULL, NULL, NOW(), NOW());
+    (UNHEX(REPLACE(UUID(), '-', '')), 'user1', 'John Doe', true, 'jcjk0302@gmail.com', 'password123', 'profile1.jpg', NULL, NOW(), NOW()),
+    (UNHEX(REPLACE(UUID(), '-', '')), 'user2', 'Jane Doe', false, 'jane@example.com', 'password456', 'profile2.jpg', NULL, NOW(), NOW()),
+    (UNHEX(REPLACE(UUID(), '-', '')), 'user3', 'Alice', true, 'alice@example.com', 'password789', NULL, NULL, NOW(), NOW());
 
 -- -- 더미 프로젝트 데이터 삽입
 -- INSERT INTO PROJECT (project_id, name, detail, start_date, end_date, create_date, user_id, last_update_user_id, regdate, moddate)
