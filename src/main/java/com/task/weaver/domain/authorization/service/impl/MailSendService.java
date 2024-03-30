@@ -1,6 +1,7 @@
-package com.task.weaver.domain.mail.service;
+package com.task.weaver.domain.authorization.service.impl;
 
 import com.task.weaver.common.exception.user.UnableSendMailException;
+import com.task.weaver.domain.authorization.dto.response.EmailCode;
 import com.task.weaver.domain.authorization.redis.RedisEmailUtil;
 import com.task.weaver.domain.user.dto.response.ResponseGetUser;
 import com.task.weaver.domain.user.service.UserService;
@@ -25,7 +26,7 @@ public class MailSendService {
     private String authCodeExpirationMillis;
     public int authNumber;
 
-    public String sendVerificationEmail(final String email) {
+    public EmailCode sendVerificationEmail(final String email) {
         ResponseGetUser user = userService.getUser(email);
         return joinEmail(user.getEmail());
     }
@@ -37,17 +38,7 @@ public class MailSendService {
         return redisEmailUtil.getData(authNum).equals(email);
     }
 
-    private void makeRandomNumber() {
-        Random r = new Random();
-        StringBuilder randomNumber = new StringBuilder();
-        for (int i = 0; i < 6; i++) {
-            randomNumber.append(r.nextInt(10));
-        }
-
-        authNumber = Integer.parseInt(randomNumber.toString());
-    }
-
-    public String joinEmail(String email) {
+    public EmailCode joinEmail(String email) {
         makeRandomNumber();
         String setFrom = "jcjk0302@likelion.org";
         String title = "Weaver 회원 가입 인증 이메일 입니다.";
@@ -58,7 +49,7 @@ public class MailSendService {
                         "<br>" +
                         "웹 사이트에 인증번호를 입력해주세요";
         mailSend(setFrom, email, title, content);
-        return Integer.toString(authNumber);
+        return EmailCode.builder().isSuccess(true).build();
     }
 
     public void mailSend(String setFrom, String toMail, String title, String content) {
@@ -75,5 +66,15 @@ public class MailSendService {
             throw new UnableSendMailException(e, true);
         }
         redisEmailUtil.setDataExpire(Integer.toString(authNumber), toMail, Long.parseLong(authCodeExpirationMillis));
+    }
+
+    private void makeRandomNumber() {
+        Random r = new Random();
+        StringBuilder randomNumber = new StringBuilder();
+        for (int i = 0; i < 6; i++) {
+            randomNumber.append(r.nextInt(10));
+        }
+
+        authNumber = Integer.parseInt(randomNumber.toString());
     }
 }

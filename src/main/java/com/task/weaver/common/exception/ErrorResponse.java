@@ -1,13 +1,15 @@
 package com.task.weaver.common.exception;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
@@ -22,7 +24,8 @@ public class ErrorResponse {
     private int status;
     private List<FieldError> errors;
     private String code;
-    private boolean data;
+    @JsonProperty("isSuccess")
+    private boolean isSuccess;
 
     private ErrorResponse(ErrorCode errorCode, List<FieldError> errors) {
         this.message = errorCode.getMessage();
@@ -36,7 +39,6 @@ public class ErrorResponse {
         this.status = errorCode.getStatus();
         this.code = errorCode.getCode();
         this.errors = new ArrayList<>();
-        this.data = errorCode.getData();
     }
 
     public static ErrorResponse of(ErrorCode errorCode, BindingResult bindingResult) {

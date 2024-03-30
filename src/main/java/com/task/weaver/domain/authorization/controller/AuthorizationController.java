@@ -2,19 +2,25 @@ package com.task.weaver.domain.authorization.controller;
 
 import com.task.weaver.common.response.DataResponse;
 import com.task.weaver.common.response.MessageResponse;
+import com.task.weaver.domain.authorization.dto.request.EmailCheckDto;
+import com.task.weaver.domain.authorization.dto.request.EmailRequest;
+import com.task.weaver.domain.authorization.dto.response.EmailCode;
+import com.task.weaver.domain.authorization.service.impl.MailSendService;
 import com.task.weaver.domain.user.dto.request.RequestCreateUser;
+import com.task.weaver.domain.user.dto.request.RequestUpdatePassword;
 import com.task.weaver.domain.user.dto.response.ResponseGetUser;
+import com.task.weaver.domain.user.dto.response.ResponseUserIdNickname;
+import com.task.weaver.domain.user.dto.response.ResponseUuid;
 import com.task.weaver.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import org.aspectj.bridge.Message;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.task.weaver.domain.authorization.dto.request.RequestSignIn;
-import com.task.weaver.domain.authorization.dto.request.RequestToken;
 import com.task.weaver.domain.authorization.dto.response.ResponseToken;
 import com.task.weaver.domain.authorization.service.AuthorizationService;
 
@@ -32,6 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AuthorizationController {
 	private final AuthorizationService authorizationService;
+	private final MailSendService mailService;
 	private final UserService userService;
 
 	@Operation(summary = "회원가입", description = "사용자가 회원가입")
@@ -119,5 +126,50 @@ public class AuthorizationController {
 	@Parameter(name = "nickname", description = "닉네임 입력", in = ParameterIn.QUERY)
 	public ResponseEntity<DataResponse<Boolean>> checkNickname(@RequestParam("nickname") String nickname){
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "중복 체크 동작", authorizationService.checkNickname(nickname)), HttpStatus.OK);
+	}
+
+	@Operation(summary = "이메일 전송", description = "랜덤 번호를 담은 이메일 전송")
+	@Parameter(name = "EmailRequest", description = "사용자 이메일", in = ParameterIn.QUERY)
+	@PostMapping("/findId/verification/request")
+	public ResponseEntity<DataResponse<EmailCode>> mailSendForId(@RequestBody @Valid EmailRequest emailDto) {
+		log.info("Find ID, verify email: {}", emailDto.email());
+		return ResponseEntity.ok(
+				DataResponse.of(HttpStatus.OK, "인증 코드 전송 성공", mailService.sendVerificationEmail(emailDto.email())));
+	}
+
+	@Operation(summary = "인증 번호 확인", description = "서버에 저장된 랜덤 번호와 사용자 입력 번호 검증")
+	@Parameter(name = "EmailCheckDto", description = "사용자 이메일, 인증 번호", in = ParameterIn.QUERY)
+	@PostMapping("/findId/verification/check")
+	public ResponseEntity<DataResponse<ResponseUserIdNickname>> AuthCheckForId(
+			@RequestBody @Valid EmailCheckDto emailCheckDto) {
+		Boolean checked = mailService.CheckAuthNum(emailCheckDto.email(), emailCheckDto.verificationCode());
+		ResponseUserIdNickname targetUser = userService.getUser(emailCheckDto.email(), checked);
+		return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "해당 유저를 반환합니다.", targetUser));
+	}
+
+	@Operation(summary = "이메일 전송", description = "랜덤 번호를 담은 이메일 전송")
+	@Parameter(name = "EmailRequest", description = "사용자 이메일", in = ParameterIn.QUERY)
+	@PostMapping("/findPassword/verification/request")
+	public ResponseEntity<DataResponse<EmailCode>> mailSendForPassword(@RequestBody @Valid EmailRequest emailDto) {
+		log.info("비밀번호 찾기 이메일 인증 :" + emailDto.email());
+		return ResponseEntity.ok(
+				DataResponse.of(HttpStatus.OK, "인증 코드 전송 성공", mailService.joinEmail(emailDto.email())));
+	}
+
+	@Operation(summary = "인증 번호 확인", description = "서버에 저장된 랜덤 번호와 사용자 입력 번호 검증")
+	@Parameter(name = "EmailCheckDto", description = "사용자 이메일, 인증 번호", in = ParameterIn.QUERY)
+	@PostMapping("/findPassword/verification/check")
+	public ResponseEntity<DataResponse<ResponseUuid>> AuthCheckForPassword(@RequestBody @Valid EmailCheckDto emailCheckDto) {
+		Boolean checked = mailService.CheckAuthNum(emailCheckDto.email(), emailCheckDto.verificationCode());
+		ResponseUuid targetUser = userService.getUuid(emailCheckDto.email(), checked);
+		return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "verificationCode 인증 성공", targetUser));
+	}
+
+	@Operation(summary = "비밀번호 재설정", description = "인증 확인된 사용자 비밀번호 재설정")
+	@Parameter(name = "RequestUpdatePassword", description = "UUID, 재설정 비밀번호", in = ParameterIn.QUERY)
+	@PutMapping("/findPassword/verification/update")
+	public ResponseEntity<MessageResponse> AuthPasswordUpdate(@RequestBody @Valid RequestUpdatePassword requestUpdatePassword) {
+		userService.updateUser(requestUpdatePassword);
+		return ResponseEntity.ok(MessageResponse.of(HttpStatus.OK, "비밀번호 변경 성공"));
 	}
 }

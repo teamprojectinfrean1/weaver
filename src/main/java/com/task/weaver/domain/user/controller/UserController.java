@@ -1,5 +1,6 @@
 package com.task.weaver.domain.user.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.task.weaver.common.response.DataResponse;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.user.dto.request.RequestGetUserPage;
@@ -7,6 +8,7 @@ import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUserForFront;
 import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
+import com.task.weaver.domain.user.dto.response.ResponseUserMypage;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,15 +49,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(responseGetUser);
     }
 
-    //    @Operation(summary = "회원가입", description = "사용자가 회원가입")
-//    @PostMapping("/join")
-//    public ResponseEntity<ResponseGetUser> addUser(@RequestBody RequestCreateUser requestCreateUser){
-//        log.info("controller - join - before");
-//        ResponseGetUser responseGetUser = userService.addUser(requestCreateUser);
-//        log.info("controller - join - after");
-//        return ResponseEntity.status(HttpStatus.OK).body(responseGetUser);
-//    }
-
     @Operation(summary = "프로젝트 구성원 조회", description = "프로젝트에 소속된 인원들 조회")
     @Parameter(name = "projectId", description = "프로젝트 id", in = ParameterIn.PATH)
     @GetMapping("/project/user-list")
@@ -78,11 +72,12 @@ public class UserController {
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "토큰 기반 유저 정보 반환 성공", responseGetUser), HttpStatus.OK);
     }
 
-    @Operation(summary = "사용자 정보 수정", description = "사용자의 정보를 수정")
+    @Operation(summary = "사용자 정보 수정", description = "사용자의 정보 (프로필 이미지, 닉네임, 비밀번호) 업데이트")
     @Parameter(name = "userId", description = "사용자 id", in = ParameterIn.QUERY)
-    @PutMapping()
+    @PutMapping("/update")
     public ResponseEntity<ResponseGetUser> updateUser(@RequestParam("userId") UUID userId,
-                                                      @RequestBody RequestUpdateUser requestUpdateUser) {
+                                                      @RequestBody RequestUpdateUser requestUpdateUser)
+            throws ParseException, JsonProcessingException {
         ResponseGetUser responseGetUser = userService.updateUser(userId, requestUpdateUser);
         return ResponseEntity.status(HttpStatus.OK).body(responseGetUser);
     }
