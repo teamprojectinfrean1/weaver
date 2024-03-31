@@ -17,7 +17,7 @@ public class Status extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "status__id")
+	@Column(name = "status_id")
 	private Long statusId;
 
 	@Column(name = "content", length = 20)

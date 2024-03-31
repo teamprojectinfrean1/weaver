@@ -1,7 +1,5 @@
 package com.task.weaver.domain.task.dto.request;
 
-import com.task.weaver.domain.issue.dto.request.RequestIssueForTask;
-import com.task.weaver.domain.issue.dto.response.ResponseIssueForTask;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.status.entity.Status;
 import com.task.weaver.domain.task.entity.Task;
@@ -22,21 +20,20 @@ import java.util.UUID;
 public class RequestCreateTask {
 
     private UUID projectId;
-//    private StatusTag statusTag;
-//    private User user;
     private UUID writerUuid;
+    private Long statusId;
     private String taskTitle;
     private String taskContent;
     private List<String> taskTagList;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-//    private List<RequestIssueForTask> issueList;
     private String editDeletePermission;
 
-    public Task toEntity(User user, Project project) {
+    public Task toEntity(User user, Project project, Status status) {
         return Task.builder()
                 .project(project)
                 .user(user)
+                .statusTag(status)
                 .modifier(user)
                 .taskTitle(taskTitle)
                 .taskContent(taskContent)
@@ -45,5 +42,4 @@ public class RequestCreateTask {
                 .editDeletePermission(editDeletePermission)
                 .build();
     }
-
 }

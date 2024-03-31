@@ -2,8 +2,10 @@ package com.task.weaver.domain.user.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.task.weaver.common.response.DataResponse;
+import com.task.weaver.common.response.MessageResponse;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.user.dto.request.RequestGetUserPage;
+import com.task.weaver.domain.user.dto.request.RequestImageUpload;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
@@ -25,11 +27,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @RestController
@@ -71,14 +75,22 @@ public class UserController {
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "토큰 기반 유저 정보 반환 성공", responseGetUser), HttpStatus.OK);
     }
 
+    @PostMapping("/uploadImage")
+    public ResponseEntity<MessageResponse> uploadImage(@RequestBody RequestImageUpload request) {
+        String apiUrl = "https://api.cloudflare.com/client/v4/accounts/8a3acd454a6f84a41d099ca358ac7e23/images/v1";
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.postForEntity(apiUrl, request, String.class);
+        return ResponseEntity.ok(MessageResponse.of(HttpStatus.OK, "Image uploaded successfully."));
+    }
+
     @Operation(summary = "사용자 정보 수정", description = "사용자의 정보 (프로필 이미지, 닉네임, 비밀번호) 업데이트")
     @Parameter(name = "userId", description = "사용자 id", in = ParameterIn.QUERY)
     @PutMapping("/update")
-    public ResponseEntity<ResponseGetUser> updateUser(@RequestParam("userId") UUID userId,
+    public ResponseEntity<DataResponse<ResponseGetUser>> updateUser(@RequestParam("userId") UUID userId,
                                                       @RequestBody RequestUpdateUser requestUpdateUser)
             throws ParseException, JsonProcessingException {
         ResponseGetUser responseGetUser = userService.updateUser(userId, requestUpdateUser);
-        return ResponseEntity.status(HttpStatus.OK).body(responseGetUser);
+        return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "유저 정보 수정 성공", responseGetUser));
     }
 
     @Operation(summary = "사용자 삭제", description = "사용자 정보 삭제, 사용자는 사용 불가")

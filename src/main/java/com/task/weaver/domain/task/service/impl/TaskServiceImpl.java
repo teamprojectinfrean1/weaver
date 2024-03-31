@@ -1,8 +1,12 @@
 package com.task.weaver.domain.task.service.impl;
 
+import static com.task.weaver.common.exception.ErrorCode.INVALID_STATUS;
+
 import com.task.weaver.common.exception.AuthorizationException;
+import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
+import com.task.weaver.common.exception.status.StatusNotFoundException;
 import com.task.weaver.common.exception.task.TaskNotFoundException;
 import com.task.weaver.common.exception.user.UserNotFoundException;
 import com.task.weaver.domain.issue.dto.request.RequestIssueForTask;
@@ -11,6 +15,7 @@ import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
 import com.task.weaver.domain.status.entity.Status;
+import com.task.weaver.domain.status.repository.StatusRepository;
 import com.task.weaver.domain.task.dto.request.RequestCreateTask;
 import com.task.weaver.domain.task.dto.request.RequestGetTaskPage;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
@@ -46,6 +51,7 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+    private final StatusRepository statusRepository;
 
     @Override
     public ResponseGetTask getTask(UUID taskId) throws NotFoundException, AuthorizationException {
@@ -105,10 +111,13 @@ public class TaskServiceImpl implements TaskService {
         Project project = projectRepository.findById(request.getProjectId())
                 .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(request.getProjectId()))));
 
+        Status status = statusRepository.findById(request.getStatusId())
+                        .orElseThrow(() -> new StatusNotFoundException(INVALID_STATUS, "상태 태그를 확인하세요."));
+
         log.info("writer id : " + request.getWriterUuid());
         log.info("project id : " + request.getProjectId());
 
-        Task entity = request.toEntity(writer, project);
+        Task entity = request.toEntity(writer, project, status);
 
         Task save = taskRepository.save(entity);
 
