@@ -12,19 +12,17 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ResponseGetUser {
+public class ResponseGetUserForFront {
     private UUID userId;
     private String id;
     private String nickname;
     private String email;
-    private String password;
     private String profileImage;
 
-    public ResponseGetUser(User user){
+    public ResponseGetUserForFront(User user){
         this.userId = user.getUserId();
         this.id = user.getId();
         this.nickname = user.getNickname();
         this.email = user.getEmail();
-        this.password = user.getPassword();
     }
 }

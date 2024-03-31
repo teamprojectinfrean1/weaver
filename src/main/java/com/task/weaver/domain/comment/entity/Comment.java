@@ -11,12 +11,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
-@Entity(name = "COMMENT")
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
+@Entity
+@Table(name = "COMMENT")
 @Builder
 public class Comment extends BaseEntity {
 

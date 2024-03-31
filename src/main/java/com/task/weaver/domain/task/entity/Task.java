@@ -33,9 +33,9 @@ public class Task extends BaseEntity {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "status_tag_id")
-    private Status statusTag;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "status_tag_id")
+//    private Status statusTag;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_user_id")
@@ -60,7 +60,8 @@ public class Task extends BaseEntity {
 
     @Column(name = "end_date")
     private LocalDateTime endDate;
-
+    @Column(name = "status")
+    private String status;
     @Column(name = "edit_delete_permission")
     private String editDeletePermission;
 
@@ -70,7 +71,6 @@ public class Task extends BaseEntity {
 
     public void updateTask(Task newTask) {
         this.project = newTask.getProject();
-        this.statusTag = newTask.getStatusTag();
         this.user = newTask.getUser();
         this.taskTitle = newTask.getTitle();
         this.taskContent = newTask.getTaskContent();

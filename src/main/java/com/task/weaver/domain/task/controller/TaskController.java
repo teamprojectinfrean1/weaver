@@ -8,11 +8,11 @@ import com.task.weaver.domain.task.dto.request.RequestGetTaskPage;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
 import com.task.weaver.domain.task.dto.response.ResponseGetTask;
 import com.task.weaver.domain.task.dto.response.ResponseGetTaskList;
-import com.task.weaver.domain.task.dto.response.ResponseTask;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.bridge.Message;
@@ -56,10 +56,22 @@ public class TaskController {
         ResponseGetTask responseTask = taskService.updateTask(taskId, requestUpdateTask);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "태스크 수정 성공", responseTask), HttpStatus.OK);
     }
+
+    @PutMapping("/status")
+    @Operation(summary = "태크스 상태 변경", description = "태스크 하나의 상태를 변경합니다. 진행중, 완료")
+    @Parameter(name = "taskId", description = "태크스 id값", in = ParameterIn.QUERY)
+    @Parameter(name = "status", description = "상태 이름 값", in = ParameterIn.QUERY)
+    public ResponseEntity<DataResponse<ResponseGetTask>> updateTaskStatus(@RequestParam("taskId") UUID taskId, @RequestParam("status") String status) {
+        ResponseGetTask responseGetTask = taskService.updateTaskStatus(taskId, status);
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "태크스 상태 수정 성공", responseGetTask), HttpStatus.OK);
+    }
+
     @Operation(summary = "태스크 삭제", description = "태스크 하나를 삭제합니다.")
     @DeleteMapping()
     public ResponseEntity<MessageResponse> deleteTask(@RequestParam UUID taskId){
         taskService.deleteTask(taskId);
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "태스크 삭제 성공" ), HttpStatus.OK);
     }
+
+
 }

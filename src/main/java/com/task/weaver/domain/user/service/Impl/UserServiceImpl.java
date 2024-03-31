@@ -19,6 +19,7 @@ import com.task.weaver.domain.user.dto.request.RequestGetUserPage;
 import com.task.weaver.domain.user.dto.request.RequestUpdatePassword;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUser;
+import com.task.weaver.domain.user.dto.response.ResponseGetUserForFront;
 import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
 import com.task.weaver.domain.user.dto.response.ResponseUserIdNickname;
 import com.task.weaver.domain.user.dto.response.ResponseUserMypage;
@@ -99,11 +100,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseGetUser getUserFromToken(HttpServletRequest request) {
+    public ResponseGetUserForFront getUserFromToken(HttpServletRequest request) {
         String userId = jwtTokenProvider.getUsername(request);
-        User user = userRepository.findByUserId(userId)
+        log.info("user id : " + userId);
+        User user = userRepository.findByEmail(userId)
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(userId))));
-        ResponseGetUser responseGetUser = new ResponseGetUser(user);
+        ResponseGetUserForFront responseGetUser = new ResponseGetUserForFront(user);
         return responseGetUser;
     }
 

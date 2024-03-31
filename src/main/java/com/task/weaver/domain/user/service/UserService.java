@@ -8,6 +8,7 @@ import com.task.weaver.domain.user.dto.request.RequestGetUserPage;
 import com.task.weaver.domain.user.dto.request.RequestUpdatePassword;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUser;
+import com.task.weaver.domain.user.dto.response.ResponseGetUserForFront;
 import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
 import com.task.weaver.domain.user.dto.response.ResponseUserIdNickname;
 import com.task.weaver.domain.user.dto.response.ResponseUserMypage;
@@ -28,7 +29,7 @@ public interface UserService {
 
     ResponseUserIdNickname getUser(String email, Boolean checked);
 
-    ResponseGetUser getUserFromToken(HttpServletRequest request);
+    ResponseGetUserForFront getUserFromToken(HttpServletRequest request);
 
     ResponseUserMypage getUserInfo(String userId);
 

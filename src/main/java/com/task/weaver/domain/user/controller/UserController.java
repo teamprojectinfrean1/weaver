@@ -8,6 +8,7 @@ import com.task.weaver.domain.user.dto.request.RequestGetUserPage;
 import com.task.weaver.domain.user.dto.request.RequestImageUpload;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.user.dto.response.ResponseGetUser;
+import com.task.weaver.domain.user.dto.response.ResponseGetUserForFront;
 import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
 import com.task.weaver.domain.user.dto.response.ResponseUserMypage;
 import com.task.weaver.domain.user.entity.User;
@@ -68,10 +69,10 @@ public class UserController {
     }
 
     @Operation(summary = "토큰 기반 유저 조회", description = "로그인 직후, 토큰 기반으로 유저 정보 조회")
-    @Parameter(name = "access token", description = "토큰", in = ParameterIn.HEADER)
+    @Parameter(name = "Authorization", description = "토큰", in = ParameterIn.HEADER)
     @GetMapping("/token")
-    public ResponseEntity<DataResponse<ResponseGetUser>> getUsersFromToken(HttpServletRequest request){
-        ResponseGetUser responseGetUser = userService.getUserFromToken(request);
+    public ResponseEntity<DataResponse<ResponseGetUserForFront>> getUsersFromToken(HttpServletRequest request){
+        ResponseGetUserForFront responseGetUser = userService.getUserFromToken(request);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "토큰 기반 유저 정보 반환 성공", responseGetUser), HttpStatus.OK);
     }
 

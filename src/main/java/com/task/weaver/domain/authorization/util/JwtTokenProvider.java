@@ -130,8 +130,10 @@ public class JwtTokenProvider {
 	}
 
 	public String getUsername(HttpServletRequest request){
-		String token = request.getHeader(AUTHORIZATION_HEADER);
-
+		String header = request.getHeader(AUTHORIZATION_HEADER);
+		log.info("header : " + header);
+		String token = header.substring(7);
+		log.info("token : " + token);
 		String info = Jwts.parserBuilder().setSigningKey(key).build()
 				.parseClaimsJws(token)
 				.getBody()

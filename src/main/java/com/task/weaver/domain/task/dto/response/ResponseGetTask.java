@@ -38,5 +38,6 @@ public class ResponseGetTask {
         this.startDate = task.getStartDate();
         this.endDate = task.getEndDate();
         this.editDeletePermission = task.getEditDeletePermission();
+        this.taskStatus = task.getStatus();
     }
 }
