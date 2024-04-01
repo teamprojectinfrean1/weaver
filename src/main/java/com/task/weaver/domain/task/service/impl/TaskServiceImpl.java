@@ -14,8 +14,6 @@ import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
-import com.task.weaver.domain.status.entity.Status;
-import com.task.weaver.domain.status.repository.StatusRepository;
 import com.task.weaver.domain.task.dto.request.RequestCreateTask;
 import com.task.weaver.domain.task.dto.request.RequestGetTaskPage;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
@@ -32,10 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -50,7 +46,6 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
-    private final StatusRepository statusRepository;
 
     @Override
     public ResponseGetTask getTask(UUID taskId) throws NotFoundException, AuthorizationException {
@@ -110,13 +105,10 @@ public class TaskServiceImpl implements TaskService {
         Project project = projectRepository.findById(request.getProjectId())
                 .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(request.getProjectId()))));
 
-        Status status = statusRepository.findById(request.getStatusId())
-                        .orElseThrow(() -> new StatusNotFoundException(INVALID_STATUS, "상태 태그를 확인하세요."));
-
         log.info("writer id : " + request.getWriterUuid());
         log.info("project id : " + request.getProjectId());
 
-        Task entity = request.toEntity(writer, project, status);
+        Task entity = request.toEntity(writer, project);
 
         Task save = taskRepository.save(entity);
 

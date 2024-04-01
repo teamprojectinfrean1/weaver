@@ -1,7 +1,6 @@
 package com.task.weaver.domain.task.dto.request;
 
 import com.task.weaver.domain.project.entity.Project;
-import com.task.weaver.domain.status.entity.Status;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.user.entity.User;
 import lombok.AllArgsConstructor;
@@ -29,11 +28,10 @@ public class RequestCreateTask {
     private LocalDateTime endDate;
     private String editDeletePermission;
 
-    public Task toEntity(User user, Project project, Status status) {
+    public Task toEntity(User user, Project projects) {
         return Task.builder()
-                .project(project)
+                .project(projects)
                 .user(user)
-                .statusTag(status)
                 .modifier(user)
                 .taskTitle(taskTitle)
                 .taskContent(taskContent)
