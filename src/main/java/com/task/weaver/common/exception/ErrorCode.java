@@ -22,6 +22,9 @@ public enum ErrorCode {
     EMAIL_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "U001", "이미 존재하는 이메일입니다."),
     USER_EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "U002", "사용자를 찾을 수 없습니다."),
     MISMATCHED_PASSWORD(HttpStatus.NOT_MODIFIED, "U003", "입력 값이 일치하지않습니다."),
+    EMPTY_FILE(HttpStatus.BAD_REQUEST, "U004", "파일 항목이 비어있습니다."),
+    CANNOT_SAVED_FILE(HttpStatus.BAD_REQUEST, "U005", "파일 저장에 실패했습니다."),
+    STORE_FILE_OUTSIDE_CURRENT_DIRECTORY_MESSAGE(HttpStatus.BAD_REQUEST, "U006", "유효하지 않은 저장 경로입니다."),
 
     // Authorization
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "A001", "패스워드가 일치하지 않습니다."),
