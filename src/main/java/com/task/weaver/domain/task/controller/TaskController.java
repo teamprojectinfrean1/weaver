@@ -28,6 +28,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TaskController {
     private final TaskService taskService;
+
     @Operation(summary = "프로젝트 태스크 상세 조회", description = "태스크 하나를 조회합니다.")
     @GetMapping("/{taskId}")
     public ResponseEntity<DataResponse<ResponseGetTask>> getTask(@PathVariable("taskId") UUID taskId){
@@ -47,6 +48,7 @@ public class TaskController {
         UUID taskId = taskService.addTask(requestCreateTask);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "태스크 생성 성공", taskId), HttpStatus.OK);
     }
+
     @Operation(summary = "태스크 수정", description = "태스크 하나의 정보를 수정합니다.")
     @PutMapping()
     public ResponseEntity<DataResponse<ResponseGetTask>> updateTask(@RequestParam UUID taskId,

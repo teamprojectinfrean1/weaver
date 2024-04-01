@@ -3,7 +3,6 @@ package com.task.weaver.domain.task.entity;
 import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.entity.Project;
-import com.task.weaver.domain.status.entity.Status;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
 import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -33,10 +32,6 @@ public class Task extends BaseEntity {
     @JoinColumn(name = "project_id")
     private Project project;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "status_tag_id")
-//    private Status statusTag;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_user_id")
     private User user;
@@ -60,8 +55,10 @@ public class Task extends BaseEntity {
 
     @Column(name = "end_date")
     private LocalDateTime endDate;
+
     @Column(name = "status")
     private String status;
+
     @Column(name = "edit_delete_permission")
     private String editDeletePermission;
 
