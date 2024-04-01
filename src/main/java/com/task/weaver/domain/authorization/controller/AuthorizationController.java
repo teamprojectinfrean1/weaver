@@ -153,7 +153,7 @@ public class AuthorizationController {
 	public ResponseEntity<DataResponse<EmailCode>> mailSendForPassword(@RequestBody @Valid EmailRequest emailDto) {
 		log.info("비밀번호 찾기 이메일 인증 :" + emailDto.email());
 		return ResponseEntity.ok(
-				DataResponse.of(HttpStatus.OK, "인증 코드 전송 성공", mailService.joinEmail(emailDto.email())));
+				DataResponse.of(HttpStatus.OK, "인증 코드 전송 성공", mailService.sendVerificationEmail(emailDto.email())));
 	}
 
 	@Operation(summary = "인증 번호 확인", description = "서버에 저장된 랜덤 번호와 사용자 입력 번호 검증")
