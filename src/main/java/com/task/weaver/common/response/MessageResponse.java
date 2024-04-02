@@ -9,11 +9,14 @@ import org.springframework.http.HttpStatus;
 @Getter
 public class MessageResponse extends DefaultResponse{
 
-    private MessageResponse(HttpStatus status, String message) {
+    private final Boolean isSuccess;
+
+    private MessageResponse(HttpStatus status, String message, Boolean isSuccess) {
         super(status.value(), message);
+        this.isSuccess = isSuccess;
     }
 
-    public static MessageResponse of(HttpStatus status, String message) {
-        return new MessageResponse(status, message);
+    public static MessageResponse of(HttpStatus status, String message, Boolean isSuccess) {
+        return new MessageResponse(status, message, isSuccess);
     }
 }

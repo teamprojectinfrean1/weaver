@@ -111,21 +111,21 @@ public class AuthorizationController {
 	@GetMapping("/checkMail")
 	@Parameter(name = "email", description = "이메일 입력", in = ParameterIn.QUERY)
 	public ResponseEntity<DataResponse<Boolean>> checkMail(@RequestParam("email") String email){
-		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "중복 체크 동작", authorizationService.checkMail(email)), HttpStatus.OK);
+		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "중복 체크 동작", authorizationService.checkMail(email), true), HttpStatus.OK);
 	}
 
 	@Operation(summary = "아이디 중복 체크", description = "아이디 중복을 체크")
 	@GetMapping("/checkId")
 	@Parameter(name = "id", description = "아이디 입력", in = ParameterIn.QUERY)
 	public ResponseEntity<DataResponse<Boolean>> checkId(@RequestParam("id") String id){
-		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "중복 체크 동작", authorizationService.checkId(id)), HttpStatus.OK);
+		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "중복 체크 동작", authorizationService.checkId(id), true), HttpStatus.OK);
 	}
 
 	@Operation(summary = "닉네임 중복 체크", description = "닉네임 중복을 체크")
 	@GetMapping("/checkNickname")
 	@Parameter(name = "nickname", description = "닉네임 입력", in = ParameterIn.QUERY)
 	public ResponseEntity<DataResponse<Boolean>> checkNickname(@RequestParam("nickname") String nickname){
-		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "중복 체크 동작", authorizationService.checkNickname(nickname)), HttpStatus.OK);
+		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "중복 체크 동작", authorizationService.checkNickname(nickname), true), HttpStatus.OK);
 	}
 
 	@Operation(summary = "이메일 전송", description = "랜덤 번호를 담은 이메일 전송")
@@ -134,7 +134,7 @@ public class AuthorizationController {
 	public ResponseEntity<DataResponse<EmailCode>> mailSendForId(@RequestBody @Valid EmailRequest emailDto) {
 		log.info("Find ID, verify email: {}", emailDto.email());
 		return ResponseEntity.ok(
-				DataResponse.of(HttpStatus.OK, "인증 코드 전송 성공", mailService.sendVerificationEmail(emailDto.email())));
+				DataResponse.of(HttpStatus.OK, "인증 코드 전송 성공", mailService.joinEmail(emailDto.email()), true));
 	}
 
 	@Operation(summary = "인증 번호 확인", description = "서버에 저장된 랜덤 번호와 사용자 입력 번호 검증")
@@ -144,7 +144,7 @@ public class AuthorizationController {
 			@RequestBody @Valid EmailCheckDto emailCheckDto) {
 		Boolean checked = mailService.CheckAuthNum(emailCheckDto.email(), emailCheckDto.verificationCode());
 		ResponseUserIdNickname targetUser = userService.getUser(emailCheckDto.email(), checked);
-		return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "해당 유저를 반환합니다.", targetUser));
+		return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "해당 유저를 반환합니다.", targetUser, true));
 	}
 
 	@Operation(summary = "이메일 전송", description = "랜덤 번호를 담은 이메일 전송")
@@ -153,7 +153,7 @@ public class AuthorizationController {
 	public ResponseEntity<DataResponse<EmailCode>> mailSendForPassword(@RequestBody @Valid EmailRequest emailDto) {
 		log.info("비밀번호 찾기 이메일 인증 :" + emailDto.email());
 		return ResponseEntity.ok(
-				DataResponse.of(HttpStatus.OK, "인증 코드 전송 성공", mailService.sendVerificationEmail(emailDto.email())));
+				DataResponse.of(HttpStatus.OK, "인증 코드 전송 성공", mailService.joinEmail(emailDto.email()), true));
 	}
 
 	@Operation(summary = "인증 번호 확인", description = "서버에 저장된 랜덤 번호와 사용자 입력 번호 검증")
@@ -162,7 +162,7 @@ public class AuthorizationController {
 	public ResponseEntity<DataResponse<ResponseUuid>> AuthCheckForPassword(@RequestBody @Valid EmailCheckDto emailCheckDto) {
 		Boolean checked = mailService.CheckAuthNum(emailCheckDto.email(), emailCheckDto.verificationCode());
 		ResponseUuid targetUser = userService.getUuid(emailCheckDto.email(), checked);
-		return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "verificationCode 인증 성공", targetUser));
+		return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "verificationCode 인증 성공", targetUser, true));
 	}
 
 	@Operation(summary = "비밀번호 재설정", description = "인증 확인된 사용자 비밀번호 재설정")
@@ -170,6 +170,6 @@ public class AuthorizationController {
 	@PutMapping("/findPassword/verification/update")
 	public ResponseEntity<MessageResponse> AuthPasswordUpdate(@RequestBody @Valid RequestUpdatePassword requestUpdatePassword) {
 		userService.updateUser(requestUpdatePassword);
-		return ResponseEntity.ok(MessageResponse.of(HttpStatus.OK, "비밀번호 변경 성공"));
+		return ResponseEntity.ok(MessageResponse.of(HttpStatus.OK, "비밀번호 변경 성공", true));
 	}
 }

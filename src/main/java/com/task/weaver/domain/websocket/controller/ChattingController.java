@@ -23,13 +23,13 @@ public class ChattingController {
     public ResponseEntity<DataResponse<List<ResponseGetChattings>>> getChattingsInChattingRoom(@PathVariable(name = "chattingRoomId") Long chattingRoomId){
         List<ResponseGetChattings> responseGetChattingsList = chattingService.getChattings(chattingRoomId);
 
-        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "채팅 조회 성공", responseGetChattingsList), HttpStatus.CREATED);
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "채팅 조회 성공", responseGetChattingsList, true), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{chatting_Id}")
     public ResponseEntity<MessageResponse> deleteChatting(@PathVariable(name = "chatting_id") Long chatting_id){
         chattingService.deleteChatting(chatting_id);
 
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "채팅 삭제 성공"), HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "채팅 삭제 성공", true), HttpStatus.NO_CONTENT);
     }
 }

@@ -1,13 +1,10 @@
 package com.task.weaver.common.exception;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.validation.BindingResult;
@@ -24,7 +21,6 @@ public class ErrorResponse {
     private int status;
     private List<FieldError> errors;
     private String code;
-    @JsonProperty("isSuccess")
     private boolean isSuccess;
 
     private ErrorResponse(ErrorCode errorCode, List<FieldError> errors) {
@@ -32,6 +28,7 @@ public class ErrorResponse {
         this.status = errorCode.getStatus();
         this.errors = errors;
         this.code = errorCode.getCode();
+        this.isSuccess = false;
     }
 
     private ErrorResponse(ErrorCode errorCode) {
@@ -39,6 +36,7 @@ public class ErrorResponse {
         this.status = errorCode.getStatus();
         this.code = errorCode.getCode();
         this.errors = new ArrayList<>();
+        this.isSuccess = false;
     }
 
     public static ErrorResponse of(ErrorCode errorCode, BindingResult bindingResult) {

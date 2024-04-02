@@ -54,7 +54,6 @@ public class UserServiceImpl implements UserService {
 
         return ResponseUuid.builder()
                 .uuid(findUser.getUserId())
-                .isSuccess(checked)
                 .build();
     }
 
@@ -90,7 +89,6 @@ public class UserServiceImpl implements UserService {
         return ResponseUserIdNickname.builder()
                 .id(findUser.getId())
                 .nickname(findUser.getNickname())
-                .isSuccess(checked)
                 .build();
     }
 
@@ -205,7 +203,7 @@ public class UserServiceImpl implements UserService {
             if (!Objects.equals(user.getPassword(), currentPassword)) {
                 throw new MismatchedPassword(MISMATCHED_PASSWORD, "입력 값 확인이 필요합니다.");
             }
-            user.updatePassword(updatePassword);
+            user.updatePassword(passwordEncoder.encode(updatePassword));
         }
     }
 
@@ -215,7 +213,7 @@ public class UserServiceImpl implements UserService {
         UUID uuid = UUID.fromString(requestUpdatePassword.getUuid());
         Optional<User> byUserId = userRepository.findById(uuid);
         User user = byUserId.orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, ": 해당 유저를 찾을 수 없습니다."));
-        user.updatePassword(requestUpdatePassword.getPassword());
+        user.updatePassword(passwordEncoder.encode(requestUpdatePassword.getPassword()));
     }
 
     @Override

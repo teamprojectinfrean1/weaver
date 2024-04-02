@@ -49,7 +49,7 @@ public class CommentController {
     public ResponseEntity<DataResponse<ResponseComment>> putComment(@PathVariable Long commentId,
                                                                     @RequestBody RequestUpdateComment comment) {
         ResponseComment responseComment = commentService.updateComment(commentId, comment);
-        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "코멘트 수정 성공", responseComment), HttpStatus.OK);
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "코멘트 수정 성공", responseComment, true), HttpStatus.OK);
     }
 
     @Operation(summary = "코멘트 조회", description = "코멘트 조회")
@@ -57,6 +57,6 @@ public class CommentController {
     public ResponseEntity<DataResponse<ResponsePageComment<ResponseCommentList, Comment>>> getComments(@PathVariable("issueId") UUID issueId,
                                                                                                        @RequestBody CommentPageRequest commentPageRequest) {
         ResponsePageComment responsePageComment = commentService.getComments(commentPageRequest);
-        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK,"이슈에 연결된 코멘트 조회 성공",responsePageComment),HttpStatus.OK);
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK,"이슈에 연결된 코멘트 조회 성공",responsePageComment, true),HttpStatus.OK);
     }
 }

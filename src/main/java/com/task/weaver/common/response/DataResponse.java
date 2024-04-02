@@ -12,13 +12,15 @@ import org.springframework.http.HttpStatus;
 public class DataResponse<T> extends DefaultResponse{
 
     private final T data;
+    private final Boolean isSuccess;
 
-    protected DataResponse(HttpStatus status, String message, T data) {
+    protected DataResponse(HttpStatus status, String message, T data, Boolean isSuccess) {
         super(status.value(), message);
         this.data = data;
+        this.isSuccess = isSuccess;
     }
 
-    public static <T> DataResponse<T> of(HttpStatus status, String message, T data) {
-        return new DataResponse<>(status, message, data);
+    public static <T> DataResponse<T> of(HttpStatus status, String message, T data, Boolean isSuccess) {
+        return new DataResponse<>(status, message, data, isSuccess);
     }
 }
