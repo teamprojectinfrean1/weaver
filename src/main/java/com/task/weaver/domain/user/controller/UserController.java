@@ -59,14 +59,14 @@ public class UserController {
     @GetMapping("/project/user-list")
     public ResponseEntity<DataResponse<ResponsePageResult<ResponseGetUserList, User>>> getUsersFromProject(@RequestBody RequestGetUserPage requestGetUserPage){
         ResponsePageResult<ResponseGetUserList, User> responseGetUserLists = userService.getUsers(requestGetUserPage);
-        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트 구성원 조회 성공", responseGetUserLists), HttpStatus.OK);
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트 구성원 조회 성공", responseGetUserLists, true), HttpStatus.OK);
     }
 
     @Operation(summary = "개발자용 유저 리스트 확인 api", description = "생성된 유저 전부 조회")
     @GetMapping("/list/test")
     public ResponseEntity<DataResponse<List<ResponseGetUser>>> getUsersForTest(){
         List<ResponseGetUser> responseGetUsers = userService.getUsersForTest();
-        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "유저 리스트 전부 조회", responseGetUsers), HttpStatus.OK);
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "유저 리스트 전부 조회", responseGetUsers, true), HttpStatus.OK);
     }
 
     @Operation(summary = "토큰 기반 유저 조회", description = "로그인 직후, 토큰 기반으로 유저 정보 조회")
@@ -74,7 +74,7 @@ public class UserController {
     @GetMapping("/token")
     public ResponseEntity<DataResponse<ResponseGetUserForFront>> getUsersFromToken(HttpServletRequest request) {
         ResponseGetUserForFront responseGetUser = userService.getUserFromToken(request);
-        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "토큰 기반 유저 정보 반환 성공", responseGetUser),
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "토큰 기반 유저 정보 반환 성공", responseGetUser, true),
                 HttpStatus.OK);
     }
 
@@ -93,7 +93,7 @@ public class UserController {
     @PostMapping("/image/upload")
     public ResponseEntity<DataResponse<ResponseFileSaveResult>> uploadImage(
             @RequestParam("image") MultipartFile image) {
-        return ResponseEntity.ok(DataResponse.of(HttpStatus.CREATED, "파일 업로드 성공", fileUploadService.store(image)));
+        return ResponseEntity.ok(DataResponse.of(HttpStatus.CREATED, "파일 업로드 성공", fileUploadService.store(image), true));
     }
 
     @GetMapping("/image/upload/{imageName}")
@@ -112,7 +112,7 @@ public class UserController {
             throws ParseException, JsonProcessingException {
 
         ResponseGetUser responseGetUser = userService.updateUser(userId, requestUpdateUser);
-        return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "유저 정보 수정 성공", responseGetUser));
+        return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "유저 정보 수정 성공", responseGetUser, true));
     }
 
     @Operation(summary = "사용자 삭제", description = "사용자 정보 삭제, 사용자는 사용 불가")

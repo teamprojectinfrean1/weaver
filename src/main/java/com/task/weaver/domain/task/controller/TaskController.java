@@ -33,20 +33,20 @@ public class TaskController {
     @GetMapping("/{taskId}")
     public ResponseEntity<DataResponse<ResponseGetTask>> getTask(@PathVariable("taskId") UUID taskId){
         ResponseGetTask responseTask = taskService.getTask(taskId);
-        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "태스크 상세 조회 성공", responseTask), HttpStatus.OK);
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "태스크 상세 조회 성공", responseTask, true), HttpStatus.OK);
     }
     @Operation(summary = "프로젝트 태스크 다수 조회", description = "프로젝트에 생성된 태스크들을 조회합니다.")
     @GetMapping()
     public ResponseEntity<DataResponse<ResponsePageResult<ResponseGetTaskList, Task>>> getTasks(RequestGetTaskPage requestGetTaskPage) {
         ResponsePageResult responsePageResult = taskService.getTasks(requestGetTaskPage);
-        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트에 연결된 태스크들 조회 성공", responsePageResult), HttpStatus.OK);
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트에 연결된 태스크들 조회 성공", responsePageResult, true), HttpStatus.OK);
     }
 
     @Operation(summary = "태스크 생성", description = "프로젝트에 태스크 하나를 생성합니다.")
     @PostMapping()
     public ResponseEntity<DataResponse<UUID>> addTask(@RequestBody RequestCreateTask requestCreateTask){
         UUID taskId = taskService.addTask(requestCreateTask);
-        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "태스크 생성 성공", taskId), HttpStatus.OK);
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "태스크 생성 성공", taskId, true), HttpStatus.OK);
     }
 
     @Operation(summary = "태스크 수정", description = "태스크 하나의 정보를 수정합니다.")
@@ -54,7 +54,7 @@ public class TaskController {
     public ResponseEntity<DataResponse<ResponseGetTask>> updateTask(@RequestParam UUID taskId,
                                                    @RequestBody RequestUpdateTask requestUpdateTask){
         ResponseGetTask responseTask = taskService.updateTask(taskId, requestUpdateTask);
-        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "태스크 수정 성공", responseTask), HttpStatus.OK);
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "태스크 수정 성공", responseTask, true), HttpStatus.OK);
     }
 
     @PutMapping("/status")
@@ -63,14 +63,14 @@ public class TaskController {
     @Parameter(name = "status", description = "상태 이름 값", in = ParameterIn.QUERY)
     public ResponseEntity<DataResponse<ResponseGetTask>> updateTaskStatus(@RequestParam("taskId") UUID taskId, @RequestParam("status") String status) {
         ResponseGetTask responseGetTask = taskService.updateTaskStatus(taskId, status);
-        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "태크스 상태 수정 성공", responseGetTask), HttpStatus.OK);
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "태크스 상태 수정 성공", responseGetTask, true), HttpStatus.OK);
     }
 
     @Operation(summary = "태스크 삭제", description = "태스크 하나를 삭제합니다.")
     @DeleteMapping()
     public ResponseEntity<MessageResponse> deleteTask(@RequestParam UUID taskId){
         taskService.deleteTask(taskId);
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "태스크 삭제 성공" ), HttpStatus.OK);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "태스크 삭제 성공", true), HttpStatus.OK);
     }
 
 

@@ -24,6 +24,6 @@ public class ChattingRoomController {
     @Parameter(name = "projectId", in = ParameterIn.PATH )
     public ResponseEntity<DataResponse<ResponseCreateChattingRoom>> createChattingRoom(@PathVariable(name = "projectId") UUID projectId) {
         ResponseCreateChattingRoom chattingRoom = chattingService.createChattingRoom(projectId);
-        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "채팅방 생성 성공", chattingRoom), HttpStatus.CREATED);
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "채팅방 생성 성공", chattingRoom, true), HttpStatus.CREATED);
     }
 }

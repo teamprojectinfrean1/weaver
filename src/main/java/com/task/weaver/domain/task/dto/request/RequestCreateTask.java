@@ -20,7 +20,6 @@ public class RequestCreateTask {
 
     private UUID projectId;
     private UUID writerUuid;
-    private Long statusId;
     private String taskTitle;
     private String taskContent;
     private List<String> taskTagList;
