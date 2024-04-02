@@ -10,7 +10,6 @@ import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
-import com.task.weaver.domain.status.entity.Status;
 import com.task.weaver.domain.task.dto.request.RequestCreateTask;
 import com.task.weaver.domain.task.dto.request.RequestGetTaskPage;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
@@ -27,10 +26,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;

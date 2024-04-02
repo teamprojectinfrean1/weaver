@@ -1,7 +1,6 @@
 package com.task.weaver.domain.task.repository;
 
 import com.task.weaver.domain.project.entity.Project;
-import com.task.weaver.domain.status.entity.Status;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.repository.dsl.TaskRepositoryDsl;
 import com.task.weaver.domain.user.entity.User;
@@ -9,8 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 public interface TaskRepository extends JpaRepository<Task, UUID>, TaskRepositoryDsl {
