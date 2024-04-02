@@ -1,10 +1,5 @@
 package com.task.weaver.domain.user.service.Impl;
 
-import static com.task.weaver.common.exception.ErrorCode.MISMATCHED_PASSWORD;
-import static com.task.weaver.common.exception.ErrorCode.NO_MATCHED_VERIFICATION_CODE;
-import static com.task.weaver.common.exception.ErrorCode.USER_EMAIL_NOT_FOUND;
-import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
-
 import com.task.weaver.common.exception.BusinessException;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.user.MismatchedPassword;
@@ -18,23 +13,11 @@ import com.task.weaver.domain.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.user.dto.request.RequestGetUserPage;
 import com.task.weaver.domain.user.dto.request.RequestUpdatePassword;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
-import com.task.weaver.domain.user.dto.response.ResponseGetUser;
-import com.task.weaver.domain.user.dto.response.ResponseGetUserForFront;
-import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
-import com.task.weaver.domain.user.dto.response.ResponseUserIdNickname;
-import com.task.weaver.domain.user.dto.response.ResponseUserMypage;
-import com.task.weaver.domain.user.dto.response.ResponseUuid;
+import com.task.weaver.domain.user.dto.response.*;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.UserRepository;
 import com.task.weaver.domain.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
@@ -45,6 +28,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.function.Function;
+
+import static com.task.weaver.common.exception.ErrorCode.*;
 
 @Slf4j
 @Service
@@ -76,11 +64,18 @@ public class UserServiceImpl implements UserService {
             .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
         return new ResponseGetUser(user);
     }
-
     @Override
-    public ResponseGetUser getUser(final String email) {
+    public ResponseGetUser getUserByMail(final String email) {
         User findUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(USER_EMAIL_NOT_FOUND, ": 해당 이메일이 존재하지않습니다."));
+        return new ResponseGetUser(findUser);
+    }
+
+    @Override
+    public ResponseGetUser getUserById(String id) {
+        User findUser = userRepository.findByUserId(id)
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, ": 해당 ID가 존재하지 않습니다."));
+
         return new ResponseGetUser(findUser);
     }
 

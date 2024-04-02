@@ -1,15 +1,13 @@
 package com.task.weaver.domain.user.service.Impl;
 
-import static com.task.weaver.common.exception.ErrorCode.*;
-
+import com.task.weaver.domain.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.task.weaver.domain.user.repository.UserRepository;
-
-import lombok.RequiredArgsConstructor;
+import static com.task.weaver.common.exception.ErrorCode.USER_EMAIL_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -21,13 +19,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 	 * Spring Security 유저 인증 처리 과정 중 유저 객체 만드는 과정
 	 * ❕ 보통 UserDetails를 따로 만들어서 사용하지만 UserDetails 인터페이스를 구현한 User라는 클래스를 시큐리티가 제공해주긴함
 	 * 그럴려면 Entity를 Member라고 바꿔야함 (User 겹쳐서 사용 못함)
-	 * @param email the username identifying the user whose data is required.
+	 * @param id the username identifying the user whose data is required.
 	 * @return
 	 * @throws UsernameNotFoundException
 	 */
 	@Override
-	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-		return userRepository.findByEmail(email)
+	public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
+		return userRepository.findByUserId(id)
 			.orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
 	}
 
