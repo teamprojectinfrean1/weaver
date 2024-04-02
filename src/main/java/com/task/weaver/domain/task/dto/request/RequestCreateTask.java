@@ -19,20 +19,18 @@ import java.util.UUID;
 public class RequestCreateTask {
 
     private UUID projectId;
-//    private StatusTag statusTag;
-//    private User user;
     private UUID writerUuid;
+    private Long statusId;
     private String taskTitle;
     private String taskContent;
     private List<String> taskTagList;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-//    private List<RequestIssueForTask> issueList;
     private String editDeletePermission;
 
-    public Task toEntity(User user, Project project) {
+    public Task toEntity(User user, Project projects) {
         return Task.builder()
-                .project(project)
+                .project(projects)
                 .user(user)
                 .modifier(user)
                 .taskTitle(taskTitle)
@@ -43,5 +41,4 @@ public class RequestCreateTask {
                 .status("진행 중")
                 .build();
     }
-
 }

@@ -32,10 +32,6 @@ public class Task extends BaseEntity {
     @JoinColumn(name = "project_id")
     private Project project;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "status_tag_id")
-//    private Status statusTag;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_user_id")
     private User user;
@@ -59,8 +55,10 @@ public class Task extends BaseEntity {
 
     @Column(name = "end_date")
     private LocalDateTime endDate;
+
     @Column(name = "status")
     private String status;
+
     @Column(name = "edit_delete_permission")
     private String editDeletePermission;
 

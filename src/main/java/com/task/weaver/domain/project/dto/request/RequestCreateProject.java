@@ -13,7 +13,7 @@ public record RequestCreateProject(@NotEmpty String projectName,
                                    @NotEmpty UUID writerUuid,
                                    LocalDateTime startDate,
                                    LocalDateTime endDate,
-                                   boolean isPublic,
+                                   LocalDateTime createDate,
                                    List<String> projectTagList,
                                    List<UUID> memberUuidList) {
 }
