@@ -1,5 +1,6 @@
 package com.task.weaver.domain.issue.dto.response;
 
+import java.net.URL;
 import java.util.UUID;
 
 import lombok.Builder;
@@ -13,5 +14,5 @@ public record GetIssueListResponse(UUID issueId,
 								   String taskTitle,
 								   String managerId,
 								   String managerNickname,
-								   String managerProfileImage) {
+								   URL managerProfileImage) {
 }

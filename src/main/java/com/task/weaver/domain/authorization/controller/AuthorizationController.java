@@ -15,6 +15,7 @@ import com.task.weaver.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import jakarta.validation.Valid;
+import java.io.IOException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 @Tag(name = "Authorization Controller", description = "인증 관련 컨트롤러")
 @RestController
@@ -43,11 +46,16 @@ public class AuthorizationController {
 
 	@Operation(summary = "회원가입", description = "사용자가 회원가입")
 	@PostMapping("/join")
-	public ResponseEntity<ResponseGetUser> addUser(@RequestBody RequestCreateUser requestCreateUser){
+	public ResponseEntity<DataResponse<ResponseGetUser>> addUser(RequestCreateUser requestCreateUser,
+												   MultipartHttpServletRequest multipartHttpServletRequest)
+			throws IOException {
+
+		MultipartFile profileImage = multipartHttpServletRequest.getFile("profileImage");
+
 		log.info("controller - join - before");
-		ResponseGetUser responseGetUser = userService.addUser(requestCreateUser);
+		ResponseGetUser responseGetUser = userService.addUser(requestCreateUser, profileImage);
 		log.info("controller - join - after");
-		return ResponseEntity.status(HttpStatus.OK).body(responseGetUser);
+		return ResponseEntity.status(HttpStatus.OK).body(DataResponse.of(HttpStatus.OK, "회원 가입 성공", responseGetUser, true));
 	}
 
 	@Operation(summary = "로그인", description = "로그인")

@@ -1,6 +1,7 @@
 package com.task.weaver.domain.user.dto.response;
 
 import com.task.weaver.domain.user.entity.User;
+import java.net.URL;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +16,7 @@ import java.util.UUID;
 public class ResponseGetUserList {
     private UUID userId;
     private String userNickname;
-    private String profileImage;
+    private URL profileImage;
 
     public ResponseGetUserList(User user){
         this.userId = user.getUserId();

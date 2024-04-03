@@ -11,13 +11,13 @@ import com.task.weaver.domain.user.dto.response.ResponseGetUserForFront;
 import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
 import com.task.weaver.domain.user.dto.response.ResponseImage;
 import com.task.weaver.domain.user.entity.User;
-import com.task.weaver.domain.user.service.Impl.FileUploadService;
 import com.task.weaver.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -44,7 +43,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserController {
 
     private final UserService userService;
-    private final FileUploadService fileUploadService;
 
     @Operation(summary = "사용자 한 명 조회", description = "사용자 한명을 조회")
     @Parameter(name = "userId", description = "사용자 id", in = ParameterIn.QUERY)
@@ -78,38 +76,12 @@ public class UserController {
                 HttpStatus.OK);
     }
 
-    /*
-    for Cloud Flare
-
-    @PostMapping("/uploadImage")
-    public ResponseEntity<MessageResponse> uploadImage(@RequestBody RequestImageUpload request) {
-        String apiUrl = "https://api.cloudflare.com/client/v4/accounts/8a3acd454a6f84a41d099ca358ac7e23/images/v1";
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.postForEntity(apiUrl, request, String.class);
-        return ResponseEntity.ok(MessageResponse.of(HttpStatus.OK, "Image uploaded successfully."));
-    }
-     */
-
-    @PostMapping("/image/upload")
-    public ResponseEntity<DataResponse<ResponseFileSaveResult>> uploadImage(
-            @RequestParam("image") MultipartFile image) {
-        return ResponseEntity.ok(DataResponse.of(HttpStatus.CREATED, "파일 업로드 성공", fileUploadService.store(image), true));
-    }
-
-    @GetMapping("/image/upload/{imageName}")
-    public ResponseEntity<byte[]> load(@PathVariable String imageName) {
-        ResponseImage image = fileUploadService.load(imageName);
-        return ResponseEntity.ok()
-                .contentType(image.getContentType())
-                .body(image.getContent());
-    }
-
     @Operation(summary = "사용자 정보 수정", description = "사용자의 정보 (프로필 이미지, 닉네임, 비밀번호) 업데이트")
     @Parameter(name = "userId", description = "사용자 id", in = ParameterIn.QUERY)
     @PutMapping("/update")
     public ResponseEntity<DataResponse<ResponseGetUser>> updateUser(@RequestParam("userId") UUID userId,
                                                                     @RequestBody RequestUpdateUser requestUpdateUser)
-            throws ParseException, JsonProcessingException {
+            throws ParseException, IOException {
 
         ResponseGetUser responseGetUser = userService.updateUser(userId, requestUpdateUser);
         return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "유저 정보 수정 성공", responseGetUser, true));

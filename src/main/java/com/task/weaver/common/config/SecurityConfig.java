@@ -36,9 +36,9 @@ public class SecurityConfig {
 	private static final String[] PERMIT_URL_ARRAY = {
 		"/api/v1/auth/login",
 		"/api/v1/auth/reissue",
-			"/api/v1/auth/checkNickname",
-			"/api/v1/auth/checkMail",
-			"/api/v1/auth/checkId",
+		"/api/v1/auth/checkNickname",
+		"/api/v1/auth/checkMail",
+		"/api/v1/auth/checkId",
 		"/api/v1/auth/join",
 		"/api/v1/users/token",
 		"/api/v1/users/list/test",
