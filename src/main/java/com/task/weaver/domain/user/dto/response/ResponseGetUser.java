@@ -1,6 +1,7 @@
 package com.task.weaver.domain.user.dto.response;
 
 import com.task.weaver.domain.user.entity.User;
+import java.net.URL;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,7 +19,7 @@ public class ResponseGetUser {
     private String nickname;
     private String email;
     private String password;
-    private String profileImage;
+    private URL profileImage;
 
     public ResponseGetUser(User user){
         this.userId = user.getUserId();
@@ -26,5 +27,6 @@ public class ResponseGetUser {
         this.nickname = user.getNickname();
         this.email = user.getEmail();
         this.password = user.getPassword();
+        this.profileImage = user.getProfileImage();
     }
 }

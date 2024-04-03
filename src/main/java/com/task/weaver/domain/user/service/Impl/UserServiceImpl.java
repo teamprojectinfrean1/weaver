@@ -10,6 +10,7 @@ import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.user.MismatchedPassword;
 import com.task.weaver.common.exception.user.UnableSendMailException;
 import com.task.weaver.common.exception.user.UserNotFoundException;
+import com.task.weaver.common.s3.S3Uploader;
 import com.task.weaver.domain.authorization.util.JwtTokenProvider;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
@@ -28,6 +29,9 @@ import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.UserRepository;
 import com.task.weaver.domain.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -45,6 +49,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -55,6 +60,7 @@ public class UserServiceImpl implements UserService {
     private final ProjectRepository projectRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final S3Uploader s3Uploader;
 
     @Override
     public ResponseUuid getUuid(final String email, final Boolean checked) {
@@ -157,7 +163,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseGetUser addUser(RequestCreateUser requestCreateUser) throws BusinessException {
+    public ResponseGetUser addUser(RequestCreateUser requestCreateUser, MultipartFile profileImage) throws BusinessException, IOException {
 
         isExistEmail(requestCreateUser.getEmail());
 
@@ -168,6 +174,9 @@ public class UserServiceImpl implements UserService {
                 .password(passwordEncoder.encode(requestCreateUser.getPassword()))
                 .build();
 
+        String storedFileName = s3Uploader.upload(profileImage, "images");
+        URL updatedImageUrlObject = new URL(storedFileName);
+        user.updateProfileImage(updatedImageUrlObject);
         User savedUser = userRepository.save(user);
 
         log.info("user uuid : " + savedUser.getUserId());
@@ -183,7 +192,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseGetUser updateUser(UUID userId, RequestUpdateUser requestUpdateUser) {
+    public ResponseGetUser updateUser(UUID userId, RequestUpdateUser requestUpdateUser) throws IOException {
         Optional<User> findUser = userRepository.findById(userId);
         if (findUser.isPresent()) {
             User user = findUser.get();
@@ -191,11 +200,19 @@ public class UserServiceImpl implements UserService {
                 case "email" -> user.updateEmail((String) requestUpdateUser.getValue());
                 case "nickname" -> user.updateNickname((String) requestUpdateUser.getValue());
                 case "password" -> updatePassword(requestUpdateUser.getValue(), user);
+                case "profileImage" -> updateProfile(requestUpdateUser.getValue(), user);
             }
             userRepository.save(user);
             return new ResponseGetUser(user);
         }
         throw new UserNotFoundException(USER_NOT_FOUND, "해당 유저가 존재하지않습니다.");
+    }
+
+    private void updateProfile(final Object value, final User user) throws IOException {
+        String oldFileUrl = user.getProfileImage().getPath().substring(1);
+        String updatedImageUrl = s3Uploader.updateFile((MultipartFile) value, oldFileUrl, "images");
+        URL updatedImageUrlObject = new URL(updatedImageUrl);
+        user.updateProfileImage(updatedImageUrlObject);
     }
 
     private void updatePassword(final Object requestUpdateUser, final User user) {

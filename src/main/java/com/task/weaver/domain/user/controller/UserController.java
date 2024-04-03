@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -78,18 +79,6 @@ public class UserController {
                 HttpStatus.OK);
     }
 
-    /*
-    for Cloud Flare
-
-    @PostMapping("/uploadImage")
-    public ResponseEntity<MessageResponse> uploadImage(@RequestBody RequestImageUpload request) {
-        String apiUrl = "https://api.cloudflare.com/client/v4/accounts/8a3acd454a6f84a41d099ca358ac7e23/images/v1";
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.postForEntity(apiUrl, request, String.class);
-        return ResponseEntity.ok(MessageResponse.of(HttpStatus.OK, "Image uploaded successfully."));
-    }
-     */
-
     @PostMapping("/image/upload")
     public ResponseEntity<DataResponse<ResponseFileSaveResult>> uploadImage(
             @RequestParam("image") MultipartFile image) {
@@ -109,7 +98,7 @@ public class UserController {
     @PutMapping("/update")
     public ResponseEntity<DataResponse<ResponseGetUser>> updateUser(@RequestParam("userId") UUID userId,
                                                                     @RequestBody RequestUpdateUser requestUpdateUser)
-            throws ParseException, JsonProcessingException {
+            throws ParseException, IOException {
 
         ResponseGetUser responseGetUser = userService.updateUser(userId, requestUpdateUser);
         return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "유저 정보 수정 성공", responseGetUser, true));

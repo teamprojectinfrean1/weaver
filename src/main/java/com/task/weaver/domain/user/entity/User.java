@@ -1,6 +1,7 @@
 package com.task.weaver.domain.user.entity;
 
 import com.task.weaver.domain.user.dto.request.RequestUpdatePassword;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -51,7 +52,7 @@ public class User extends BaseEntity implements UserDetails {
     private String password;
 
     @Column(name = "profile_image")
-    private String profileImage;
+    private URL profileImage;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<ChattingRoomMember> chattingRoomMemberList;
@@ -79,6 +80,10 @@ public class User extends BaseEntity implements UserDetails {
 
     public void updateNickname(final String nickname) {
         this.nickname = nickname;
+    }
+
+    public void updateProfileImage(final URL storedFileName) {
+        this.profileImage = storedFileName;
     }
 
     @Override
@@ -128,4 +133,5 @@ public class User extends BaseEntity implements UserDetails {
         // 이메일 인증 여부를 여기서 확인해줄수도 있음
         return true;
     }
+
 }
