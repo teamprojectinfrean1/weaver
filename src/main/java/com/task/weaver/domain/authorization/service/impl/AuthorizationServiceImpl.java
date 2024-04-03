@@ -1,6 +1,17 @@
 package com.task.weaver.domain.authorization.service.impl;
 
+import com.task.weaver.common.exception.authorization.InvalidPasswordException;
+import com.task.weaver.common.exception.user.UserNotFoundException;
+import com.task.weaver.domain.authorization.dto.request.RequestSignIn;
+import com.task.weaver.domain.authorization.dto.response.ResponseToken;
+import com.task.weaver.domain.authorization.redis.RefreshToken;
+import com.task.weaver.domain.authorization.redis.RefreshTokenRedisRepository;
+import com.task.weaver.domain.authorization.service.AuthorizationService;
+import com.task.weaver.domain.authorization.util.JwtTokenProvider;
+import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -9,18 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.task.weaver.common.exception.authorization.InvalidPasswordException;
-import com.task.weaver.domain.authorization.dto.request.RequestSignIn;
-import com.task.weaver.domain.authorization.dto.response.ResponseToken;
-import com.task.weaver.domain.authorization.redis.RefreshToken;
-import com.task.weaver.domain.authorization.redis.RefreshTokenRedisRepository;
-import com.task.weaver.domain.authorization.service.AuthorizationService;
-import com.task.weaver.domain.authorization.util.JwtTokenProvider;
-import com.task.weaver.domain.user.dto.response.ResponseGetUser;
-import com.task.weaver.domain.user.service.UserService;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
 
 @Slf4j
 @Service
@@ -30,8 +30,6 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 	private final JwtTokenProvider jwtTokenProvider;
-
-	private final UserService userService;
 	private final UserRepository userRepository;
 	private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
@@ -39,7 +37,8 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 	@Transactional(readOnly = true)
 	public ResponseToken login(RequestSignIn requestSignIn) {
 		// userId check
-		ResponseGetUser user = userService.getUser(requestSignIn.email());
+		User user = userRepository.findByUserId(requestSignIn.id())
+				.orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, " 해당 ID가 존재하지 않습니다."));
 
 		// password check
 		if(!isCheckPassword(requestSignIn)){
@@ -47,7 +46,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 		}
 
 		// 아직 인증되지 않은 객체로 추후 모든 인증이 완료되면 인증된 생성자로 authentication 객체가 생성된다.
-		UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(requestSignIn.email(), requestSignIn.password());
+		UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(requestSignIn.id(), requestSignIn.password());
 		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(usernamePasswordAuthenticationToken);
 
 		// 실패하면 securitycontextholder를 비우고, 성공하면 securitycontextholder에 authentication을 세팅
@@ -71,7 +70,8 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 	}
 
 	private boolean isCheckPassword(RequestSignIn requestSignIn) {
-		ResponseGetUser user = userService.getUser(requestSignIn.email());
+		User user = userRepository.findByUserId(requestSignIn.id())
+				.orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, " 해당 id가 존재하지 않습니다."));
 		log.info(user.getPassword());
 		log.info(requestSignIn.password());
 		log.info(passwordEncoder.matches(requestSignIn.password(), user.getPassword()) ? "true" : "false");

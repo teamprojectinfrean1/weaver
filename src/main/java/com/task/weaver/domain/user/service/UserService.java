@@ -7,19 +7,13 @@ import com.task.weaver.domain.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.user.dto.request.RequestGetUserPage;
 import com.task.weaver.domain.user.dto.request.RequestUpdatePassword;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
-import com.task.weaver.domain.user.dto.response.ResponseGetUser;
-import com.task.weaver.domain.user.dto.response.ResponseGetUserForFront;
-import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
-import com.task.weaver.domain.user.dto.response.ResponseUserIdNickname;
-import com.task.weaver.domain.user.dto.response.ResponseUserMypage;
-import com.task.weaver.domain.user.dto.response.ResponseUuid;
+import com.task.weaver.domain.user.dto.response.*;
 import com.task.weaver.domain.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
-import java.io.IOException;
+import org.json.simple.parser.ParseException;
+
 import java.util.List;
 import java.util.UUID;
-import org.json.simple.parser.ParseException;
-import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
 
@@ -27,7 +21,9 @@ public interface UserService {
 
     ResponseGetUser getUser(UUID userId);
 
-    ResponseGetUser getUser(String email);
+    ResponseGetUser getUserByMail(String email);
+
+    ResponseGetUser getUserById(String id);
 
     ResponseUserIdNickname getUser(String email, Boolean checked);
 

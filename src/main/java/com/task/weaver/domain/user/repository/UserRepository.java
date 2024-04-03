@@ -6,7 +6,6 @@ import com.task.weaver.domain.user.repository.dsl.UserRepositoryDsl;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -15,7 +14,7 @@ public interface UserRepository extends JpaRepository<User, UUID>, UserRepositor
     Optional<User> findByNickname(String nickname);
     Optional<User> findByEmail(String email);
 
-    @Query("SELECT u.id FROM User u WHERE u.id = :id")
+    @Query("SELECT u FROM User as u WHERE u.id = :id")
     Optional<User> findByUserId(@Param("id") String id);
 
     @Query("SELECT NEW com.task.weaver.domain.user.dto"
