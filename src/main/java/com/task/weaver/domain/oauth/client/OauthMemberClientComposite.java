@@ -15,6 +15,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class OauthMemberClientComposite {
 
+    /**
+     * OauthMemberClient - Kakao .. Naver ..
+     */
     private final Map<OauthServerType, OauthMemberClient> mapping;
 
     public OauthMemberClientComposite(Set<OauthMemberClient> clients) {
@@ -25,6 +28,11 @@ public class OauthMemberClientComposite {
                 ));
     }
 
+    /**
+     * @param oauthServerType Kakao .. Naver ..
+     * @param authCode 1차 요청으로 받은 Auth Code
+     * @return OauthMember, mapping된 ApiClient를 통해 회원 가입 or 로그인 처리 후 반환
+     */
     public OauthMember fetch(OauthServerType oauthServerType, String authCode) {
         return getClient(oauthServerType).fetch(authCode);
     }

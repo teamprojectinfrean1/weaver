@@ -21,6 +21,12 @@ public class OauthController {
 
     private final OauthService oauthService;
 
+    /**
+     *
+     * @param oauthServerType OAuth 제공 서버 kakao.. naver..
+     * @param response Service 로직을 통해 생성된 URL로 사용자 Redirect
+     * @return Void
+     */
     @SneakyThrows
     @GetMapping("/{oauthServerType}")
     ResponseEntity<Void> redirectAuthCodeRequestUrl(@PathVariable OauthServerType oauthServerType,
@@ -33,10 +39,7 @@ public class OauthController {
     }
 
     @GetMapping("/login/{oauthServerType}")
-    ResponseEntity<Long> login(
-            @PathVariable OauthServerType oauthServerType,
-            @RequestParam("code") String code
-    ) {
+    ResponseEntity<Long> login(@PathVariable OauthServerType oauthServerType, @RequestParam("code") String code) {
         log.info("Kakao OAuth --> 로그인 요청 성공");
         Long login = oauthService.login(oauthServerType, code);
         return ResponseEntity.ok(login);

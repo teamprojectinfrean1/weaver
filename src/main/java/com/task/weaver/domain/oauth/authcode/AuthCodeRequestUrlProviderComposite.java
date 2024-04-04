@@ -11,6 +11,11 @@ import java.util.Optional;
 import java.util.Set;
 import org.springframework.stereotype.Component;
 
+/**
+ * Composite 패턴 변형 <br/>
+ * OauthServerType의 종류에 따라, 이에 해당하는 AuthCodeRequestUrlProvider를 사용하여 <br/>
+ * URL을 생성할 수 있도록 한다.
+ */
 @Component
 public class AuthCodeRequestUrlProviderComposite {
 
