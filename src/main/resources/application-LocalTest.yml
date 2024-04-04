@@ -9,10 +9,10 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
 
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: jcjk0302@likelion.org
-    password: weakqfmrwgziikpz
+    host: ${SMTP_HOST}
+    port: ${SMTP_PORT}
+    username: ${SMTP_USERNAME}
+    password: ${SMTP_PASSWORD}
     properties:
       mail:
         smtp:
@@ -52,10 +52,16 @@ springdoc:
   use-fqn: true
 
 oauth:
-  kakako:
-    url: https://kauth.kakao.com/oauth
-    id: 269732da6c1f4791883a8271be0633ac
-    redirect: http://localhost:3000/kakao/callback
+  kakao:
+    client_id: ${KAKAO_CLIENT_ID}
+    redirect_uri: ${KAKAO_REDIRECT_URI}
+    client_secret: ${KAKAO_CLIENT_SECRET}
+    scope: ${KAKAO_SCOPE}
+  naver:
+    client_id: ${NAVER_CLIENT_ID}
+    redirect_uri: ${NAVER_REDIRECT_URI}
+    client_secret: ${NAVER_CLIENT_SECRET}
+    scope: ${NAVER_SCOPE}
 
 jwt:
   secret:
