@@ -9,11 +9,11 @@ import lombok.Builder;
 
 @Builder
 public record UpdateIssueRequest(UUID modifierId,
-								 UUID managerId,
+								 UUID assigneeId,
 								 UUID taskId,
 								 LocalDateTime startDate,
 								 LocalDateTime endDate,
-								 String title,
-								 String content,
+								 String issueTitle,
+								 String issueContent,
 								 String status) {
 }

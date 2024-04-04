@@ -3,8 +3,6 @@ package com.task.weaver.domain.project.service.impl;
 import com.task.weaver.common.exception.BusinessException;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.user.UserNotFoundException;
-import com.task.weaver.domain.issue.dto.response.IssueResponse;
-import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.dto.request.RequestCreateProject;
 import com.task.weaver.domain.project.dto.request.RequestPageProject;
 import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
@@ -23,12 +21,9 @@ import java.util.function.Function;
 
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import com.task.weaver.domain.projectmember.repository.ProjectMemberRepository;
-import com.task.weaver.domain.task.dto.response.ResponseGetTask;
-import com.task.weaver.domain.task.dto.response.ResponseUpdateDetail;
-import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.UserRepository;
-import lombok.AllArgsConstructor;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,8 +31,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.swing.*;
 
 @Service
 @RequiredArgsConstructor

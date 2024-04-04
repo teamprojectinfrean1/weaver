@@ -37,21 +37,21 @@ public class Issue extends BaseEntity {
     private Task task;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "creator_id")
-    private User creator;
+    @JoinColumn(name = "modifier_id")
+    private User modifier;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_id")
-    private User manager;
+    @JoinColumn(name = "assignee_id")
+    private User assignee;
 
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
-    @Column(name = "title", length = 100)
-    private String title;
+    @Column(name = "issue_title", length = 100)
+    private String issueTitle;
 
-    @Column(name = "content")
-    private String content;
+    @Column(name = "issue_content")
+    private String issueContent;
 
     // @LastModifiedDate
     // @Column(name = "modify_date")
@@ -66,12 +66,12 @@ public class Issue extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    public void updateIssue(UpdateIssueRequest updateIssueRequest, Task task, User modifier, User manager) {
+    public void updateIssue(UpdateIssueRequest updateIssueRequest, Task task, User modifier, User assignee) {
         this.task = task;
-        this.creator = modifier;
-        this.manager = manager;
-        this.title = updateIssueRequest.title();
-        this.content = updateIssueRequest.content();
+        this.modifier = modifier;
+        this.assignee = assignee;
+        this.issueTitle = updateIssueRequest.issueTitle();
+        this.issueContent = updateIssueRequest.issueContent();
         this.startDate = updateIssueRequest.startDate();
         this.endDate = updateIssueRequest.endDate();
         this.status = Status.valueOf(updateIssueRequest.status());

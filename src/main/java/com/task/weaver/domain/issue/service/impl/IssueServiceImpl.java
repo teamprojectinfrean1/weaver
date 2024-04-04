@@ -21,6 +21,7 @@ import com.task.weaver.domain.issue.service.IssueService;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
+import com.task.weaver.domain.task.dto.response.ResponseUpdateDetail;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.repository.TaskRepository;
 import com.task.weaver.domain.user.entity.User;
@@ -48,7 +49,14 @@ public class IssueServiceImpl implements IssueService {
 	@Override
 	public IssueResponse getIssue(UUID issueId) throws NotFoundException, AuthorizationException {
 		Issue issue = issueRepository.findById(issueId).orElseThrow(() -> new IllegalArgumentException(""));
-		return new IssueResponse(issue);
+		// projectId, taskId, lastUpdateDetail,
+		Task task = taskRepository.findById(issue.getTask().getTaskId())
+			.orElseThrow(() -> new IllegalArgumentException(""));
+		User assignee = issue.getAssignee();
+
+		IssueResponse issueResponse = new IssueResponse(issue, task, assignee);
+
+		return issueResponse;
 	}
 
 	@Override
@@ -67,12 +75,12 @@ public class IssueServiceImpl implements IssueService {
 				// status 확인
 				if(issue.getStatus().equals(Status.valueOf(status))){
 					issueList.add(new GetIssueListResponse(issue.getIssueId(),
-						issue.getTitle(),
+						issue.getIssueTitle(),
 						task.getTaskId(),
 						task.getTaskTitle(),
-						issue.getManager().getId(),
-						issue.getManager().getNickname(),
-						issue.getManager().getProfileImage()));
+						issue.getAssignee().getId(),
+						issue.getAssignee().getNickname(),
+						issue.getAssignee().getProfileImage()));
 				}
 			}
 		}
@@ -102,14 +110,14 @@ public class IssueServiceImpl implements IssueService {
 				for (Task task : project.getTaskList()) {
 					for(Issue issue : task.getIssueList()){
 						// manager 확인
-						if(issue.getManager().getNickname().contains(word)){
+						if(issue.getAssignee().getNickname().contains(word)){
 							issueList.add(new GetIssueListResponse(issue.getIssueId(),
-								issue.getTitle(),
+								issue.getIssueTitle(),
 								task.getTaskId(),
 								task.getTaskTitle(),
-								issue.getManager().getId(),
-								issue.getManager().getNickname(),
-								issue.getManager().getProfileImage()));
+								issue.getAssignee().getId(),
+								issue.getAssignee().getNickname(),
+								issue.getAssignee().getProfileImage()));
 						}
 					}
 				}
@@ -119,12 +127,12 @@ public class IssueServiceImpl implements IssueService {
 					if(task.getTaskTitle().contains(word)){
 						for(Issue issue : task.getIssueList()){
 							issueList.add(new GetIssueListResponse(issue.getIssueId(),
-								issue.getTitle(),
+								issue.getIssueTitle(),
 								task.getTaskId(),
 								task.getTaskTitle(),
-								issue.getManager().getId(),
-								issue.getManager().getNickname(),
-								issue.getManager().getProfileImage()));
+								issue.getAssignee().getId(),
+								issue.getAssignee().getNickname(),
+								issue.getAssignee().getProfileImage()));
 						}
 					}
 				}
@@ -133,14 +141,14 @@ public class IssueServiceImpl implements IssueService {
 				for (Task task : project.getTaskList()) {
 					for(Issue issue : task.getIssueList()){
 						// issue title 확인
-						if(issue.getTitle().contains(word)){
+						if(issue.getIssueTitle().contains(word)){
 							issueList.add(new GetIssueListResponse(issue.getIssueId(),
-								issue.getTitle(),
+								issue.getIssueTitle(),
 								task.getTaskId(),
 								task.getTaskTitle(),
-								issue.getManager().getId(),
-								issue.getManager().getNickname(),
-								issue.getManager().getProfileImage()));
+								issue.getAssignee().getId(),
+								issue.getAssignee().getNickname(),
+								issue.getAssignee().getProfileImage()));
 						}
 					}
 				}
@@ -167,10 +175,10 @@ public class IssueServiceImpl implements IssueService {
 
 		Issue issue = Issue.builder()
 			.task(task)
-			.creator(creator)
-			.manager(manager)
-			.title(createIssueRequest.title())
-			.content(createIssueRequest.content())
+			.modifier(creator)
+			.assignee(manager)
+			.issueTitle(createIssueRequest.title())
+			.issueContent(createIssueRequest.content())
 			.startDate(createIssueRequest.startDate())
 			.endDate(createIssueRequest.endDate())
 			.status(Status.valueOf(createIssueRequest.status()))
@@ -190,7 +198,7 @@ public class IssueServiceImpl implements IssueService {
 			.orElseThrow(() -> new IllegalArgumentException(""));
 		User modifier = userRepository.findById(updateIssueRequest.modifierId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
-		User manager = userRepository.findById(updateIssueRequest.managerId())
+		User manager = userRepository.findById(updateIssueRequest.assigneeId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
 
 		issue.updateIssue(updateIssueRequest, task, modifier, manager);
