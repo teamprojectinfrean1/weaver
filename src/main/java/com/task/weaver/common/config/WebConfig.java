@@ -1,8 +1,9 @@
 package com.task.weaver.common.config;
 
+import com.task.weaver.domain.oauth.util.OauthServerTypeConverter;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -11,17 +12,17 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")              //와일드 카드 패턴
-                .allowedOrigins("*")                          //*로 하면 모든 오리진 허용
-                .allowedMethods("GET", "POST", "PUT", "DELETE");  //*로 정하면 모든 메서드 허용
-//                .allowedHeaders("*");
-//                .maxAge(MAX_AGE_SECS);
+        registry.addMapping("/**")
+                .allowedOrigins("*", "http://localhost:3000")
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .exposedHeaders("*");
     }
 
+    /**
+     * converter 설정 추가
+     */
     @Override
-    public void addResourceHandlers(final ResourceHandlerRegistry registry) {
-        registry
-                .addResourceHandler("/images/**")
-                .addResourceLocations("file:/Users/ondd/Documents/Java-WorkSpace/weaver-file/generated_files/");
+    public void addFormatters(final FormatterRegistry registry) {
+        registry.addConverter(new OauthServerTypeConverter());
     }
 }
