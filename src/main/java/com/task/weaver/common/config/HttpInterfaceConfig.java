@@ -1,5 +1,6 @@
 package com.task.weaver.common.config;
 
+import com.task.weaver.common.oauth.google.client.GoogleApiClient;
 import com.task.weaver.common.oauth.kakao.client.KakaoApiClient;
 import com.task.weaver.common.oauth.naver.client.NaverApiClient;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,11 @@ public class HttpInterfaceConfig {
     @Bean
     public NaverApiClient naverApiClient() {
         return createHttpInterface(NaverApiClient.class);
+    }
+
+    @Bean
+    public GoogleApiClient googleApiClient() {
+        return createHttpInterface(GoogleApiClient.class);
     }
 
     private <T> T createHttpInterface(Class<T> clazz) {

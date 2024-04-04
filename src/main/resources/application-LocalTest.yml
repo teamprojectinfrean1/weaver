@@ -62,6 +62,11 @@ oauth:
     redirect_uri: ${NAVER_REDIRECT_URI}
     client_secret: ${NAVER_CLIENT_SECRET}
     scope: ${NAVER_SCOPE}
+  google:
+    client_id: Not yet
+    redirect_uri: Not yet
+    client_secret: Not yet
+    scope: Not yet
 
 jwt:
   secret:
