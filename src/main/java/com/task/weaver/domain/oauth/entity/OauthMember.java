@@ -1,6 +1,4 @@
-package com.task.weaver.domain.oauth.kakao.entity;
-
-import static lombok.AccessLevel.PROTECTED;
+package com.task.weaver.domain.oauth.entity;
 
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;

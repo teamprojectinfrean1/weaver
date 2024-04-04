@@ -1,7 +1,7 @@
 package com.task.weaver.common.config;
 
-import com.task.weaver.domain.oauth.kakao.client.KakaoApiClient;
-import com.task.weaver.domain.oauth.naver.client.NaverApiClient;
+import com.task.weaver.common.oauth.kakao.client.KakaoApiClient;
+import com.task.weaver.common.oauth.naver.client.NaverApiClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;

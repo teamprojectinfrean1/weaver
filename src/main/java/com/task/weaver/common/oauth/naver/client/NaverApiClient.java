@@ -1,9 +1,9 @@
-package com.task.weaver.domain.oauth.naver.client;
+package com.task.weaver.common.oauth.naver.client;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
-import com.task.weaver.domain.oauth.naver.dto.NaverMemberResponse;
-import com.task.weaver.domain.oauth.naver.dto.NaverToken;
+import com.task.weaver.common.oauth.naver.dto.NaverMemberResponse;
+import com.task.weaver.common.oauth.naver.dto.NaverToken;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;

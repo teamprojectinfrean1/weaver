@@ -1,10 +1,9 @@
-package com.task.weaver.domain.oauth.service.impl;
+package com.task.weaver.domain.oauth.authcode;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
 import com.task.weaver.common.model.OauthServerType;
-import com.task.weaver.domain.oauth.service.AuthCodeRequestUrlProvider;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;

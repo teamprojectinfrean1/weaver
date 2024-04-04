@@ -1,4 +1,4 @@
-package com.task.weaver.domain.oauth.kakao.entity;
+package com.task.weaver.domain.oauth.entity;
 
 import static jakarta.persistence.EnumType.STRING;
 

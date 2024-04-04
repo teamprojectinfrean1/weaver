@@ -1,4 +1,4 @@
-package com.task.weaver.domain.oauth.service;
+package com.task.weaver.domain.oauth.authcode;
 
 import com.task.weaver.common.model.OauthServerType;
 

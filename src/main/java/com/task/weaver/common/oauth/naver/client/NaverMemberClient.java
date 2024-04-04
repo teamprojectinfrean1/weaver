@@ -1,11 +1,11 @@
-package com.task.weaver.domain.oauth.naver.client;
+package com.task.weaver.common.oauth.naver.client;
 
 import com.task.weaver.common.config.NaverOauthConfig;
 import com.task.weaver.domain.oauth.client.OauthMemberClient;
 import com.task.weaver.common.model.OauthServerType;
-import com.task.weaver.domain.oauth.kakao.entity.OauthMember;
-import com.task.weaver.domain.oauth.naver.dto.NaverMemberResponse;
-import com.task.weaver.domain.oauth.naver.dto.NaverToken;
+import com.task.weaver.domain.oauth.entity.OauthMember;
+import com.task.weaver.common.oauth.naver.dto.NaverMemberResponse;
+import com.task.weaver.common.oauth.naver.dto.NaverToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;

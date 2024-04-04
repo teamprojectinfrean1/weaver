@@ -1,4 +1,4 @@
-package com.task.weaver.domain.oauth.naver.dto;
+package com.task.weaver.common.oauth.naver.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

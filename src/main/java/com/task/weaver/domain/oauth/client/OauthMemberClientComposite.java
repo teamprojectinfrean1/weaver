@@ -4,7 +4,7 @@ import static java.util.stream.Collectors.toMap;
 import static java.util.function.Function.identity;
 
 import com.task.weaver.common.model.OauthServerType;
-import com.task.weaver.domain.oauth.kakao.entity.OauthMember;
+import com.task.weaver.domain.oauth.entity.OauthMember;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;

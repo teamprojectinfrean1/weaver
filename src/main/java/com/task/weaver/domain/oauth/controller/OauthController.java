@@ -1,7 +1,7 @@
 package com.task.weaver.domain.oauth.controller;
 
 import com.task.weaver.common.model.OauthServerType;
-import com.task.weaver.domain.oauth.service.impl.OauthService;
+import com.task.weaver.domain.oauth.service.OauthService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

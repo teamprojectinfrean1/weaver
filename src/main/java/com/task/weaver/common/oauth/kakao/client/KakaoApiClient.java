@@ -1,10 +1,10 @@
-package com.task.weaver.domain.oauth.kakao.client;
+package com.task.weaver.common.oauth.kakao.client;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 
-import com.task.weaver.domain.oauth.kakao.dto.KakaoMemberResponse;
-import com.task.weaver.domain.oauth.kakao.dto.KakaoToken;
+import com.task.weaver.common.oauth.kakao.dto.KakaoMemberResponse;
+import com.task.weaver.common.oauth.kakao.dto.KakaoToken;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;

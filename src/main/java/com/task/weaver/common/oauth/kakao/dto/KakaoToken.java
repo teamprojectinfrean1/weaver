@@ -1,4 +1,4 @@
-package com.task.weaver.domain.oauth.kakao.dto;
+package com.task.weaver.common.oauth.kakao.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

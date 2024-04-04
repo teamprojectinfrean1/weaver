@@ -1,8 +1,9 @@
-package com.task.weaver.domain.oauth.service.impl;
+package com.task.weaver.domain.oauth.service;
 
+import com.task.weaver.domain.oauth.authcode.AuthCodeRequestUrlProviderComposite;
 import com.task.weaver.domain.oauth.client.OauthMemberClientComposite;
 import com.task.weaver.common.model.OauthServerType;
-import com.task.weaver.domain.oauth.kakao.entity.OauthMember;
+import com.task.weaver.domain.oauth.entity.OauthMember;
 import com.task.weaver.domain.oauth.repository.OauthMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

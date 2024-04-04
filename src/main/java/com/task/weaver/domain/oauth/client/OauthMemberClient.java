@@ -1,7 +1,7 @@
 package com.task.weaver.domain.oauth.client;
 
 import com.task.weaver.common.model.OauthServerType;
-import com.task.weaver.domain.oauth.kakao.entity.OauthMember;
+import com.task.weaver.domain.oauth.entity.OauthMember;
 
 public interface OauthMemberClient {
 
