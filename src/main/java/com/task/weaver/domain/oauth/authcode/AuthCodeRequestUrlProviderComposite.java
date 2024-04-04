@@ -3,6 +3,8 @@ package com.task.weaver.domain.oauth.authcode;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
+import com.task.weaver.common.exception.ErrorCode;
+import com.task.weaver.common.exception.user.UnsupportedPlatformsException;
 import com.task.weaver.common.model.OauthServerType;
 import java.util.Map;
 import java.util.Optional;
@@ -28,6 +30,7 @@ public class AuthCodeRequestUrlProviderComposite {
 
     private AuthCodeRequestUrlProvider getProvider(OauthServerType oauthServerType) {
         return Optional.ofNullable(mapping.get(oauthServerType))
-                .orElseThrow(() -> new RuntimeException("지원하지 않는 소셜 로그인 타입입니다."));
+                .orElseThrow(
+                        () -> new UnsupportedPlatformsException(ErrorCode.UNSUPPORTED_OAUTH, "지원하지 않는 소셜 로그인 타입입니다."));
     }
 }
