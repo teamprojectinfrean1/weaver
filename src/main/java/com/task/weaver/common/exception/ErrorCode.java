@@ -35,7 +35,10 @@ public enum ErrorCode {
 
     // Email
     UNABLE_TO_SEND_EMAIL(HttpStatus.BAD_REQUEST, "M001", "메일을 보낼 수 없습니다."),
-    NO_SEARCH_ALGORITHM(HttpStatus.FORBIDDEN, "M002", "검색 알고리즘이 없습니다.");
+    NO_SEARCH_ALGORITHM(HttpStatus.FORBIDDEN, "M002", "검색 알고리즘이 없습니다."),
+
+    // Comment
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "CM001", "해당 코멘트를 찾을 수 없습니다");
 
     private final HttpStatus status;
     private final String code;
