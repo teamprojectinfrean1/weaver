@@ -15,14 +15,23 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 // @Builder
-// public record IssueResponse(UUID issueId,
-// 							String title,
-// 							String content,
-// 							LocalDateTime modDate,
-// 							String status
-// 							) {
+// public record IssueResponse(
+// 		UUID projectId,
+// 		UUID taskId,
+// 		String taskTitle,
+// 		UUID issueId,
+// 		String issueTitle,
+// 		String issueContent,
+// 		String status,
+// 		UUID assigneeId,
+// 		String assigneeNickname,
+// 		String assigneeProfileImage,
+// 		LocalDateTime startDate,
+// 		LocalDateTime endDate,
+// 		ResponseUpdateDetail lastUpdateDetail
+// 		) {
 //
-// 	public IssueResponse(Issue issue) {
+// 	public IssueResponse(Issue issue, User assignee, User modifier) {
 // 		this(issue.getIssueId(), issue.getTitle(), issue.getContent(), issue.getModDate(), issue.getStatus().toString());
 // 	}
 // }
@@ -46,18 +55,23 @@ public class IssueResponse {
 	private LocalDateTime endDate;
 	private ResponseUpdateDetail lastUpdateDetail;
 
-	public IssueResponse(Issue issue, Task task, User assignee) {
-		this.projectId = task.getProject().getProjectId();
-		this.taskId = task.getTaskId();
-		this.taskTitle = task.getTaskTitle();
+	public IssueResponse(Issue issue) {
+		this.projectId = issue.getTask().getProject().getProjectId();
+		this.taskId = issue.getTask().getTaskId();
+		this.taskTitle = issue.getTask().getTaskTitle();
 		this.issueId = issue.getIssueId();
 		this.issueTitle = issue.getIssueTitle();
 		this.issueContent = issue.getIssueContent();
 		this.status = issue.getStatus().toString();
-		this.assigneeId = assignee.getUserId();
-		this.assigneeNickname = assignee.getNickname();
-		this.assigneeProfileImage = assignee.getProfileImage();
+		this.assigneeId = issue.getAssignee().getUserId();
+		this.assigneeNickname = issue.getAssignee().getNickname();
+		this.assigneeProfileImage = issue.getAssignee().getProfileImage();
 		this.startDate = issue.getStartDate();
 		this.endDate = issue.getEndDate();
+		this.lastUpdateDetail = ResponseUpdateDetail.builder()
+			.userUuid(issue.getModifier().getUserId())
+			.userNickname(issue.getModifier().getNickname())
+			.updatedDate(issue.getModDate())
+			.build();
 	}
 }

@@ -14,6 +14,5 @@ public record UpdateIssueRequest(UUID modifierId,
 								 LocalDateTime startDate,
 								 LocalDateTime endDate,
 								 String issueTitle,
-								 String issueContent,
-								 String status) {
+								 String issueContent) {
 }

@@ -18,11 +18,13 @@ public interface IssueService {
     Page<GetIssueListResponse> getIssues(String status, GetIssuePageRequest getIssuePageRequest)
             throws NotFoundException, AuthorizationException;
 
-    UUID addIssue(CreateIssueRequest issueRequest) throws AuthorizationException;
+    IssueResponse addIssue(CreateIssueRequest issueRequest) throws AuthorizationException;
 
 
     IssueResponse updateIssue(UUID issueId, UpdateIssueRequest updateIssueRequest)
             throws NotFoundException, AuthorizationException;
+
+    void updateIssueStatus(UUID issueId, String status) throws NotFoundException, AuthorizationException;
 
     void deleteIssue(Issue issue) throws NotFoundException, AuthorizationException;
 

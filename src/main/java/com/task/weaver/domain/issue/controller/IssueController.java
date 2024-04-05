@@ -35,7 +35,7 @@ public class IssueController {
 	// private final DataResponse dataResponse;
 
 	@Operation(summary = "이슈 단건 조회", description = "issueId로 이슈 단건 조회")
-	@GetMapping("/{issueId}")
+	@GetMapping("/detail/{issueId}")
 	public ResponseEntity<?> getIssueInfo(@PathVariable UUID issueId){
 		IssueResponse issueResponse = issueService.getIssue(issueId);
 		return ResponseEntity.ok()
@@ -45,8 +45,7 @@ public class IssueController {
 	@Operation(summary = "이슈 생성", description = "이슈 생성")
 	@PostMapping
 	public ResponseEntity<?> addIssue(@RequestBody CreateIssueRequest createIssueRequest) {
-		issueService.addIssue(createIssueRequest);
-		return ResponseEntity.ok().body("Add Issue Successful");
+		return ResponseEntity.ok().body(issueService.addIssue(createIssueRequest));
 	}
 
 	@Operation(summary = "이슈 삭제", description = "issueId로 이슈 삭제")
@@ -70,9 +69,16 @@ public class IssueController {
 	}
 
 	@Operation(summary = "이슈 수정", description = "issueId로 기존 이슈 상세 정보 수정")
-	@PutMapping("/{issueId}")
+	@PutMapping("/detail/{issueId}")
 	public ResponseEntity<?> updateTask(@PathVariable UUID issueId, UpdateIssueRequest updateIssueRequest){
 		return ResponseEntity.ok().body(issueService.updateIssue(issueId, updateIssueRequest));
+	}
+
+	@Operation(summary = "이슈 상태 수정", description = "issueId로 이슈 상세 상태 수정")
+	@PutMapping("/status/{issueId}")
+	public ResponseEntity<?> updateTask(@PathVariable UUID issueId, String status){
+		issueService.updateIssueStatus(issueId, status);
+		return ResponseEntity.ok().body("Update Issue Status");
 	}
 
 	@Operation(summary = "이슈 검색 조회", description = "filter로 이슈 검색 조회 (MANAGER / TASK / ISSUE)")

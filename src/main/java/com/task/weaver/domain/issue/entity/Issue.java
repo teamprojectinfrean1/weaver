@@ -12,10 +12,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.lang.reflect.Modifier;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -37,6 +39,10 @@ public class Issue extends BaseEntity {
     private Task task;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "creator_id")
+    private User creator;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "modifier_id")
     private User modifier;
 
@@ -52,10 +58,6 @@ public class Issue extends BaseEntity {
 
     @Column(name = "issue_content")
     private String issueContent;
-
-    // @LastModifiedDate
-    // @Column(name = "modify_date")
-    // private LocalDateTime modDate;
 
     @Column(name = "start_date")
     private LocalDateTime startDate;
@@ -74,6 +76,37 @@ public class Issue extends BaseEntity {
         this.issueContent = updateIssueRequest.issueContent();
         this.startDate = updateIssueRequest.startDate();
         this.endDate = updateIssueRequest.endDate();
-        this.status = Status.valueOf(updateIssueRequest.status());
+    }
+
+    public void updateTask(Task task){
+        this.task = task;
+    }
+
+    public void updateModifier(User modifier) {
+        this.modifier = modifier;
+    }
+
+    public void updateAssignee(User assignee){
+        this.assignee = assignee;
+    }
+
+    public void updateIssueTitle(String issueTitle) {
+        this.issueTitle = issueTitle;
+    }
+
+    public void updateIssueContent(String issueContent) {
+        this.issueContent = issueContent;
+    }
+
+    public void updateStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public void updateEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
+    }
+
+    public void updateStatus(Status status) {
+        this.status = status;
     }
 }

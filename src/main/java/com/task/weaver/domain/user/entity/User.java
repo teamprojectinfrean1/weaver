@@ -66,8 +66,8 @@ public class User extends BaseEntity implements UserDetails {
     @OneToMany(mappedBy = "creator", cascade = CascadeType.REMOVE)
     private List<Issue> creatorIssueList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "manager", cascade = CascadeType.REMOVE)
-    private List<Issue> managerIssueList = new ArrayList<>();
+    @OneToMany(mappedBy = "assignee", cascade = CascadeType.REMOVE)
+    private List<Issue> assigneeIssueList = new ArrayList<>();
 
     public void updateEmail(final String email) {
         this.email = email;
