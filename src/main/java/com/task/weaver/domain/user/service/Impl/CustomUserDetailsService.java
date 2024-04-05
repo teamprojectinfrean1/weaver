@@ -2,6 +2,8 @@ package com.task.weaver.domain.user.service.Impl;
 
 import static com.task.weaver.common.exception.ErrorCode.*;
 
+import com.task.weaver.domain.oauth.entity.OauthId;
+import com.task.weaver.domain.oauth.repository.OauthMemberRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -30,6 +32,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 		return userRepository.findByEmail(email)
 			.orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
 	}
+
 
 	/**
 	 * Security 권한 관리

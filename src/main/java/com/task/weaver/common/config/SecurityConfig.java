@@ -52,7 +52,8 @@ public class SecurityConfig {
 		"/h2-console/**",
 		"/favicon.ico",
 		"/api/v1/auth/findId/**",
-		"/api/v1/auth/findPassword/**"
+		"/api/v1/auth/findPassword/**",
+		"/api/v1/oauth/**"
 	};
 
 	@Bean

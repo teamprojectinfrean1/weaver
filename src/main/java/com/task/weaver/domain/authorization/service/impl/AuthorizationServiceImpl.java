@@ -1,5 +1,7 @@
 package com.task.weaver.domain.authorization.service.impl;
 
+import com.task.weaver.domain.oauth.entity.OauthId;
+import com.task.weaver.domain.oauth.entity.OauthMember;
 import com.task.weaver.domain.user.repository.UserRepository;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -37,7 +39,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public ResponseToken login(RequestSignIn requestSignIn) {
+	public ResponseToken weaverLogin(RequestSignIn requestSignIn) {
 		// userId check
 		ResponseGetUser user = userService.getUser(requestSignIn.email());
 
@@ -46,28 +48,47 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 			throw new InvalidPasswordException(new Throwable(requestSignIn.password()));
 		}
 
-		// 아직 인증되지 않은 객체로 추후 모든 인증이 완료되면 인증된 생성자로 authentication 객체가 생성된다.
-		UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(requestSignIn.email(), requestSignIn.password());
-		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(usernamePasswordAuthenticationToken);
-
-		// 실패하면 securitycontextholder를 비우고, 성공하면 securitycontextholder에 authentication을 세팅
-		SecurityContextHolder.getContext().setAuthentication(authentication);
+		Authentication authentication = getAuthentication(requestSignIn.email(), requestSignIn.password());
 
 		// refresh token 발급
 		String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
 		// access token 발급
 		String accessToken = jwtTokenProvider.createAccessToken(authentication);
-
 		// refresh token redis에 저장
 		refreshTokenRedisRepository.save(new RefreshToken(authentication.getName(), refreshToken));
 
 		// 기존 토큰 있으면 수정, 없으면 생성
-
 		// accessToken, refreshToken 리턴
 		return ResponseToken.builder()
 			.accessToken("Bearer " + accessToken)
 			.refreshToken(refreshToken)
 			.build();
+	}
+
+	@Override
+	public ResponseToken oauthLogin(final OauthMember oauthMember) {
+		OauthId oauthId = oauthMember.oauthId();
+		Authentication authentication = getAuthentication(oauthId.oauthServerId(), oauthId.oauthServer().name());
+		String accessToken = jwtTokenProvider.createAccessToken(authentication);
+		String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
+		refreshTokenRedisRepository.save(new RefreshToken(authentication.getName(), refreshToken));
+		return ResponseToken.builder()
+				.accessToken("Bearer " + accessToken)
+				.refreshToken(refreshToken)
+				.build();
+	}
+
+	private Authentication getAuthentication(final String principal, final String credentials) {
+		// 아직 인증되지 않은 객체로 추후 모든 인증이 완료되면 인증된 생성자로 authentication 객체가 생성된다.
+		UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+				principal, credentials);
+		log.info((String) usernamePasswordAuthenticationToken.getCredentials(), "--------------------------------");
+		log.info((String) usernamePasswordAuthenticationToken.getPrincipal(), "--------------------------------");
+		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(usernamePasswordAuthenticationToken);
+
+		// 실패하면 securitycontextholder를 비우고, 성공하면 securitycontextholder에 authentication을 세팅
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		return authentication;
 	}
 
 	private boolean isCheckPassword(RequestSignIn requestSignIn) {

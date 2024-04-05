@@ -62,7 +62,7 @@ public class AuthorizationController {
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody RequestSignIn requestSignIn, HttpServletResponse res) {
 		// access token -> header? body? cookie?
-		ResponseToken responseToken = authorizationService.login(requestSignIn);
+		ResponseToken responseToken = authorizationService.weaverLogin(requestSignIn);
 
 		log.info("refreshToken : " + responseToken.refreshToken());
 
