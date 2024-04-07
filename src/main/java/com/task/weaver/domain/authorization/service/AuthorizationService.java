@@ -6,7 +6,6 @@ import com.task.weaver.domain.oauth.entity.OauthMember;
 
 public interface AuthorizationService {
 	ResponseToken weaverLogin(RequestSignIn requestSignIn);
-	ResponseToken oauthLogin(OauthMember oauthMember);
 	ResponseToken reissue (String refreshToken);
 	void logout(String refreshToken);
 	Boolean checkMail(String email);

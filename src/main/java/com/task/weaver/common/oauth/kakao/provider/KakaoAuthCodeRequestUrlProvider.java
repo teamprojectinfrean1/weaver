@@ -1,6 +1,6 @@
 package com.task.weaver.common.oauth.kakao.provider;
 
-import com.task.weaver.common.config.KakaoOauthConfig;
+import com.task.weaver.common.oauth.config.KakaoOauthConfig;
 import com.task.weaver.common.model.OauthServerType;
 import com.task.weaver.domain.oauth.authcode.AuthCodeRequestUrlProvider;
 import lombok.RequiredArgsConstructor;

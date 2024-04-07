@@ -5,6 +5,7 @@ import com.task.weaver.common.response.DataResponse;
 import com.task.weaver.domain.authorization.dto.response.ResponseToken;
 import com.task.weaver.domain.authorization.service.AuthorizationService;
 import com.task.weaver.domain.authorization.service.impl.AuthorizationServiceImpl;
+import com.task.weaver.domain.oauth.entity.OauthMember;
 import com.task.weaver.domain.oauth.service.OauthService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +47,7 @@ public class OauthController {
     @GetMapping("/login/{oauthServerType}")
     ResponseEntity<DataResponse<ResponseToken>> login(@PathVariable OauthServerType oauthServerType, @RequestParam("code") String code) {
         log.info("Kakao OAuth --> 로그인 요청 성공");
-        ResponseToken responseToken = authorizationService.oauthLogin(oauthService.login(oauthServerType, code));
+        ResponseToken responseToken = authorizationService.authenticationOAuthUser(oauthService.login(oauthServerType, code));
         return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "소셜 로그인 성공", responseToken, true));
     }
 }

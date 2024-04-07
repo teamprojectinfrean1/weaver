@@ -37,8 +37,8 @@ public class OauthMember {
     private String nickname;
     private String profileImageUrl;
 
-    public Long id() {
-        return id;
+    public String id() {
+        return String.valueOf(id);
     }
 
     public OauthId oauthId() {
@@ -52,4 +52,5 @@ public class OauthMember {
     public String profileImageUrl() {
         return profileImageUrl;
     }
+
 }

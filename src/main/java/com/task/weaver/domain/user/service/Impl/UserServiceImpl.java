@@ -1,10 +1,5 @@
 package com.task.weaver.domain.user.service.Impl;
 
-import static com.task.weaver.common.exception.ErrorCode.MISMATCHED_PASSWORD;
-import static com.task.weaver.common.exception.ErrorCode.NO_MATCHED_VERIFICATION_CODE;
-import static com.task.weaver.common.exception.ErrorCode.USER_EMAIL_NOT_FOUND;
-import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
-
 import com.task.weaver.common.exception.BusinessException;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.user.MismatchedPassword;
@@ -19,26 +14,13 @@ import com.task.weaver.domain.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.user.dto.request.RequestGetUserPage;
 import com.task.weaver.domain.user.dto.request.RequestUpdatePassword;
 import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
-import com.task.weaver.domain.user.dto.response.ResponseGetUser;
-import com.task.weaver.domain.user.dto.response.ResponseGetUserForFront;
-import com.task.weaver.domain.user.dto.response.ResponseGetUserList;
-import com.task.weaver.domain.user.dto.response.ResponseUserIdNickname;
-import com.task.weaver.domain.user.dto.response.ResponseUserMypage;
-import com.task.weaver.domain.user.dto.response.ResponseUuid;
+import com.task.weaver.domain.user.dto.response.*;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.UserRepository;
 import com.task.weaver.domain.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
@@ -50,6 +32,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.*;
+import java.util.function.Function;
+
+import static com.task.weaver.common.exception.ErrorCode.*;
 
 @Slf4j
 @Service
@@ -81,11 +68,18 @@ public class UserServiceImpl implements UserService {
             .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
         return new ResponseGetUser(user);
     }
-
     @Override
-    public ResponseGetUser getUser(final String email) {
+    public ResponseGetUser getUserByMail(final String email) {
         User findUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(USER_EMAIL_NOT_FOUND, ": 해당 이메일이 존재하지않습니다."));
+        return new ResponseGetUser(findUser);
+    }
+
+    @Override
+    public ResponseGetUser getUserById(String id) {
+        User findUser = userRepository.findByUserId(id)
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, ": 해당 ID가 존재하지 않습니다."));
+
         return new ResponseGetUser(findUser);
     }
 
@@ -174,13 +168,19 @@ public class UserServiceImpl implements UserService {
                 .password(passwordEncoder.encode(requestCreateUser.getPassword()))
                 .build();
 
-        String storedFileName = s3Uploader.upload(profileImage, "images");
-        URL updatedImageUrlObject = new URL(storedFileName);
-        user.updateProfileImage(updatedImageUrlObject);
+        if (profileImage != null) {
+            updateProfileImage(s3Uploader.upload(profileImage, "images"), user);
+        }
         User savedUser = userRepository.save(user);
 
         log.info("user uuid : " + savedUser.getUserId());
         return new ResponseGetUser(savedUser);
+    }
+
+    private void updateProfileImage(final String s3Uploader, final User user) throws IOException {
+        String storedFileName = s3Uploader;
+        URL updatedImageUrlObject = new URL(storedFileName);
+        user.updateProfileImage(updatedImageUrlObject);
     }
 
     private void isExistEmail(String email) {
@@ -210,9 +210,7 @@ public class UserServiceImpl implements UserService {
 
     private void updateProfile(final Object value, final User user) throws IOException {
         String oldFileUrl = user.getProfileImage().getPath().substring(1);
-        String updatedImageUrl = s3Uploader.updateFile((MultipartFile) value, oldFileUrl, "images");
-        URL updatedImageUrlObject = new URL(updatedImageUrl);
-        user.updateProfileImage(updatedImageUrlObject);
+        updateProfileImage(s3Uploader.updateFile((MultipartFile) value, oldFileUrl, "images"), user);
     }
 
     private void updatePassword(final Object requestUpdateUser, final User user) {

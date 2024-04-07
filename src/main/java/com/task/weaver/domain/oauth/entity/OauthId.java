@@ -28,4 +28,5 @@ public class OauthId {
     public OauthServerType oauthServer() {
         return oauthServerType;
     }
+
 }

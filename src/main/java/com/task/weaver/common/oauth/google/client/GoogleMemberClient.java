@@ -1,6 +1,6 @@
 package com.task.weaver.common.oauth.google.client;
 
-import com.task.weaver.common.config.GoogleOauthConfig;
+import com.task.weaver.common.oauth.config.GoogleOauthConfig;
 import com.task.weaver.common.model.OauthServerType;
 import com.task.weaver.common.oauth.google.dto.GoogleMemberResponse;
 import com.task.weaver.common.oauth.google.dto.GoogleToken;

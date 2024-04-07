@@ -1,6 +1,6 @@
 package com.task.weaver.common.oauth.kakao.client;
 
-import com.task.weaver.common.config.KakaoOauthConfig;
+import com.task.weaver.common.oauth.config.KakaoOauthConfig;
 import com.task.weaver.domain.oauth.client.OauthMemberClient;
 import com.task.weaver.common.model.OauthServerType;
 import com.task.weaver.common.oauth.kakao.dto.KakaoMemberResponse;

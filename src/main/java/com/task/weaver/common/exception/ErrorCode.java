@@ -46,7 +46,10 @@ public enum ErrorCode {
     NO_MATCHED_VERIFICATION_CODE(HttpStatus.FORBIDDEN, "M004", "인증 코드가 일치하지않습니다."),
 
     // Status
-    INVALID_STATUS(HttpStatus.BAD_REQUEST, "S001", "유효하지않은 STATUS입니다.");
+    INVALID_STATUS(HttpStatus.BAD_REQUEST, "S001", "유효하지않은 STATUS입니다."),
+
+    // Comment
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "CM001", "해당 코멘트를 찾을 수 없습니다");
 
     private final HttpStatus status;
     private final String code;

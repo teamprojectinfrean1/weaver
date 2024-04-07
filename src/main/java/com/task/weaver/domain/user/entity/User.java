@@ -1,6 +1,5 @@
 package com.task.weaver.domain.user.entity;
 
-import com.task.weaver.domain.user.dto.request.RequestUpdatePassword;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,11 +14,9 @@ import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import com.task.weaver.domain.user.dto.request.RequestUpdateUser;
-import jakarta.persistence.*;
 
 @Entity
 @AllArgsConstructor
@@ -27,7 +24,7 @@ import jakarta.persistence.*;
 @Getter
 @Setter
 @Builder
-public class User extends BaseEntity implements UserDetails {
+public class User extends BaseEntity implements UserDetails{
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -93,45 +90,26 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.getEmail();
+        return this.nickname;
     }
 
-    /**
-     * 계정 만료 여부
-     * @return true : 만료 X / false : 만료 O
-     */
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
-    /**
-     * 계정 잠금 여부
-     * @return true : 잠금 해제 / false : 잠금
-     */
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
-    /**
-     * 비밀번호 만료 여부
-     * @return true : 만료 X / false : 만료 O
-     */
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
-    /**
-     * 사용자 활성화 여부
-     * @return true : 활성화 / false : 비활성화
-     */
     @Override
     public boolean isEnabled() {
-        this.isOnline = true;
-        // 이메일 인증 여부를 여기서 확인해줄수도 있음
         return true;
     }
-
 }

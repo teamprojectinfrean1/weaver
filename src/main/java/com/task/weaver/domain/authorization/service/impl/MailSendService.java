@@ -5,14 +5,15 @@ import com.task.weaver.domain.authorization.dto.response.EmailCode;
 import com.task.weaver.domain.authorization.redis.RedisEmailUtil;
 import com.task.weaver.domain.user.dto.response.ResponseGetUser;
 import com.task.weaver.domain.user.service.UserService;
-import java.util.Random;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.util.Random;
 
 @RequiredArgsConstructor
 @Service
@@ -27,7 +28,7 @@ public class MailSendService {
     public int authNumber;
 
     public EmailCode sendVerificationEmail(final String email) {
-        ResponseGetUser user = userService.getUser(email);
+        ResponseGetUser user = userService.getUserByMail(email);
         return joinEmail(user.getEmail());
     }
 

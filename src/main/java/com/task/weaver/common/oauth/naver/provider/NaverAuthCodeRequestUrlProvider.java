@@ -1,6 +1,6 @@
 package com.task.weaver.common.oauth.naver.provider;
 
-import com.task.weaver.common.config.NaverOauthConfig;
+import com.task.weaver.common.oauth.config.NaverOauthConfig;
 import com.task.weaver.common.model.OauthServerType;
 import com.task.weaver.domain.oauth.authcode.AuthCodeRequestUrlProvider;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.task.weaver.common.config;
+package com.task.weaver.common.oauth.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
