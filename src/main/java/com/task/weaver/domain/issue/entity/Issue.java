@@ -4,6 +4,7 @@ import com.task.weaver.common.model.Status;
 import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.comment.entity.Comment;
 import com.task.weaver.domain.issue.dto.request.UpdateIssueRequest;
+import com.task.weaver.domain.oauth.entity.OauthMember;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -44,6 +45,14 @@ public class Issue extends BaseEntity {
     @JoinColumn(name = "manager_id")
     private User manager;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "oauth_creator_id")
+    private OauthMember OauthCreator;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "oauth_manager_id")
+    private OauthMember OauthManager;
+
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
@@ -52,10 +61,6 @@ public class Issue extends BaseEntity {
 
     @Column(name = "content")
     private String content;
-
-    // @LastModifiedDate
-    // @Column(name = "modify_date")
-    // private LocalDateTime modDate;
 
     @Column(name = "start_date")
     private LocalDateTime startDate;

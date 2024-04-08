@@ -1,6 +1,7 @@
 package com.task.weaver.domain.project.entity;
 
 import com.task.weaver.domain.BaseEntity;
+import com.task.weaver.domain.oauth.entity.OauthMember;
 import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import com.task.weaver.domain.task.entity.Task;
@@ -28,12 +29,6 @@ public class Project extends BaseEntity {
     @Column(columnDefinition = "BINARY(16)", name = "project_id")
     private UUID projectId;
 
-//    @Column(name = "custom_url")
-//    private String customUrl;
-
-//    @Column(name = "banner_url")
-//    private String bannerUrl;
-
     @Column(name = "name")
     private String name;
 
@@ -52,6 +47,10 @@ public class Project extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User writer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "oauth_member_id")
+    private OauthMember OauthWriter;
 
     @Builder.Default
     @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE)

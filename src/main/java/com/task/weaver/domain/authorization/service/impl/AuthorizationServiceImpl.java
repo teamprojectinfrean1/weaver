@@ -69,8 +69,8 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
 	private Authentication getAuthentication(final String principal, final String credentials) {
 		// 아직 인증되지 않은 객체로 추후 모든 인증이 완료되면 인증된 생성자로 authentication 객체가 생성된다.
-		UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-				principal, credentials);
+		UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+				new UsernamePasswordAuthenticationToken(principal, credentials);
 		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(usernamePasswordAuthenticationToken);
 
 		log.info(authentication.getName());
@@ -89,6 +89,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
+		log.info("Authentication Object = {}", SecurityContextHolder.getContext());
 		String accessToken = jwtTokenProvider.createAccessToken(authentication);
 		String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
 		saveRefreshToken(authentication.getName(), refreshToken);

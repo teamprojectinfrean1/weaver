@@ -1,6 +1,7 @@
 package com.task.weaver.domain.projectmember.entity;
 
 import com.task.weaver.domain.BaseEntity;
+import com.task.weaver.domain.oauth.entity.OauthMember;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.Column;
@@ -11,11 +12,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.*;
 
 @Entity
 @Getter
 @Builder
+@Table(name = "Project_Member")
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProjectMember extends BaseEntity {
@@ -32,4 +35,8 @@ public class ProjectMember extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "oauth_member_id")
+    private OauthMember oauthMember;
 }
