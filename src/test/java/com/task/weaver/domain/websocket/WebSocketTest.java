@@ -1,8 +1,6 @@
 package com.task.weaver.domain.websocket;
-import com.task.weaver.domain.user.service.UserService;
-import com.task.weaver.domain.websocket.dto.response.ResponseCreateChattingRoom;
+import com.task.weaver.domain.member.user.service.UserService;
 import com.task.weaver.domain.websocket.service.ChattingService;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;

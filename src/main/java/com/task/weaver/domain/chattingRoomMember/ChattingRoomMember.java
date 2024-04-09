@@ -1,8 +1,8 @@
 package com.task.weaver.domain.chattingRoomMember;
 
 import com.task.weaver.domain.BaseEntity;
-import com.task.weaver.domain.oauth.entity.OauthMember;
-import com.task.weaver.domain.user.entity.User;
+import com.task.weaver.domain.member.oauth.entity.OauthMember;
+import com.task.weaver.domain.member.user.entity.User;
 import com.task.weaver.domain.websocket.entity.ChattingRoom;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

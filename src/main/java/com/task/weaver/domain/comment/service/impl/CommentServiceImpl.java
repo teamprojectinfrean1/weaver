@@ -16,8 +16,8 @@ import com.task.weaver.domain.comment.repository.CommentRepository;
 import com.task.weaver.domain.comment.service.CommentService;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.issue.repository.IssueRepository;
-import com.task.weaver.domain.user.entity.User;
-import com.task.weaver.domain.user.repository.UserRepository;
+import com.task.weaver.domain.member.user.entity.User;
+import com.task.weaver.domain.member.user.repository.UserRepository;
 
 import java.util.function.Function;
 

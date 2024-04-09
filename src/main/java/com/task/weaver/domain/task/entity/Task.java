@@ -4,7 +4,7 @@ import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
-import com.task.weaver.domain.user.entity.User;
+import com.task.weaver.domain.member.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;

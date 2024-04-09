@@ -4,8 +4,8 @@ import static com.task.weaver.common.model.OauthServerType.KAKAO;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.task.weaver.domain.oauth.entity.OauthId;
-import com.task.weaver.domain.oauth.entity.OauthMember;
+import com.task.weaver.domain.member.oauth.entity.OauthId;
+import com.task.weaver.domain.member.oauth.entity.OauthMember;
 import java.time.LocalDateTime;
 
 @JsonNaming(SnakeCaseStrategy.class)

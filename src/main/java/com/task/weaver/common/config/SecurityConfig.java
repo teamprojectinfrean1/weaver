@@ -117,8 +117,7 @@ public class SecurityConfig {
 
 		// 추후 설정
 		configuration.addAllowedOriginPattern("*");
-		// configuration.addAllowedOrigin("http://localhost:8080");
-
+		configuration.addAllowedOrigin("*");
 		configuration.addAllowedHeader("*");
 		configuration.addAllowedMethod("*");
 		configuration.setAllowCredentials(true);

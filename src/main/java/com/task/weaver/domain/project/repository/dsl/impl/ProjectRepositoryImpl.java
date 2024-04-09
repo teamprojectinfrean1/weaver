@@ -5,7 +5,7 @@ import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.entity.QProject;
 import com.task.weaver.domain.project.repository.dsl.ProjectRepositoryDsl;
 import com.task.weaver.domain.projectmember.entity.QProjectMember;
-import com.task.weaver.domain.user.entity.User;
+import com.task.weaver.domain.member.user.entity.User;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

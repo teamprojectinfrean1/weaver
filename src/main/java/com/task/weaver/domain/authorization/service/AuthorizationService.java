@@ -2,7 +2,6 @@ package com.task.weaver.domain.authorization.service;
 
 import com.task.weaver.domain.authorization.dto.request.RequestSignIn;
 import com.task.weaver.domain.authorization.dto.response.ResponseToken;
-import com.task.weaver.domain.oauth.entity.OauthMember;
 
 public interface AuthorizationService {
 	ResponseToken weaverLogin(RequestSignIn requestSignIn);

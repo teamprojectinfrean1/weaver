@@ -1,11 +1,11 @@
 package com.task.weaver.domain.project.entity;
 
 import com.task.weaver.domain.BaseEntity;
-import com.task.weaver.domain.oauth.entity.OauthMember;
+import com.task.weaver.domain.member.oauth.entity.OauthMember;
 import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import com.task.weaver.domain.task.entity.Task;
-import com.task.weaver.domain.user.entity.User;
+import com.task.weaver.domain.member.user.entity.User;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

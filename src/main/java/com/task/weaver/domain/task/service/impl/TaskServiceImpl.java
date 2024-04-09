@@ -1,12 +1,8 @@
 package com.task.weaver.domain.task.service.impl;
 
-import static com.task.weaver.common.exception.ErrorCode.INVALID_STATUS;
-
 import com.task.weaver.common.exception.AuthorizationException;
-import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
-import com.task.weaver.common.exception.status.StatusNotFoundException;
 import com.task.weaver.common.exception.task.TaskNotFoundException;
 import com.task.weaver.common.exception.user.UserNotFoundException;
 import com.task.weaver.domain.issue.dto.request.RequestIssueForTask;
@@ -23,8 +19,8 @@ import com.task.weaver.domain.task.dto.response.ResponseUpdateDetail;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.repository.TaskRepository;
 import com.task.weaver.domain.task.service.TaskService;
-import com.task.weaver.domain.user.entity.User;
-import com.task.weaver.domain.user.repository.UserRepository;
+import com.task.weaver.domain.member.user.entity.User;
+import com.task.weaver.domain.member.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

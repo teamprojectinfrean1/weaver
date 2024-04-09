@@ -12,7 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import com.task.weaver.domain.user.service.Impl.CustomUserDetailsService;
+import com.task.weaver.domain.member.user.service.Impl.CustomUserDetailsService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

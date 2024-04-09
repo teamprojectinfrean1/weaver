@@ -1,11 +1,8 @@
 package com.task.weaver.domain.issue.service.impl;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Function;
 
 import com.task.weaver.common.exception.AuthorizationException;
 import com.task.weaver.common.exception.NotFoundException;
@@ -18,13 +15,12 @@ import com.task.weaver.domain.issue.dto.response.IssueResponse;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.issue.repository.IssueRepository;
 import com.task.weaver.domain.issue.service.IssueService;
-import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.repository.TaskRepository;
-import com.task.weaver.domain.user.entity.User;
-import com.task.weaver.domain.user.repository.UserRepository;
+import com.task.weaver.domain.member.user.entity.User;
+import com.task.weaver.domain.member.user.repository.UserRepository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;

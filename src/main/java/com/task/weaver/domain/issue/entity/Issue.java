@@ -4,9 +4,9 @@ import com.task.weaver.common.model.Status;
 import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.comment.entity.Comment;
 import com.task.weaver.domain.issue.dto.request.UpdateIssueRequest;
-import com.task.weaver.domain.oauth.entity.OauthMember;
+import com.task.weaver.domain.member.oauth.entity.OauthMember;
 import com.task.weaver.domain.task.entity.Task;
-import com.task.weaver.domain.user.entity.User;
+import com.task.weaver.domain.member.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.data.annotation.LastModifiedDate;
 
 @Entity
 @AllArgsConstructor

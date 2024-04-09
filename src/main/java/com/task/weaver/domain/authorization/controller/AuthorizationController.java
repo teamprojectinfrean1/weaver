@@ -6,12 +6,12 @@ import com.task.weaver.domain.authorization.dto.request.EmailCheckDto;
 import com.task.weaver.domain.authorization.dto.request.EmailRequest;
 import com.task.weaver.domain.authorization.dto.response.EmailCode;
 import com.task.weaver.domain.authorization.service.impl.MailSendService;
-import com.task.weaver.domain.user.dto.request.RequestCreateUser;
-import com.task.weaver.domain.user.dto.request.RequestUpdatePassword;
-import com.task.weaver.domain.user.dto.response.ResponseGetUser;
-import com.task.weaver.domain.user.dto.response.ResponseUserIdNickname;
-import com.task.weaver.domain.user.dto.response.ResponseUuid;
-import com.task.weaver.domain.user.service.UserService;
+import com.task.weaver.domain.member.user.dto.request.RequestCreateUser;
+import com.task.weaver.domain.member.user.dto.request.RequestUpdatePassword;
+import com.task.weaver.domain.member.user.dto.response.ResponseGetUser;
+import com.task.weaver.domain.member.user.dto.response.ResponseUserIdNickname;
+import com.task.weaver.domain.member.user.dto.response.ResponseUuid;
+import com.task.weaver.domain.member.user.service.UserService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import jakarta.validation.Valid;
@@ -47,8 +47,7 @@ public class AuthorizationController {
 	@Operation(summary = "회원가입", description = "사용자가 회원가입")
 	@PostMapping("/join")
 	public ResponseEntity<DataResponse<ResponseGetUser>> addUser(RequestCreateUser requestCreateUser,
-												   MultipartHttpServletRequest multipartHttpServletRequest)
-			throws IOException {
+												   MultipartHttpServletRequest multipartHttpServletRequest) throws IOException {
 
 		MultipartFile profileImage = multipartHttpServletRequest.getFile("profileImage");
 
