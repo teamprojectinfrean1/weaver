@@ -1,5 +1,6 @@
 package com.task.weaver.domain.member.user.entity;
 
+import com.task.weaver.domain.member.LoginType;
 import com.task.weaver.domain.member.Member;
 import java.net.URL;
 import java.util.ArrayList;
@@ -23,7 +24,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Setter
 @Builder
 public class User extends BaseEntity implements UserDetails, Member {
 
@@ -51,6 +51,10 @@ public class User extends BaseEntity implements UserDetails, Member {
 
     @Column(name = "profile_image")
     private URL profileImage;
+
+    @Column(name = "login_type")
+    @Enumerated(EnumType.STRING)
+    private LoginType loginType;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<ChattingRoomMember> chattingRoomMemberList;

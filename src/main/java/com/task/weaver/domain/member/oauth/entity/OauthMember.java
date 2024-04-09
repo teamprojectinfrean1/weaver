@@ -3,6 +3,7 @@ package com.task.weaver.domain.member.oauth.entity;
 import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.chattingRoomMember.ChattingRoomMember;
 import com.task.weaver.domain.issue.entity.Issue;
+import com.task.weaver.domain.member.LoginType;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import com.task.weaver.domain.member.Member;
@@ -10,6 +11,8 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -58,6 +61,10 @@ public class OauthMember extends BaseEntity implements Member {
     @Column(name = "is_online", length = 20)
     private boolean isOnline;
 
+    @Column(name = "login_type")
+    @Enumerated(EnumType.STRING)
+    private LoginType loginType;
+
     @OneToMany(mappedBy = "oauthMember", cascade = CascadeType.REMOVE)
     private List<ChattingRoomMember> chattingRoomMemberList;
 
@@ -90,4 +97,7 @@ public class OauthMember extends BaseEntity implements Member {
         return profileImageUrl;
     }
 
+    public LoginType loginType() {
+        return loginType;
+    }
 }

@@ -4,6 +4,7 @@ import static com.task.weaver.common.model.OauthServerType.KAKAO;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.task.weaver.domain.member.LoginType;
 import com.task.weaver.domain.member.oauth.entity.OauthId;
 import com.task.weaver.domain.member.oauth.entity.OauthMember;
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ public record KakaoMemberResponse(Long id,
                 .oauthId(new OauthId(String.valueOf(id), KAKAO))
                 .nickname(kakaoAccount.profile.nickname)
                 .profileImageUrl(kakaoAccount.profile.profileImageUrl)
+                .loginType(LoginType.OAUTH)
                 .build();
     }
 
