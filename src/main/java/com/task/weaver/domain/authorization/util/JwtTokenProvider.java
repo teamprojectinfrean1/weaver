@@ -1,5 +1,6 @@
 package com.task.weaver.domain.authorization.util;
 
+import com.task.weaver.domain.member.LoginType;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
@@ -51,12 +52,14 @@ public class JwtTokenProvider {
 	/**
 	 * Access Token 생성
 	 */
-	public String createAccessToken(Authentication authentication){
+	public String createAccessToken(Authentication authentication, LoginType loginType){
+		Claims claims = Jwts.claims().setSubject(authentication.getName());
+		claims.put("loginType", loginType.toString());
 		Date now = new Date();
 		Date validity = new Date(now.getTime() + ACCESS_TOKEN_VAILD_TIME);
 
 		return Jwts.builder()
-			.setSubject(authentication.getName()) // 이 코드 더 찾아보기 -> 이전 플젝에서는 ResponseDto 받아와서 email 넣어줌
+			.setClaims(claims) // 이 코드 더 찾아보기 -> 이전 플젝에서는 ResponseDto 받아와서 email 넣어줌
 			.setIssuedAt(now) // 발행 시간
 			.signWith(key, SignatureAlgorithm.HS512) // 암호화
 			.setExpiration(validity) // 만료 시간

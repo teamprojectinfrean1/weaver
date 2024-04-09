@@ -201,6 +201,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseGetUser updateUser(UUID userId, RequestUpdateUser requestUpdateUser) throws IOException {
         Optional<User> findUser = userRepository.findById(userId);
+
         if (findUser.isPresent()) {
             User user = findUser.get();
             switch (requestUpdateUser.getType()) {

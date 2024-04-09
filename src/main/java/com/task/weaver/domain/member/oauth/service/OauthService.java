@@ -17,7 +17,6 @@ public class OauthService {
     private final OauthMemberRepository oauthMemberRepository;
 
     /**
-     *
      * @param oauthServerType
      * @return oauthServerType에 해당하는 인증 서버에서 Auth Code를 받아오기 위한 URL 주소 생성
      */

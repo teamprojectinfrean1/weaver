@@ -8,6 +8,7 @@ import com.task.weaver.domain.authorization.redis.RefreshToken;
 import com.task.weaver.domain.authorization.redis.RefreshTokenRedisRepository;
 import com.task.weaver.domain.authorization.service.AuthorizationService;
 import com.task.weaver.domain.authorization.util.JwtTokenProvider;
+import com.task.weaver.domain.member.LoginType;
 import com.task.weaver.domain.member.oauth.entity.OauthMember;
 import com.task.weaver.domain.member.user.entity.User;
 import com.task.weaver.domain.member.user.repository.UserRepository;
@@ -55,7 +56,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 		// refresh token 발급
 		String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
 		// access token 발급
-		String accessToken = jwtTokenProvider.createAccessToken(authentication);
+		String accessToken = jwtTokenProvider.createAccessToken(authentication, LoginType.WEAVER);
 		// refresh token redis에 저장
 		saveRefreshToken(authentication.getName(), refreshToken);
 
@@ -90,7 +91,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
 		log.info("Authentication Object = {}", SecurityContextHolder.getContext());
-		String accessToken = jwtTokenProvider.createAccessToken(authentication);
+		String accessToken = jwtTokenProvider.createAccessToken(authentication, oauthMember.loginType());
 		String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
 		saveRefreshToken(authentication.getName(), refreshToken);
 
