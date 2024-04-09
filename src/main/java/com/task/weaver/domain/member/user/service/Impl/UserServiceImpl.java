@@ -6,7 +6,7 @@ import com.task.weaver.common.exception.user.MismatchedPassword;
 import com.task.weaver.common.exception.user.UnableSendMailException;
 import com.task.weaver.common.exception.user.UserNotFoundException;
 import com.task.weaver.common.s3.S3Uploader;
-import com.task.weaver.domain.authorization.util.JwtTokenProvider;
+import com.task.weaver.common.jwt.provider.JwtTokenProvider;
 import com.task.weaver.domain.member.LoginType;
 import com.task.weaver.domain.member.user.dto.response.ResponseGetUser;
 import com.task.weaver.domain.member.user.dto.response.ResponseGetUserForFront;

@@ -2,9 +2,9 @@ package com.task.weaver.domain.member.user.repository.dsl.Impl;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.task.weaver.domain.member.user.entity.QUser;
 import com.task.weaver.domain.project.entity.QProject;
 import com.task.weaver.domain.projectmember.entity.QProjectMember;
-import com.task.weaver.domain.user.entity.QUser;
 import com.task.weaver.domain.member.user.entity.User;
 import com.task.weaver.domain.member.user.repository.dsl.UserRepositoryDsl;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.task.weaver.common.handler;
+package com.task.weaver.common.jwt.handler;
 
 import java.io.IOException;
 

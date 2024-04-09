@@ -1,8 +1,8 @@
 package com.task.weaver.common.config;
 
-import com.task.weaver.common.filter.JwtAuthenticationFilter;
-import com.task.weaver.common.handler.JwtAuthenticationEntryPoint;
-import com.task.weaver.domain.authorization.util.JwtTokenProvider;
+import com.task.weaver.common.jwt.filter.JwtAuthenticationFilter;
+import com.task.weaver.common.jwt.handler.JwtAuthenticationEntryPoint;
+import com.task.weaver.common.jwt.provider.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

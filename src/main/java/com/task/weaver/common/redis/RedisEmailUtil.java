@@ -1,4 +1,4 @@
-package com.task.weaver.domain.authorization.redis;
+package com.task.weaver.common.redis;
 
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;

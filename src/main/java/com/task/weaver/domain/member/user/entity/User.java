@@ -24,6 +24,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @Builder
 public class User extends BaseEntity implements UserDetails, Member {
 

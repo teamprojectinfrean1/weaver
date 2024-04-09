@@ -1,4 +1,4 @@
-package com.task.weaver.domain.authorization.redis;
+package com.task.weaver.common.redis;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;

@@ -4,10 +4,10 @@ import com.task.weaver.common.exception.authorization.InvalidPasswordException;
 import com.task.weaver.common.exception.user.UserNotFoundException;
 import com.task.weaver.domain.authorization.dto.request.RequestSignIn;
 import com.task.weaver.domain.authorization.dto.response.ResponseToken;
-import com.task.weaver.domain.authorization.redis.RefreshToken;
-import com.task.weaver.domain.authorization.redis.RefreshTokenRedisRepository;
+import com.task.weaver.common.redis.RefreshToken;
+import com.task.weaver.common.redis.RefreshTokenRedisRepository;
 import com.task.weaver.domain.authorization.service.AuthorizationService;
-import com.task.weaver.domain.authorization.util.JwtTokenProvider;
+import com.task.weaver.common.jwt.provider.JwtTokenProvider;
 import com.task.weaver.domain.member.LoginType;
 import com.task.weaver.domain.member.oauth.entity.OauthMember;
 import com.task.weaver.domain.member.user.entity.User;
@@ -132,7 +132,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
 		// accessToken과 refreshToken 모두 재발행
 		String newRefreshToken = jwtTokenProvider.createRefreshToken(authentication);
-		String newAccessToken = jwtTokenProvider.createAccessToken(authentication);
+		String newAccessToken = jwtTokenProvider.createAccessToken(authentication, LoginType.WEAVER);
 
 		// redis 에 새로 발급한 refreshtoken 저장
 		refreshTokenRedisRepository.save(new RefreshToken(authentication.getName(), newRefreshToken));

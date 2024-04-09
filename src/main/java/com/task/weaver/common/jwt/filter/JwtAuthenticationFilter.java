@@ -1,4 +1,4 @@
-package com.task.weaver.common.filter;
+package com.task.weaver.common.jwt.filter;
 
 import java.io.IOException;
 
@@ -7,7 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.task.weaver.domain.authorization.util.JwtTokenProvider;
+import com.task.weaver.common.jwt.provider.JwtTokenProvider;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;

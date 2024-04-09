@@ -1,6 +1,4 @@
-package com.task.weaver.domain.authorization.redis;
-
-import java.util.Optional;
+package com.task.weaver.common.redis;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

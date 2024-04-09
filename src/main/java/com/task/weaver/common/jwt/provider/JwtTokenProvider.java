@@ -1,6 +1,7 @@
-package com.task.weaver.domain.authorization.util;
+package com.task.weaver.common.jwt.provider;
 
 import com.task.weaver.domain.member.LoginType;
+import io.jsonwebtoken.Jws;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
@@ -109,7 +110,7 @@ public class JwtTokenProvider {
 	 * @param accessToken
 	 * @return Claim
 	 */
-	private Claims parseClaims(String accessToken) {
+	public Claims parseClaims(String accessToken) {
 		try {
 			// log.info();
 			return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
@@ -143,5 +144,12 @@ public class JwtTokenProvider {
 				.getSubject();
 
 		return info;
+	}
+
+	public LoginType decodeAccessToken(String accessToken) {
+		Jws<Claims> claimsJws = Jwts.parserBuilder().build().parseClaimsJws(accessToken);
+		Claims body = claimsJws.getBody();
+		String loginType = body.get("loginType", String.class);
+		return LoginType.fromName(loginType);
 	}
 }
