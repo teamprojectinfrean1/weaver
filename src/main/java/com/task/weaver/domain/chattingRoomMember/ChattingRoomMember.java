@@ -1,6 +1,7 @@
 package com.task.weaver.domain.chattingRoomMember;
 
 import com.task.weaver.domain.BaseEntity;
+import com.task.weaver.domain.member.Member;
 import com.task.weaver.domain.member.oauth.entity.OauthMember;
 import com.task.weaver.domain.member.user.entity.User;
 import com.task.weaver.domain.websocket.entity.ChattingRoom;
@@ -27,9 +28,5 @@ public class ChattingRoomMember extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "oauth_member_id")
-    private OauthMember oauthMember;
+    private Member member;
 }

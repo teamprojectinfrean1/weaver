@@ -14,13 +14,14 @@ import com.task.weaver.domain.member.user.dto.response.ResponseGetUser;
 import com.task.weaver.domain.member.user.dto.response.ResponseUserIdNickname;
 import com.task.weaver.domain.member.user.dto.response.ResponseUuid;
 import com.task.weaver.domain.member.user.service.UserService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import jakarta.validation.Valid;
 import java.io.IOException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -72,9 +73,11 @@ public class AuthorizationController {
 
 	@Operation(summary = "reissue", description = "refresh token 재발급")
 	@GetMapping("/reissue")
-	public ResponseEntity<?> reissue(@CookieValue(value = "refreshToken") String refreshToken) {
+	public ResponseEntity<?> reissue(@CookieValue(value = "refreshToken") String refreshToken,
+									 @RequestParam String loginType) {
 		log.info("reissue controller - refreshToken : " + refreshToken);
-		ResponseToken responseToken = authorizationService.reissue(refreshToken);
+
+		ResponseToken responseToken = authorizationService.reissue(refreshToken, loginType);
 		HttpHeaders headers = setCookieAndHeader(responseToken);
 		return new ResponseEntity<>(MessageResponse.of(HttpStatus.CREATED, "Token 재발급 성공", true), headers, HttpStatus.CREATED);
 	}

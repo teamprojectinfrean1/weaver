@@ -3,6 +3,8 @@ package com.task.weaver.domain.project.service.impl;
 import com.task.weaver.common.exception.BusinessException;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.user.UserNotFoundException;
+import com.task.weaver.domain.member.Member;
+import com.task.weaver.domain.member.MemberRepository;
 import com.task.weaver.domain.project.dto.request.RequestCreateProject;
 import com.task.weaver.domain.project.dto.request.RequestPageProject;
 import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
@@ -39,6 +41,7 @@ public class ProjectServiceImplDummy implements ProjectService {
 
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final ProjectMemberRepository projectMemberRepository;
 
 
@@ -66,19 +69,20 @@ public class ProjectServiceImplDummy implements ProjectService {
     }
 
     @Override
-    public List<ResponseGetProjectList> getProejctsForMain(UUID userId) throws BusinessException {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(userId))));
+    public List<ResponseGetProjectList> getProejctsForMain(UUID memberId) throws BusinessException {
 
-        List<Project> result = projectRepository.findProjectsByUser(user)
-                .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(userId))));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(memberId))));
+
+        List<Project> result = projectRepository.findProjectsByMember(member)
+                .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(memberId))));
 
         List<ResponseGetProjectList> responseGetProjectLists = new ArrayList<>();
 
         for (Project project : result) {
             ResponseGetProjectList responseGetProjectList = new ResponseGetProjectList(project);
 
-            if(project.getProjectId() == user.getMainProject().getProjectId())
+            if(project.getProjectId() == member.getMainProject().getProjectId())
                 responseGetProjectList.setIsMainProject(true);
 
             responseGetProjectLists.add(responseGetProjectList);
@@ -92,11 +96,11 @@ public class ProjectServiceImplDummy implements ProjectService {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(projectId))));
 
-        User modifier = project.getModifier();
+        Member modifier = project.getModifier();
 
         ResponseUpdateDetail responseUpdateDetail = ResponseUpdateDetail.builder()
-                .userUuid(modifier.getUserId())
-                .userNickname(modifier.getNickname())
+                .userUuid(modifier.getMemberId())
+                .userNickname(modifier.getWeaver().getNickname())
                 .updatedDate(project.getModDate())
                 .build();
 
@@ -109,7 +113,7 @@ public class ProjectServiceImplDummy implements ProjectService {
     @Override
     public UUID addProject(final RequestCreateProject dto) throws BusinessException {
         Project project = dtoToEntity(dto);
-        User writer = userRepository.findById(dto.writerUuid())
+        Member writer = memberRepository.findById(dto.writerUuid())
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(dto.writerUuid()))));
 
         if(writer.getMainProject() == null)   //작성자가 처음 만든 프로젝트면, 메인 프로젝트로 선정
@@ -118,17 +122,17 @@ public class ProjectServiceImplDummy implements ProjectService {
         Project savedProject = projectRepository.save(project);
         List<ProjectMember> projectMemberList = new ArrayList<>();
 
-        for (UUID userId : dto.memberUuidList()) {
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(userId))));
+        for (UUID memberId : dto.memberUuidList()) {
+            Member member = memberRepository.findById(memberId)
+                    .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(memberId))));
 
-            if(user.getMainProject() == null){
-                user.setMainProject(savedProject);
+            if(member.getMainProject() == null){
+                member.setMainProject(savedProject);
             }
 
             ProjectMember projectMember = ProjectMember.builder()
                     .project(savedProject)
-                    .user(user)
+                    .member(member)
                     .build();
 
             projectMemberRepository.save(projectMember);
@@ -155,7 +159,7 @@ public class ProjectServiceImplDummy implements ProjectService {
         Optional<Project> result = projectRepository.findById(projectId);
 
         if (result.isPresent()) {
-            User updater = userRepository.findById(dto.updaterUuid())
+            Member updater = memberRepository.findById(dto.updaterUuid())
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(dto.updaterUuid()))));
             Project entity = result.get();
 //            entity.changeDetail(dto.projectContent());
@@ -173,15 +177,14 @@ public class ProjectServiceImplDummy implements ProjectService {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(projectId))));
 
-        UUID writerId = project.getWriter().getUserId();
+        UUID writerId = project.getWriter().getMemberId();
 
-        User writer = userRepository.findById(writerId)
+        Member writer = memberRepository.findById(writerId)
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(writerId))));
 
         writer.setMainProject(project);
 
-        userRepository.save(writer);
-        return ;
+        memberRepository.save(writer);
     }
 
     @Override

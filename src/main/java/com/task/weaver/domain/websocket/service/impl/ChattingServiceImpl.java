@@ -87,7 +87,7 @@ public class ChattingServiceImpl implements ChattingService {
         for(ProjectMember projectMember : project.getProjectMemberList()){  //프로젝트에 참여된 member들 가져옴
             ChattingRoomMember chattingRoomMember = ChattingRoomMember.builder()     //다대다 관계 chattingRoomMember를 만든다.
                     .chattingRoom(chattingRoom)
-                    .user(projectMember.getUser())                                   //그 프로젝트에 연관된 member들 다 chattingroom에 연결시킴
+                    .member(projectMember.getMember())                                   //그 프로젝트에 연관된 member들 다 chattingroom에 연결시킴
                     .build();
 
             chattingRoomMemberRepository.save(chattingRoomMember);

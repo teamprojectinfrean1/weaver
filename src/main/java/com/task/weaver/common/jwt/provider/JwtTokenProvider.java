@@ -60,10 +60,10 @@ public class JwtTokenProvider {
 		Date validity = new Date(now.getTime() + ACCESS_TOKEN_VAILD_TIME);
 
 		return Jwts.builder()
-			.setClaims(claims) // 이 코드 더 찾아보기 -> 이전 플젝에서는 ResponseDto 받아와서 email 넣어줌
-			.setIssuedAt(now) // 발행 시간
-			.signWith(key, SignatureAlgorithm.HS512) // 암호화
-			.setExpiration(validity) // 만료 시간
+			.setClaims(claims)
+			.setIssuedAt(now)
+			.signWith(key, SignatureAlgorithm.HS512)
+			.setExpiration(validity)
 			.compact();
 	}
 
@@ -73,16 +73,13 @@ public class JwtTokenProvider {
 	public String createRefreshToken(Authentication authentication) {
 		Date now = new Date();
 		Date validity = new Date(now.getTime() + REFRESH_TOKEN_VALID_TIME);
-
 		String j = Jwts.builder()
-			.setSubject(authentication.getName()) // sub
-			.setIssuedAt(now) // 발행 시간
-			.signWith(key, SignatureAlgorithm.HS512) // 암호화
-			.setExpiration(validity) // 만료 시간
+			.setSubject(authentication.getName())
+			.setIssuedAt(now)
+			.signWith(key, SignatureAlgorithm.HS512)
+			.setExpiration(validity)
 			.compact();
-
 		log.info(j);
-
 		return j;
 	}
 

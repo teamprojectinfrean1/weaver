@@ -1,5 +1,7 @@
 package com.task.weaver.domain.issue.service.impl;
 
+import com.task.weaver.domain.member.Member;
+import com.task.weaver.domain.member.MemberRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -38,6 +40,7 @@ import lombok.RequiredArgsConstructor;
 public class IssueServiceImpl implements IssueService {
 	private final IssueRepository issueRepository;
 	private final UserRepository userRepository;
+	private final MemberRepository memberRepository;
 	private final TaskRepository taskRepository;
 	private final ProjectRepository projectRepository;
 
@@ -66,9 +69,9 @@ public class IssueServiceImpl implements IssueService {
 						issue.getTitle(),
 						task.getTaskId(),
 						task.getTaskTitle(),
-						issue.getManager().getId(),
-						issue.getManager().getNickname(),
-						issue.getManager().getProfileImage()));
+						issue.getManager().getMemberId().toString(),
+						issue.getManager().getWeaver().getNickname(),
+						issue.getManager().getWeaver().getProfileImage()));
 				}
 			}
 		}
@@ -98,14 +101,14 @@ public class IssueServiceImpl implements IssueService {
 				for (Task task : project.getTaskList()) {
 					for(Issue issue : task.getIssueList()){
 						// manager 확인
-						if(issue.getManager().getNickname().contains(word)){
+						if(issue.getManager().getWeaver().getNickname().contains(word)){
 							issueList.add(new GetIssueListResponse(issue.getIssueId(),
 								issue.getTitle(),
 								task.getTaskId(),
 								task.getTaskTitle(),
-								issue.getManager().getId(),
-								issue.getManager().getNickname(),
-								issue.getManager().getProfileImage()));
+								issue.getManager().getMemberId().toString(),
+								issue.getManager().getWeaver().getNickname(),
+								issue.getManager().getWeaver().getProfileImage()));
 						}
 					}
 				}
@@ -118,9 +121,9 @@ public class IssueServiceImpl implements IssueService {
 								issue.getTitle(),
 								task.getTaskId(),
 								task.getTaskTitle(),
-								issue.getManager().getId(),
-								issue.getManager().getNickname(),
-								issue.getManager().getProfileImage()));
+								issue.getManager().getMemberId().toString(),
+								issue.getManager().getWeaver().getNickname(),
+								issue.getManager().getWeaver().getProfileImage()));
 						}
 					}
 				}
@@ -134,9 +137,9 @@ public class IssueServiceImpl implements IssueService {
 								issue.getTitle(),
 								task.getTaskId(),
 								task.getTaskTitle(),
-								issue.getManager().getId(),
-								issue.getManager().getNickname(),
-								issue.getManager().getProfileImage()));
+								issue.getManager().getMemberId().toString(),
+								issue.getManager().getWeaver().getNickname(),
+								issue.getManager().getWeaver().getProfileImage()));
 						}
 					}
 				}
@@ -156,9 +159,9 @@ public class IssueServiceImpl implements IssueService {
 	public UUID addIssue(CreateIssueRequest createIssueRequest) throws AuthorizationException {
 		Task task = taskRepository.findById(createIssueRequest.taskId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
-		User creator = userRepository.findById(createIssueRequest.creatorId())
+		Member creator = memberRepository.findById(createIssueRequest.creatorId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
-		User manager = userRepository.findById(createIssueRequest.managerId())
+		Member manager = memberRepository.findById(createIssueRequest.managerId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
 
 		Issue issue = Issue.builder()
@@ -184,9 +187,9 @@ public class IssueServiceImpl implements IssueService {
 			.orElseThrow(() -> new IllegalArgumentException(""));
 		Task task = taskRepository.findById(updateIssueRequest.taskId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
-		User modifier = userRepository.findById(updateIssueRequest.modifierId())
+		Member modifier = memberRepository.findById(updateIssueRequest.modifierId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
-		User manager = userRepository.findById(updateIssueRequest.managerId())
+		Member manager = memberRepository.findById(updateIssueRequest.managerId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
 
 		issue.updateIssue(updateIssueRequest, task, modifier, manager);

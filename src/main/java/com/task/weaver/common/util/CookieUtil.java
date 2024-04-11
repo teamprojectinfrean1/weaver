@@ -15,7 +15,6 @@ public class CookieUtil {
     }
 
     public static void setRefreshCookie(HttpHeaders httpHeaders, String refreshToken) {
-
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
                 .secure(true)
@@ -23,7 +22,6 @@ public class CookieUtil {
                 .path("/")
                 .sameSite("None")
                 .build();
-
         httpHeaders.add(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 }

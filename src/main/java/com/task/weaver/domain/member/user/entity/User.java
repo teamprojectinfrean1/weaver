@@ -1,22 +1,20 @@
 package com.task.weaver.domain.member.user.entity;
 
-import com.task.weaver.domain.member.LoginType;
-import com.task.weaver.domain.member.Member;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.task.weaver.domain.BaseEntity;
-import com.task.weaver.domain.chattingRoomMember.ChattingRoomMember;
-import com.task.weaver.domain.project.entity.Project;
-import com.task.weaver.domain.issue.entity.Issue;
-import com.task.weaver.domain.projectmember.entity.ProjectMember;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import java.net.URL;
+import java.util.Collection;
+import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
-import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -26,7 +24,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Getter
 @Setter
 @Builder
-public class User extends BaseEntity implements UserDetails, Member {
+public class User extends BaseEntity implements UserDetails {
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -52,26 +50,6 @@ public class User extends BaseEntity implements UserDetails, Member {
 
     @Column(name = "profile_image")
     private URL profileImage;
-
-    @Column(name = "login_type")
-    @Enumerated(EnumType.STRING)
-    private LoginType loginType;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
-    private List<ChattingRoomMember> chattingRoomMemberList;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
-    private List<ProjectMember> projectMemberList;
-
-    @OneToOne
-    @JoinColumn(name = "main_project_id")
-    private Project mainProject;
-
-    @OneToMany(mappedBy = "creator", cascade = CascadeType.REMOVE)
-    private List<Issue> creatorIssueList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "manager", cascade = CascadeType.REMOVE)
-    private List<Issue> managerIssueList = new ArrayList<>();
 
     public void updateEmail(final String email) {
         this.email = email;

@@ -7,7 +7,7 @@ import org.springframework.http.HttpHeaders;
 
 public interface AuthorizationService {
 	ResponseToken weaverLogin(RequestSignIn requestSignIn);
-	ResponseToken reissue (String refreshToken);
+	ResponseToken reissue (String refreshToken, String loginType);
 	void logout(String refreshToken);
 	Boolean checkMail(String email);
 	Boolean checkId(String id);

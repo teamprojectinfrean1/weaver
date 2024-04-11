@@ -1,6 +1,7 @@
 package com.task.weaver.domain.project.entity;
 
 import com.task.weaver.domain.BaseEntity;
+import com.task.weaver.domain.member.Member;
 import com.task.weaver.domain.member.oauth.entity.OauthMember;
 import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
@@ -46,11 +47,7 @@ public class Project extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private User writer;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "oauth_member_id")
-    private OauthMember OauthWriter;
+    private Member writer;
 
     @Builder.Default
     @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE)
@@ -61,8 +58,8 @@ public class Project extends BaseEntity {
     private List<Task> taskList = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "last_update_user_id")
-    private User modifier;
+    @JoinColumn(name = "last_update_member_id")
+    private Member modifier;
 
     public void changeName(String name) {
         this.name = name;
@@ -72,7 +69,7 @@ public class Project extends BaseEntity {
         this.detail = detail;
     }
 
-    public void updateProject(RequestUpdateProject requestUpdateProject, User updater){
+    public void updateProject(RequestUpdateProject requestUpdateProject, Member updater){
         this.name = requestUpdateProject.projectName();
         this.detail = requestUpdateProject.projectContent();
         this.startDate = requestUpdateProject.startDate();

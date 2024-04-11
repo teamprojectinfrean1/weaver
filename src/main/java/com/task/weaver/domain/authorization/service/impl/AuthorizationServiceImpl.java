@@ -2,19 +2,22 @@ package com.task.weaver.domain.authorization.service.impl;
 
 import com.task.weaver.common.exception.authorization.InvalidPasswordException;
 import com.task.weaver.common.exception.user.UserNotFoundException;
+import com.task.weaver.common.redis.service.RedisService;
 import com.task.weaver.common.util.CookieUtil;
 import com.task.weaver.common.util.HttpHeaderUtil;
 import com.task.weaver.domain.authorization.dto.request.RequestSignIn;
 import com.task.weaver.domain.authorization.dto.response.ResponseReIssueToken;
 import com.task.weaver.domain.authorization.dto.response.ResponseToken;
 import com.task.weaver.common.redis.RefreshToken;
-import com.task.weaver.common.redis.RefreshTokenRedisRepository;
+import com.task.weaver.common.redis.RefreshTokenRepository;
 import com.task.weaver.domain.authorization.service.AuthorizationService;
 import com.task.weaver.common.jwt.provider.JwtTokenProvider;
 import com.task.weaver.domain.member.LoginType;
-import com.task.weaver.domain.member.oauth.entity.OauthMember;
+import com.task.weaver.domain.member.Member;
+import com.task.weaver.domain.member.MemberRepository;
 import com.task.weaver.domain.member.user.entity.User;
 import com.task.weaver.domain.member.user.repository.UserRepository;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -37,20 +40,21 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final UserRepository userRepository;
-	private final RefreshTokenRedisRepository refreshTokenRedisRepository;
+	private final MemberRepository memberRepository;
+	private final RedisService redisService;
+	private final RefreshTokenRepository refreshTokenRepository;
 
 	@Override
 	@Transactional(readOnly = true)
 	public ResponseToken weaverLogin(RequestSignIn requestSignIn) {
 
-		// userId check
 		User user = userRepository.findByUserId(requestSignIn.id())
 				.orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, " 해당 ID가 존재하지 않습니다."));
-
-		// password check
 		if(!isCheckPassword(requestSignIn)){
 			throw new InvalidPasswordException(new Throwable(requestSignIn.password()));
 		}
+		Member member = memberRepository.findByWeaver(user)
+				.orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, " 해당 ID가 존재하지 않습니다."));
 
 		Authentication authentication = getAuthentication(requestSignIn.id(), requestSignIn.password());
 
@@ -62,7 +66,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 		// access token 발급
 		String accessToken = jwtTokenProvider.createAccessToken(authentication, LoginType.WEAVER);
 		// refresh token redis에 저장
-		saveRefreshToken(authentication.getName(), refreshToken);
+		saveRefreshToken(member.getMemberId(), refreshToken);
 
 		// 기존 토큰 있으면 수정, 없으면 생성
 		// accessToken, refreshToken 리턴
@@ -84,20 +88,20 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 		return authentication;
 	}
 
-	private void saveRefreshToken(final String username, final String refreshToken) {
-		refreshTokenRedisRepository.save(new RefreshToken(username, refreshToken));
+	private void saveRefreshToken(final UUID uuid, final String refreshToken) {
+		refreshTokenRepository.save(new RefreshToken(uuid, refreshToken));
 	}
 
-	public ResponseToken authenticationOAuthUser(OauthMember oauthMember) {
-		Authentication authentication = new UsernamePasswordAuthenticationToken(oauthMember.oauthId().oauthServerId(),
-				oauthMember.oauthId().oauthServer());
+	public ResponseToken authenticationOAuthUser(Member member) {
+		Authentication authentication = new UsernamePasswordAuthenticationToken(member.getMemberId(),
+				member.getLoginType());
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
 		log.info("Authentication Object = {}", SecurityContextHolder.getContext());
-		String accessToken = jwtTokenProvider.createAccessToken(authentication, oauthMember.loginType());
+		String accessToken = jwtTokenProvider.createAccessToken(authentication, member.getLoginType());
 		String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
-		saveRefreshToken(authentication.getName(), refreshToken);
+		saveRefreshToken(member.getMemberId(), refreshToken);
 
 		return ResponseToken.builder()
 				.accessToken("Bearer " + accessToken)
@@ -114,7 +118,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 		return passwordEncoder.matches(requestSignIn.password(), user.getPassword()); // 암호화된 비밀번호가 뒤로 와야 한다 순서
 	}
 
-	public ResponseToken reissue(String refreshToken) {
+	public ResponseToken reissue(String refreshToken, String loginType) {
 
 		// refresh token 유효성 검증
 		jwtTokenProvider.validateToken(refreshToken);
@@ -125,21 +129,21 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 		log.info("authentication.getName() : " + authentication.getName());
 
 		// authentication.getname()으로 redis에 있는 refresh token 가져오기
-		RefreshToken findTokenEntity = refreshTokenRedisRepository.findById(authentication.getName())
-			.orElseThrow(() -> new RuntimeException("")); // 예외 처리 추후 수정
+		RefreshToken currentRefreshToken = refreshTokenRepository.findByRefreshToken(refreshToken)
+			.orElseThrow(() -> new RuntimeException(""));
 
 		// refresh token, redis 에 저장된 것과 일치하는지 검증
 		log.info("resolvedToken : " + refreshToken);
-		log.info("findrefreshtoken : " + findTokenEntity.getRefreshToken());
-		if(!refreshToken.equals(findTokenEntity.getRefreshToken()))
+		log.info("findrefreshtoken : " + currentRefreshToken.getRefreshToken());
+		if(!refreshToken.equals(currentRefreshToken.getRefreshToken()))
 			throw new IllegalArgumentException(""); // 예외 처리 추후 수정
 
 		// accessToken과 refreshToken 모두 재발행
 		String newRefreshToken = jwtTokenProvider.createRefreshToken(authentication);
-		String newAccessToken = jwtTokenProvider.createAccessToken(authentication, LoginType.WEAVER);
+		String newAccessToken = jwtTokenProvider.createAccessToken(authentication, LoginType.fromName(loginType));
 
 		// redis 에 새로 발급한 refreshtoken 저장
-		refreshTokenRedisRepository.save(new RefreshToken(authentication.getName(), newRefreshToken));
+		refreshTokenRepository.save(new RefreshToken(currentRefreshToken.getId(), newRefreshToken));
 
 		return ResponseToken.builder()
 			.accessToken("Bearer "+newAccessToken)
@@ -164,7 +168,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
 		Authentication authentication = jwtTokenProvider.getAuthentication(resolveToken(refreshToken));
 
-		refreshTokenRedisRepository.deleteById(authentication.getName());
+		refreshTokenRepository.deleteById(authentication.getName());
 	}
 
 	@Override
@@ -190,8 +194,8 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
 	public static HttpHeaders setCookieAndHeader(final ResponseToken responseToken) {
 		HttpHeaders headers = new HttpHeaders();
-		CookieUtil.setRefreshCookie(headers, responseToken.accessToken());
 		HttpHeaderUtil.setAccessToken(headers, responseToken.accessToken());
+		CookieUtil.setRefreshCookie(headers, responseToken.refreshToken());
 		return headers;
 	}
 

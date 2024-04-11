@@ -20,7 +20,6 @@ public record NaverMemberResponse(
                 .oauthId(new OauthId(String.valueOf(response.id), NAVER))
                 .nickname(response.nickname)
                 .profileImageUrl(response.profileImage)
-                .loginType(LoginType.OAUTH)
                 .build();
     }
 

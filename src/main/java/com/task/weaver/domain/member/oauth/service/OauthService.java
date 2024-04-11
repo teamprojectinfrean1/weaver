@@ -1,5 +1,8 @@
 package com.task.weaver.domain.member.oauth.service;
 
+import com.task.weaver.domain.member.LoginType;
+import com.task.weaver.domain.member.Member;
+import com.task.weaver.domain.member.MemberRepository;
 import com.task.weaver.domain.member.oauth.authcode.AuthCodeRequestUrlProviderComposite;
 import com.task.weaver.domain.member.oauth.client.OauthMemberClientComposite;
 import com.task.weaver.domain.member.oauth.entity.OauthMember;
@@ -15,6 +18,7 @@ public class OauthService {
     private final AuthCodeRequestUrlProviderComposite authCodeRequestUrlProviderComposite;
     private final OauthMemberClientComposite oauthMemberClientComposite;
     private final OauthMemberRepository oauthMemberRepository;
+    private final MemberRepository memberRepository;
 
     /**
      * @param oauthServerType

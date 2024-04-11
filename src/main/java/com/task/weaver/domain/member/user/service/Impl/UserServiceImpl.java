@@ -172,7 +172,6 @@ public class UserServiceImpl implements UserService {
                 .nickname(requestCreateUser.getNickname())
                 .email(requestCreateUser.getEmail())
                 .password(passwordEncoder.encode(requestCreateUser.getPassword()))
-                .loginType(LoginType.WEAVER)
                 .build();
 
         if (profileImage != null) {

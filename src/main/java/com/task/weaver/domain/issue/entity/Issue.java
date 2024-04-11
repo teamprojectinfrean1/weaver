@@ -4,6 +4,7 @@ import com.task.weaver.common.model.Status;
 import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.comment.entity.Comment;
 import com.task.weaver.domain.issue.dto.request.UpdateIssueRequest;
+import com.task.weaver.domain.member.Member;
 import com.task.weaver.domain.member.oauth.entity.OauthMember;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.member.user.entity.User;
@@ -38,19 +39,11 @@ public class Issue extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id")
-    private User creator;
+    private Member creator;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id")
-    private User manager;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "oauth_creator_id")
-    private OauthMember OauthCreator;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "oauth_manager_id")
-    private OauthMember OauthManager;
+    private Member manager;
 
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL)
     private List<Comment> comments;
@@ -70,7 +63,7 @@ public class Issue extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    public void updateIssue(UpdateIssueRequest updateIssueRequest, Task task, User modifier, User manager) {
+    public void updateIssue(UpdateIssueRequest updateIssueRequest, Task task, Member modifier, Member manager) {
         this.task = task;
         this.creator = modifier;
         this.manager = manager;

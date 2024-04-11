@@ -3,7 +3,7 @@ package com.task.weaver.common.redis.service;
 import static com.task.weaver.common.exception.ErrorCode.REFRESH_JWT_EXPIRED;
 
 import com.task.weaver.common.redis.RefreshToken;
-import com.task.weaver.common.redis.RefreshTokenRedisRepository;
+import com.task.weaver.common.redis.RefreshTokenRepository;
 import io.jsonwebtoken.JwtException;
 import java.time.Duration;
 import java.util.UUID;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RedisService {
 
-    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final RedisTemplate<String, Object> redisTemplate;
 
     public void setValues(String key, String data, Duration duration) {
@@ -42,12 +42,12 @@ public class RedisService {
 
     @Transactional
     public void saveRefreshToken(UUID memberId, String refreshToken) {
-        refreshTokenRedisRepository.save(new RefreshToken(memberId, refreshToken));
+        refreshTokenRepository.save(new RefreshToken(memberId, refreshToken));
     }
 
     @Transactional(readOnly = true)
     public UUID findMemberByToken(String refreshToken) {
-        RefreshToken token = refreshTokenRedisRepository.findByRefreshToken(refreshToken)
+        RefreshToken token = refreshTokenRepository.findByRefreshToken(refreshToken)
                 .orElseThrow(() -> new JwtException(REFRESH_JWT_EXPIRED.getMessage()));
         return token.getId();
     }
