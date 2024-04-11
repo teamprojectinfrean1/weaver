@@ -1,5 +1,7 @@
 package com.task.weaver.domain.member.oauth.controller;
 
+import static com.task.weaver.domain.authorization.service.impl.AuthorizationServiceImpl.setCookieAndHeader;
+
 import com.task.weaver.common.model.OauthServerType;
 import com.task.weaver.common.response.DataResponse;
 import com.task.weaver.domain.authorization.dto.response.ResponseToken;
@@ -9,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,11 +45,12 @@ public class OauthController {
     }
 
     @GetMapping("/login/{oauthServerType}")
-    ResponseEntity<DataResponse<ResponseToken>> login(@PathVariable OauthServerType oauthServerType,
+    ResponseEntity<?> login(@PathVariable OauthServerType oauthServerType,
                                                       @RequestParam("code") String code) {
         log.info("Kakao OAuth --> 로그인 요청 성공");
         ResponseToken responseToken = authorizationService.authenticationOAuthUser(
                 oauthService.login(oauthServerType, code));
-        return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "소셜 로그인 성공", responseToken, true));
+        HttpHeaders headers = setCookieAndHeader(responseToken);
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.CREATED, "OAuth login successfully", headers, true), HttpStatus.CREATED);
     }
 }

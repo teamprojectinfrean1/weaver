@@ -2,7 +2,10 @@ package com.task.weaver.domain.authorization.service.impl;
 
 import com.task.weaver.common.exception.authorization.InvalidPasswordException;
 import com.task.weaver.common.exception.user.UserNotFoundException;
+import com.task.weaver.common.util.CookieUtil;
+import com.task.weaver.common.util.HttpHeaderUtil;
 import com.task.weaver.domain.authorization.dto.request.RequestSignIn;
+import com.task.weaver.domain.authorization.dto.response.ResponseReIssueToken;
 import com.task.weaver.domain.authorization.dto.response.ResponseToken;
 import com.task.weaver.common.redis.RefreshToken;
 import com.task.weaver.common.redis.RefreshTokenRedisRepository;
@@ -14,6 +17,7 @@ import com.task.weaver.domain.member.user.entity.User;
 import com.task.weaver.domain.member.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -182,5 +186,19 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 		if(userRepository.findByNickname(nickname).isPresent())
 			return false;
 		return true;
+	}
+
+	public static HttpHeaders setCookieAndHeader(final ResponseToken responseToken) {
+		HttpHeaders headers = new HttpHeaders();
+		CookieUtil.setRefreshCookie(headers, responseToken.accessToken());
+		HttpHeaderUtil.setAccessToken(headers, responseToken.accessToken());
+		return headers;
+	}
+
+	public static HttpHeaders setCookieAndHeader(final ResponseReIssueToken reIssueToken) {
+		HttpHeaders headers = new HttpHeaders();
+		HttpHeaderUtil.setAccessToken(headers, reIssueToken.accessToken());
+		CookieUtil.setRefreshCookie(headers, reIssueToken.refreshToken());
+		return headers;
 	}
 }

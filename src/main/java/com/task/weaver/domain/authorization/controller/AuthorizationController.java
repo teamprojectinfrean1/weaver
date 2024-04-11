@@ -1,5 +1,7 @@
 package com.task.weaver.domain.authorization.controller;
 
+import static com.task.weaver.domain.authorization.service.impl.AuthorizationServiceImpl.setCookieAndHeader;
+
 import com.task.weaver.common.response.DataResponse;
 import com.task.weaver.common.response.MessageResponse;
 import com.task.weaver.domain.authorization.dto.request.EmailCheckDto;
@@ -16,6 +18,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import jakarta.validation.Valid;
 import java.io.IOException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -59,50 +62,21 @@ public class AuthorizationController {
 
 	@Operation(summary = "로그인", description = "로그인")
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody RequestSignIn requestSignIn, HttpServletResponse res) {
-		// access token -> header? body? cookie?
+	public ResponseEntity<?> login(@RequestBody RequestSignIn requestSignIn) {
 		ResponseToken responseToken = authorizationService.weaverLogin(requestSignIn);
-
 		log.info("refreshToken : " + responseToken.refreshToken());
-
-		// refresh token cookie에 담기
-		ResponseCookie cookie = ResponseCookie.from("refresh-token", responseToken.refreshToken())
-			.maxAge(60 * 60 * 24 * 15)
-			.httpOnly(true)
-			// .secure(true)
-			.domain("")
-			.path("/")
-			// .sameSite("None")
-			.build();
-
-		res.setHeader("Set-Cookie", cookie.toString());
-		log.info("login - cookie : " + cookie);
-
-		// access token body에 담아 return
-		return ResponseEntity.ok().body(responseToken.accessToken());
+		HttpHeaders headers = setCookieAndHeader(responseToken);
+		return new ResponseEntity<>(DataResponse.of(HttpStatus.CREATED, "Weaver login successfully", headers, true),
+				HttpStatus.CREATED);
 	}
 
 	@Operation(summary = "reissue", description = "refresh token 재발급")
 	@GetMapping("/reissue")
-	public ResponseEntity<?> reissue(@CookieValue(value = "refresh-token", required = false) Cookie cookie, HttpServletResponse res) {
-		log.info("reissue controller - cookie : " + cookie.getValue());
-
-		ResponseToken responseToken = authorizationService.reissue(cookie.getValue());
-    
-		// refresh token cookie에 담기
-		ResponseCookie newCookie = ResponseCookie.from("refresh-token", responseToken.refreshToken())
-			.maxAge(60 * 60 * 24 * 15)
-			.httpOnly(true)
-			// .secure(true)
-			.domain("")
-			.path("/")
-			// .sameSite("None")
-			.build();
-
-		res.setHeader("Set-Cookie", newCookie.toString());
-
-		// access token body에 담아 return
-		return ResponseEntity.ok().body(responseToken.accessToken());
+	public ResponseEntity<?> reissue(@CookieValue(value = "refreshToken") String refreshToken) {
+		log.info("reissue controller - refreshToken : " + refreshToken);
+		ResponseToken responseToken = authorizationService.reissue(refreshToken);
+		HttpHeaders headers = setCookieAndHeader(responseToken);
+		return new ResponseEntity<>(MessageResponse.of(HttpStatus.CREATED, "Token 재발급 성공", true), headers, HttpStatus.CREATED);
 	}
 
 	@Operation(summary = "로그아웃", description = "로그아웃")

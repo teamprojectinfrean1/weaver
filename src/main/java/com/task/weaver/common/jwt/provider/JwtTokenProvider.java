@@ -35,9 +35,9 @@ public class JwtTokenProvider {
 	private Key key;
 
 	// access token -> 30minutes
-	private final Long ACCESS_TOKEN_VAILD_TIME = 30 * 60 * 1000L;
+	public static final Long ACCESS_TOKEN_VAILD_TIME = 30 * 60 * 1000L;
 	// refresh token -> 7days
-	private final Long REFRESH_TOKEN_VALID_TIME = 7 * 24 * 60 * 60 * 1000L;
+	public static final Long REFRESH_TOKEN_VALID_TIME = 7 * 24 * 60 * 60 * 1000L;
 
 	private final CustomUserDetailsService customUserDetailsService;
 	private static final String AUTHORIZATION_HEADER = "Authorization";
