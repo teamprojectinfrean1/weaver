@@ -14,7 +14,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
@@ -23,9 +22,11 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Builder
@@ -45,9 +46,10 @@ import lombok.NoArgsConstructor;
 public class OauthMember extends BaseEntity implements Member {
 
     @Id
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(name = "oauth_member_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
     @Embedded
     private OauthId oauthId;
@@ -81,7 +83,7 @@ public class OauthMember extends BaseEntity implements Member {
     @OneToMany(mappedBy = "OauthManager", cascade = CascadeType.REMOVE)
     private List<Issue> managerIssueList = new ArrayList<>();
 
-    public Long id() {
+    public UUID id() {
         return id;
     }
 

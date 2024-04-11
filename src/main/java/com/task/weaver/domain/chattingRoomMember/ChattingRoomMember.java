@@ -26,7 +26,7 @@ public class ChattingRoomMember extends BaseEntity {
     private ChattingRoom chattingRoom;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "member_id")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)

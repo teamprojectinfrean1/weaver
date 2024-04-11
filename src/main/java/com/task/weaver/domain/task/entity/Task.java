@@ -33,7 +33,7 @@ public class Task extends BaseEntity {
     private Project project;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "creator_user_id")
+    @JoinColumn(name = "creator_member_id")
     private User user;
 
     @OneToMany(mappedBy = "task")
@@ -41,7 +41,7 @@ public class Task extends BaseEntity {
     private List<Issue> issueList = new ArrayList<>();
 
     @OneToOne
-    @JoinColumn(name = "last_update_user_id")
+    @JoinColumn(name = "last_update_member_id")
     private User modifier;
 
     @Column(name = "task_title", length = 100)

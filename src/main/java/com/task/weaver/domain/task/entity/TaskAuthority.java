@@ -33,7 +33,7 @@ public class TaskAuthority {
     private Project project;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "member_id")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)

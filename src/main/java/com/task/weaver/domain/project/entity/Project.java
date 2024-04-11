@@ -45,7 +45,7 @@ public class Project extends BaseEntity {
     private LocalDateTime created;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "member_id")
     private User writer;
 
     @ManyToOne(fetch = FetchType.LAZY)
