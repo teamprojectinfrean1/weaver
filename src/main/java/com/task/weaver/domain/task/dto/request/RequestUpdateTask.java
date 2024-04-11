@@ -1,6 +1,5 @@
 package com.task.weaver.domain.task.dto.request;
 
-import com.task.weaver.domain.issue.dto.request.RequestIssueForTask;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,8 +22,6 @@ public class RequestUpdateTask {
     private String taskContent;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String taskStatus;
     private List<String> taskTagList;
-    private List<RequestIssueForTask> issueList;
     private String editDeletePermission;
 }

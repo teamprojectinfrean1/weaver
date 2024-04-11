@@ -1,6 +1,5 @@
 package com.task.weaver.domain.user.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.user.dto.request.RequestCreateUser;
@@ -11,7 +10,9 @@ import com.task.weaver.domain.user.dto.response.*;
 import com.task.weaver.domain.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.json.simple.parser.ParseException;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
