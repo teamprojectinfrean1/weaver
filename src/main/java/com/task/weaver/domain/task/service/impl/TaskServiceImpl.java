@@ -5,8 +5,6 @@ import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.task.TaskNotFoundException;
 import com.task.weaver.common.exception.user.UserNotFoundException;
-import com.task.weaver.domain.issue.dto.request.RequestIssueForTask;
-import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
@@ -28,8 +26,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -152,9 +148,6 @@ public class TaskServiceImpl implements TaskService {
 
         User updater = userRepository.findById(requestUpdateTask.getUpdaterUuid())
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(requestUpdateTask.getUpdaterUuid()))));
-
-        List<RequestIssueForTask> requestIssueForTasks = requestUpdateTask.getIssueList();
-        List<Issue> issueList = new ArrayList<>();
 
         findTask.updateTask(requestUpdateTask, updater);
 

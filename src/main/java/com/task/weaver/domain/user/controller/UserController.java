@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -77,7 +78,7 @@ public class UserController {
     @PutMapping("/update")
     public ResponseEntity<DataResponse<ResponseGetUser>> updateUser(@RequestParam("userId") UUID userId,
                                                                     @RequestBody RequestUpdateUser requestUpdateUser)
-            throws ParseException, JsonProcessingException {
+            throws ParseException, IOException {
 
         ResponseGetUser responseGetUser = userService.updateUser(userId, requestUpdateUser);
         return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "유저 정보 수정 성공", responseGetUser, true));

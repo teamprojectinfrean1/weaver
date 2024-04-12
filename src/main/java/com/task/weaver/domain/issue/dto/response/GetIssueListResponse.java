@@ -1,5 +1,6 @@
 package com.task.weaver.domain.issue.dto.response;
 
+import java.net.URL;
 import java.util.UUID;
 
 import lombok.Builder;

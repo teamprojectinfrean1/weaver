@@ -13,6 +13,7 @@ public enum ErrorCode {
     INVALID_TYPE_VALUE(HttpStatus.BAD_REQUEST, "C004", "입력 값의 타입이 올바르지 않습니다."),
     HANDLE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "C005", "접근이 거부 되었습니다."),
     RESOURCE_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "R001", "해당 리소스에 대한 권한이 없습니다."),
+    UNSUPPORTED_OAUTH(HttpStatus.NOT_ACCEPTABLE, "C006", "지원하지않는 플랫폼입니다."),
 
     // Project
     PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "P001", "해당 프로젝트를 찾을 수 없습니다."),
@@ -45,7 +46,10 @@ public enum ErrorCode {
     NO_MATCHED_VERIFICATION_CODE(HttpStatus.FORBIDDEN, "M004", "인증 코드가 일치하지않습니다."),
 
     // Status
-    INVALID_STATUS(HttpStatus.BAD_REQUEST, "S001", "유효하지않은 STATUS입니다.");
+    INVALID_STATUS(HttpStatus.BAD_REQUEST, "S001", "유효하지않은 STATUS입니다."),
+
+    // Comment
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "CM001", "해당 코멘트를 찾을 수 없습니다");
 
     private final HttpStatus status;
     private final String code;
