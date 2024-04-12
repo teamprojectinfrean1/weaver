@@ -99,9 +99,11 @@ public class IssueServiceImpl implements IssueService {
 		Project project = projectRepository.findById(getIssuePageRequest.projectId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
 
-		List<GetIssueListResponse> issueList = new ArrayList<>();
+		List<Issue> issueList = new ArrayList<>();
 
 		Pageable pageable = getIssuePageRequest.getPageable(Sort.by("issueId").descending());
+
+		// Page<Issue> issuePage = issueRepository.findBySearch(getIssuePageRequest.projectId(), status, filter, word, pageable);
 
 		switch (filter){
 			case "ASSIGNEE":
@@ -109,13 +111,14 @@ public class IssueServiceImpl implements IssueService {
 					for(Issue issue : task.getIssueList()){
 						// manager 확인
 						if(issue.getAssignee().getNickname().contains(word)){
-							issueList.add(new GetIssueListResponse(issue.getIssueId(),
-								issue.getIssueTitle(),
-								task.getTaskId(),
-								task.getTaskTitle(),
-								issue.getAssignee().getId(),
-								issue.getAssignee().getNickname(),
-								issue.getAssignee().getProfileImage()));
+							// issueList.add(new GetIssueListResponse(issue.getIssueId(),
+							// 	issue.getIssueTitle(),
+							// 	task.getTaskId(),
+							// 	task.getTaskTitle(),
+							// 	issue.getAssignee().getId(),
+							// 	issue.getAssignee().getNickname(),
+							// 	issue.getAssignee().getProfileImage()));
+							issueList.add(issue);
 						}
 					}
 				}
@@ -124,13 +127,14 @@ public class IssueServiceImpl implements IssueService {
 				for (Task task : project.getTaskList()) {
 					if(task.getTaskTitle().contains(word)){
 						for(Issue issue : task.getIssueList()){
-							issueList.add(new GetIssueListResponse(issue.getIssueId(),
-								issue.getIssueTitle(),
-								task.getTaskId(),
-								task.getTaskTitle(),
-								issue.getAssignee().getId(),
-								issue.getAssignee().getNickname(),
-								issue.getAssignee().getProfileImage()));
+							// issueList.add(new GetIssueListResponse(issue.getIssueId(),
+							// 	issue.getIssueTitle(),
+							// 	task.getTaskId(),
+							// 	task.getTaskTitle(),
+							// 	issue.getAssignee().getId(),
+							// 	issue.getAssignee().getNickname(),
+							// 	issue.getAssignee().getProfileImage()));
+							issueList.add(issue);
 						}
 					}
 				}
@@ -140,27 +144,35 @@ public class IssueServiceImpl implements IssueService {
 					for(Issue issue : task.getIssueList()){
 						// issue title 확인
 						if(issue.getIssueTitle().contains(word)){
-							issueList.add(new GetIssueListResponse(issue.getIssueId(),
-								issue.getIssueTitle(),
-								task.getTaskId(),
-								task.getTaskTitle(),
-								issue.getAssignee().getId(),
-								issue.getAssignee().getNickname(),
-								issue.getAssignee().getProfileImage()));
+							// issueList.add(new GetIssueListResponse(issue.getIssueId(),
+							// 	issue.getIssueTitle(),
+							// 	task.getTaskId(),
+							// 	task.getTaskTitle(),
+							// 	issue.getAssignee().getId(),
+							// 	issue.getAssignee().getNickname(),
+							// 	issue.getAssignee().getProfileImage()));
+							issueList.add(issue);
 						}
 					}
 				}
 				break;
 		}
 
+		// Page<Issue> issuePage = issueList;
+
 		// paging 처리
 		PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
 		int start = (int) pageable.getOffset();
 		int end = Math.min((start + pageable.getPageSize()), issueList.size());
-		Page<GetIssueListResponse> issuePage = new PageImpl<>(issueList.subList(start, end), pageRequest, issueList.size());
+		Page<Issue> issuePage = new PageImpl<>(issueList.subList(start, end), pageRequest, issueList.size());
 
-		Function<Issue, GetIssueListResponse> fn = Issue -> (new GetIssueListResponse(Issue));
-		return issuePage;
+
+		Function<Issue, GetIssueListResponse> fn = Issue -> (new GetIssueListResponse(Issue.getIssueId(), Issue.getIssueTitle(), Issue.getTask().getTaskId(), Issue.getTask().getTaskTitle(), Issue.getAssignee().getId(), Issue.getAssignee().getNickname(), Issue.getAssignee().getProfileImage()));
+
+		// ResponsePageResult<> result = new ResponsePageResult()
+
+		// Function<Issue, GetIssueListResponse> fn = Issue -> (new GetIssueListResponse(Issue));
+		return new ResponsePageResult<>(issuePage, fn);
 	}
 
 	@Override
