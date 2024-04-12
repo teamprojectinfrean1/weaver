@@ -2,6 +2,7 @@ package com.task.weaver.domain.issue.controller;
 
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.task.weaver.common.response.DataResponse;
+import com.task.weaver.common.response.MessageResponse;
 import com.task.weaver.domain.issue.dto.request.CreateIssueRequest;
 import com.task.weaver.domain.issue.dto.request.GetIssuePageRequest;
 import com.task.weaver.domain.issue.dto.request.UpdateIssueRequest;
@@ -38,14 +41,13 @@ public class IssueController {
 	@GetMapping("/detail/{issueId}")
 	public ResponseEntity<?> getIssueInfo(@PathVariable UUID issueId){
 		IssueResponse issueResponse = issueService.getIssue(issueId);
-		return ResponseEntity.ok()
-			.body(issueResponse);
+		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "이슈 상세 조회 성공", issueResponse, true), HttpStatus.OK);
 	}
 
 	@Operation(summary = "이슈 생성", description = "이슈 생성")
 	@PostMapping
 	public ResponseEntity<?> addIssue(@RequestBody CreateIssueRequest createIssueRequest) {
-		return ResponseEntity.ok().body(issueService.addIssue(createIssueRequest));
+		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "이슈 생성 성공", issueService.addIssue(createIssueRequest), true), HttpStatus.OK);
 	}
 
 	@Operation(summary = "이슈 삭제", description = "issueId로 이슈 삭제")
@@ -53,8 +55,7 @@ public class IssueController {
 	public ResponseEntity<?> removeIssue(@PathVariable UUID issueId){
 		// 담당자만 삭제 가능하도록 수정
 		issueService.deleteIssue(issueId);
-		return ResponseEntity.ok()
-			.body("Delete Successful");
+		return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "이슈 삭제 성공", true), HttpStatus.OK);
 	}
 
 	/**
@@ -65,25 +66,25 @@ public class IssueController {
 	@GetMapping("/allTickets/{status}")
 	public ResponseEntity<?> getIssues(@PathVariable String status, GetIssuePageRequest getIssuePageRequest){
 		// issueService.getIssues(projectId, status, getIssuePageRequest);
-		return ResponseEntity.ok().body(issueService.getIssues(status, getIssuePageRequest));
+		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "status로 이슈 조회 성공", issueService.getIssues(status, getIssuePageRequest), true), HttpStatus.OK);
 	}
 
 	@Operation(summary = "이슈 수정", description = "issueId로 기존 이슈 상세 정보 수정")
 	@PutMapping("/detail/{issueId}")
 	public ResponseEntity<?> updateTask(@PathVariable UUID issueId, UpdateIssueRequest updateIssueRequest){
-		return ResponseEntity.ok().body(issueService.updateIssue(issueId, updateIssueRequest));
+		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "이슈 상세 정보 수정 성공", issueService.updateIssue(issueId, updateIssueRequest), true), HttpStatus.OK);
 	}
 
 	@Operation(summary = "이슈 상태 수정", description = "issueId로 이슈 상세 상태 수정")
 	@PutMapping("/status/{issueId}")
 	public ResponseEntity<?> updateTask(@PathVariable UUID issueId, String status){
 		issueService.updateIssueStatus(issueId, status);
-		return ResponseEntity.ok().body("Update Issue Status");
+		return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "이슈 상태 수정 성공", true), HttpStatus.OK);
 	}
 
 	@Operation(summary = "이슈 검색 조회", description = "filter로 이슈 검색 조회 (MANAGER / TASK / ISSUE)")
 	@GetMapping("/search/{status}")
 	public ResponseEntity<?> getSearchIssues(@PathVariable String status, @RequestParam("filter") String filter, @RequestParam("word") String word, GetIssuePageRequest getIssuePageRequest){
-		return ResponseEntity.ok().body(issueService.getSearchIssues(status, filter, word, getIssuePageRequest));
+		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "이슈 검색 조회 성공", issueService.getSearchIssues(status, filter, word, getIssuePageRequest), true), HttpStatus.OK);
 	}
 }
