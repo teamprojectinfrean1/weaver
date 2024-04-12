@@ -17,7 +17,7 @@ public interface IssueService {
 
     IssueResponse getIssue(UUID issueId) throws NotFoundException, AuthorizationException;
 
-    Page<GetIssueListResponse> getIssues(String status, GetIssuePageRequest getIssuePageRequest)
+    ResponsePageResult<GetIssueListResponse, Issue> getIssues(String status, GetIssuePageRequest getIssuePageRequest)
             throws NotFoundException, AuthorizationException;
 
     IssueResponse addIssue(CreateIssueRequest issueRequest) throws AuthorizationException;

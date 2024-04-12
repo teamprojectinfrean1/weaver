@@ -58,13 +58,13 @@ public class IssueServiceImpl implements IssueService {
 	}
 
 	@Override
-	public Page<GetIssueListResponse> getIssues(String status,
+	public ResponsePageResult<GetIssueListResponse, Issue> getIssues(String status,
 		GetIssuePageRequest getIssuePageRequest) throws NotFoundException, AuthorizationException {
 
 		Project project = projectRepository.findById(getIssuePageRequest.projectId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
 
-		List<GetIssueListResponse> issueList = new ArrayList<>();
+		List<Issue> issueList = new ArrayList<>();
 
 		Pageable pageable = getIssuePageRequest.getPageable(Sort.by("issueId").descending());
 
@@ -72,13 +72,7 @@ public class IssueServiceImpl implements IssueService {
 			for(Issue issue : task.getIssueList()){
 				// status 확인
 				if(issue.getStatus().equals(Status.valueOf(status))){
-					issueList.add(new GetIssueListResponse(issue.getIssueId(),
-						issue.getIssueTitle(),
-						task.getTaskId(),
-						task.getTaskTitle(),
-						issue.getAssignee().getId(),
-						issue.getAssignee().getNickname(),
-						issue.getAssignee().getProfileImage()));
+					issueList.add(issue);
 				}
 			}
 		}
@@ -87,9 +81,11 @@ public class IssueServiceImpl implements IssueService {
 		PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
 		int start = (int) pageable.getOffset();
 		int end = Math.min((start + pageable.getPageSize()), issueList.size());
-		Page<GetIssueListResponse> issuePage = new PageImpl<>(issueList.subList(start, end), pageRequest, issueList.size());
+		Page<Issue> issuePage = new PageImpl<>(issueList.subList(start, end), pageRequest, issueList.size());
 
-		return issuePage;
+		Function<Issue, GetIssueListResponse> fn = Issue -> (new GetIssueListResponse(Issue.getIssueId(), Issue.getIssueTitle(), Issue.getTask().getTaskId(), Issue.getTask().getTaskTitle(), Issue.getAssignee().getId(), Issue.getAssignee().getNickname(), Issue.getAssignee().getProfileImage()));
+
+		return new ResponsePageResult<>(issuePage, fn);
 	}
 
 	@Override
@@ -111,13 +107,6 @@ public class IssueServiceImpl implements IssueService {
 					for(Issue issue : task.getIssueList()){
 						// manager 확인
 						if(issue.getAssignee().getNickname().contains(word)){
-							// issueList.add(new GetIssueListResponse(issue.getIssueId(),
-							// 	issue.getIssueTitle(),
-							// 	task.getTaskId(),
-							// 	task.getTaskTitle(),
-							// 	issue.getAssignee().getId(),
-							// 	issue.getAssignee().getNickname(),
-							// 	issue.getAssignee().getProfileImage()));
 							issueList.add(issue);
 						}
 					}
@@ -127,13 +116,6 @@ public class IssueServiceImpl implements IssueService {
 				for (Task task : project.getTaskList()) {
 					if(task.getTaskTitle().contains(word)){
 						for(Issue issue : task.getIssueList()){
-							// issueList.add(new GetIssueListResponse(issue.getIssueId(),
-							// 	issue.getIssueTitle(),
-							// 	task.getTaskId(),
-							// 	task.getTaskTitle(),
-							// 	issue.getAssignee().getId(),
-							// 	issue.getAssignee().getNickname(),
-							// 	issue.getAssignee().getProfileImage()));
 							issueList.add(issue);
 						}
 					}
@@ -144,13 +126,6 @@ public class IssueServiceImpl implements IssueService {
 					for(Issue issue : task.getIssueList()){
 						// issue title 확인
 						if(issue.getIssueTitle().contains(word)){
-							// issueList.add(new GetIssueListResponse(issue.getIssueId(),
-							// 	issue.getIssueTitle(),
-							// 	task.getTaskId(),
-							// 	task.getTaskTitle(),
-							// 	issue.getAssignee().getId(),
-							// 	issue.getAssignee().getNickname(),
-							// 	issue.getAssignee().getProfileImage()));
 							issueList.add(issue);
 						}
 					}
