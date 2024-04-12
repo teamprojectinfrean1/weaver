@@ -1,10 +1,8 @@
 package com.task.weaver.domain.project.dto.response;
 
-import com.task.weaver.domain.issue.dto.response.IssueResponse;
 import com.task.weaver.domain.project.entity.Project;
-import com.task.weaver.domain.task.dto.response.ResponseGetTask;
-
 import com.task.weaver.domain.task.dto.response.ResponseUpdateDetail;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
