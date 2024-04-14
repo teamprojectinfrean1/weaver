@@ -1,18 +1,15 @@
 package com.task.weaver.domain.issue.dto.response;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
 import com.task.weaver.domain.issue.entity.Issue;
-import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.task.dto.response.ResponseUpdateDetail;
-import com.task.weaver.domain.task.entity.Task;
-import com.task.weaver.domain.user.entity.User;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 // @Builder
 // public record IssueResponse(
@@ -50,7 +47,7 @@ public class IssueResponse {
 	private String status;
 	private UUID assigneeId;
 	private String assigneeNickname;
-	private String assigneeProfileImage;
+	private URL assigneeProfileImage;
 	private LocalDateTime startDate;
 	private LocalDateTime endDate;
 	private ResponseUpdateDetail lastUpdateDetail;

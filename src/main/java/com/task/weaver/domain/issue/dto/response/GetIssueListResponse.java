@@ -1,11 +1,9 @@
 package com.task.weaver.domain.issue.dto.response;
 
-import java.net.URL;
-import java.util.UUID;
-
 import lombok.Builder;
 
-import com.task.weaver.domain.issue.entity.Issue;
+import java.net.URL;
+import java.util.UUID;
 
 @Builder
 public record GetIssueListResponse(UUID issueId,
@@ -14,7 +12,7 @@ public record GetIssueListResponse(UUID issueId,
 								   String taskTitle,
 								   String assigneeId,
 								   String assigneeNickname,
-								   String assigneeProfileImage) {
+								   URL assigneeProfileImage) {
 	// public GetIssueListResponse(Issue issue) {
 	// 	this.issueId = issue.getIssueId();
 	// 	this.issueTitle = issue.getIssueTitle();
