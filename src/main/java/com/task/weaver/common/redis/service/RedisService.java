@@ -51,4 +51,8 @@ public class RedisService {
                 .orElseThrow(() -> new JwtException(REFRESH_JWT_EXPIRED.getMessage()));
         return token.getId();
     }
+
+    public void deleteRefreshToken(RefreshToken refreshToken) {
+        refreshTokenRepository.delete(refreshToken);
+    }
 }

@@ -13,7 +13,6 @@ import com.task.weaver.common.redis.RefreshTokenRepository;
 import com.task.weaver.domain.authorization.service.AuthorizationService;
 import com.task.weaver.common.jwt.provider.JwtTokenProvider;
 import com.task.weaver.domain.member.LoginType;
-import com.task.weaver.domain.member.oauth.entity.OauthMember;
 import com.task.weaver.domain.member.user.entity.User;
 import com.task.weaver.domain.member.user.repository.UserRepository;
 import com.task.weaver.domain.useroauthmember.entity.UserOauthMember;
@@ -113,29 +112,28 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 		jwtTokenProvider.validateToken(refreshToken);
 
 		Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
-
-		// log.info("resolvedToken : " + resolvedToken);
 		log.info("authentication.getName() : " + authentication.getName());
 
-		// authentication.getname()으로 redis에 있는 refresh token 가져오기
 		RefreshToken currentRefreshToken = refreshTokenRepository.findByRefreshToken(refreshToken)
 			.orElseThrow(() -> new RuntimeException(""));
 
-		// refresh token, redis 에 저장된 것과 일치하는지 검증
 		log.info("resolvedToken : " + refreshToken);
 		log.info("findrefreshtoken : " + currentRefreshToken.getRefreshToken());
 		if(!refreshToken.equals(currentRefreshToken.getRefreshToken()))
-			throw new IllegalArgumentException(""); // 예외 처리 추후 수정
+			throw new IllegalArgumentException("");
 
 		// accessToken과 refreshToken 모두 재발행
 		String newRefreshToken = jwtTokenProvider.createRefreshToken(authentication);
 		String newAccessToken = jwtTokenProvider.createAccessToken(authentication, LoginType.fromName(loginType));
 
+		redisService.deleteRefreshToken(currentRefreshToken);
+
 		// redis 에 새로 발급한 refreshtoken 저장
 		refreshTokenRepository.save(new RefreshToken(currentRefreshToken.getId(), newRefreshToken));
 
+
 		return ResponseToken.builder()
-			.accessToken("Bearer "+newAccessToken)
+			.accessToken("Bearer "+ newAccessToken)
 			.refreshToken(newRefreshToken)
 			.build();
 	}
