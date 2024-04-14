@@ -1,5 +1,7 @@
 package com.task.weaver.domain.member.user.controller;
 
+import static com.task.weaver.domain.useroauthmember.dto.response.ResponseUserOauth.*;
+
 import com.task.weaver.common.response.DataResponse;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.member.user.dto.request.RequestGetUserPage;
@@ -9,6 +11,7 @@ import com.task.weaver.domain.member.user.dto.response.ResponseGetUserForFront;
 import com.task.weaver.domain.member.user.dto.response.ResponseGetUserList;
 import com.task.weaver.domain.member.user.entity.User;
 import com.task.weaver.domain.member.user.service.UserService;
+import com.task.weaver.domain.useroauthmember.dto.response.ResponseUserOauth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -58,8 +61,8 @@ public class UserController {
 
     @Operation(summary = "개발자용 유저 리스트 확인 api", description = "생성된 유저 전부 조회")
     @GetMapping("/list/test")
-    public ResponseEntity<DataResponse<List<ResponseGetUser>>> getUsersForTest(){
-        List<ResponseGetUser> responseGetUsers = userService.getUsersForTest();
+    public ResponseEntity<DataResponse<AllMember>> getUsersForTest(){
+        AllMember responseGetUsers = userService.getUsersForTest();
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "유저 리스트 전부 조회", responseGetUsers, true), HttpStatus.OK);
     }
 

@@ -6,10 +6,10 @@ import com.task.weaver.common.model.OauthServerType;
 import com.task.weaver.common.response.DataResponse;
 import com.task.weaver.domain.authorization.dto.response.ResponseToken;
 import com.task.weaver.domain.authorization.service.impl.AuthorizationServiceImpl;
-import com.task.weaver.domain.member.Member;
-import com.task.weaver.domain.member.MemberService;
 import com.task.weaver.domain.member.oauth.entity.OauthMember;
 import com.task.weaver.domain.member.oauth.service.OauthService;
+import com.task.weaver.domain.useroauthmember.entity.UserOauthMember;
+import com.task.weaver.domain.useroauthmember.factory.UserOauthMemberFactory;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -30,8 +30,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class OauthController {
 
     private final OauthService oauthService;
-    private final MemberService memberService;
     private final AuthorizationServiceImpl authorizationService;
+    private final UserOauthMemberFactory userOauthMemberFactory;
+
 
     /**
      * @param oauthServerType OAuth 제공 서버 kakao.. naver..
@@ -53,7 +54,8 @@ public class OauthController {
                                                       @RequestParam("code") String code) {
         log.info("Kakao OAuth --> 로그인 요청 성공");
         OauthMember oauthMember = oauthService.login(oauthServerType, code);
-        ResponseToken responseToken = authorizationService.authenticationOAuthUser(memberService.getOAuthMember(oauthMember));
+        UserOauthMember userOauthMember = userOauthMemberFactory.createUserOauthMember(oauthMember);
+        ResponseToken responseToken = authorizationService.authenticationOAuthUser(userOauthMember);
         HttpHeaders headers = setCookieAndHeader(responseToken);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.CREATED, "OAuth login successfully", headers, true), HttpStatus.CREATED);
     }

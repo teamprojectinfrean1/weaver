@@ -13,6 +13,7 @@ import com.task.weaver.domain.member.user.dto.request.RequestGetUserPage;
 import com.task.weaver.domain.member.user.dto.request.RequestUpdatePassword;
 import com.task.weaver.domain.member.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.member.user.entity.User;
+import com.task.weaver.domain.useroauthmember.dto.response.ResponseUserOauth;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import org.json.simple.parser.ParseException;
@@ -27,10 +28,6 @@ public interface UserService {
 
     ResponseGetUser getUser(UUID userId);
 
-    ResponseGetUser getUserByMail(String email);
-
-    ResponseGetUser getUserById(String id);
-
     ResponseUserIdNickname getUser(String email, Boolean checked);
 
     ResponseGetUserForFront getUserFromToken(HttpServletRequest request);
@@ -38,7 +35,7 @@ public interface UserService {
     ResponseUserMypage getUserInfo(String userId);
 
     ResponsePageResult<ResponseGetUserList, User> getUsers(RequestGetUserPage requestGetUserPage);
-    List<ResponseGetUser> getUsersForTest();
+    ResponseUserOauth.AllMember getUsersForTest();
     ResponsePageResult<ResponseGetUserList, User> getUsersForSearch(String nickname);
     List<ResponseGetUser> getUsers(Project project); //프로젝트에 연괸된 사람들
     List<ResponseGetUser> getUsers(User user);  //본인과 연결된 다른 사람들

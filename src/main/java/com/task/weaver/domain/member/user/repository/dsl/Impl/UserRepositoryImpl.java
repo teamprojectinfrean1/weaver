@@ -2,12 +2,12 @@ package com.task.weaver.domain.member.user.repository.dsl.Impl;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.task.weaver.domain.member.QMember;
 import com.task.weaver.domain.member.user.entity.QUser;
 import com.task.weaver.domain.project.entity.QProject;
 import com.task.weaver.domain.projectmember.entity.QProjectMember;
 import com.task.weaver.domain.member.user.entity.User;
 import com.task.weaver.domain.member.user.repository.dsl.UserRepositoryDsl;
+import com.task.weaver.domain.useroauthmember.entity.QUserOauthMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +22,7 @@ public class UserRepositoryImpl implements UserRepositoryDsl {
     private final JPAQueryFactory jpaQueryFactory;
 
     QProjectMember qProjectMember = QProjectMember.projectMember;
-    QMember qMember = QMember.member;
+    QUserOauthMember qUserOauthMember = QUserOauthMember.userOauthMember;
     QUser qUser = QUser.user;
     QProject qProject = QProject.project;
 
@@ -30,7 +30,7 @@ public class UserRepositoryImpl implements UserRepositoryDsl {
     public Page<User> findUsersForProject(UUID projectId, String nickname, Pageable pageable) {
         List<User> result = jpaQueryFactory
                 .selectFrom(qUser)
-                .join(qMember.projectMemberList, qProjectMember)
+                .join(qUserOauthMember.projectMemberList, qProjectMember)
                 .where(qProjectMember.project.projectId.eq(projectId), NicknameEq(nickname))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -39,7 +39,7 @@ public class UserRepositoryImpl implements UserRepositoryDsl {
         Long count = jpaQueryFactory
                 .select(qUser.count())
                 .from(qUser)
-                .join(qMember.projectMemberList, qProjectMember)
+                .join(qUserOauthMember.projectMemberList, qProjectMember)
                 .where(qProjectMember.project.projectId.eq(projectId))
                 .fetchOne();
 

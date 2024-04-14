@@ -21,16 +21,10 @@ public class MailSendService {
 
     private final JavaMailSender mailSender;
     private final RedisEmailUtil redisEmailUtil;
-    private final UserService userService;
 
     @Value("${spring.mail.auth-code-expiration-millis}")
     private String authCodeExpirationMillis;
     public int authNumber;
-
-    public EmailCode sendVerificationEmail(final String email) {
-        ResponseGetUser user = userService.getUserByMail(email);
-        return joinEmail(user.getEmail());
-    }
 
     public boolean CheckAuthNum(String email, String authNum) {
         if (redisEmailUtil.getData(authNum) == null) {

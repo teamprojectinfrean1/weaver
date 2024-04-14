@@ -13,10 +13,10 @@ import com.task.weaver.common.redis.RefreshTokenRepository;
 import com.task.weaver.domain.authorization.service.AuthorizationService;
 import com.task.weaver.common.jwt.provider.JwtTokenProvider;
 import com.task.weaver.domain.member.LoginType;
-import com.task.weaver.domain.member.Member;
-import com.task.weaver.domain.member.MemberRepository;
+import com.task.weaver.domain.member.oauth.entity.OauthMember;
 import com.task.weaver.domain.member.user.entity.User;
 import com.task.weaver.domain.member.user.repository.UserRepository;
+import com.task.weaver.domain.useroauthmember.entity.UserOauthMember;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,6 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final UserRepository userRepository;
-	private final MemberRepository memberRepository;
 	private final RedisService redisService;
 	private final RefreshTokenRepository refreshTokenRepository;
 
@@ -53,23 +52,14 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 		if(!isCheckPassword(requestSignIn)){
 			throw new InvalidPasswordException(new Throwable(requestSignIn.password()));
 		}
-		Member member = memberRepository.findByWeaver(user)
-				.orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, " 해당 ID가 존재하지 않습니다."));
 
 		Authentication authentication = getAuthentication(requestSignIn.id(), requestSignIn.password());
-
-		// 실패하면 securitycontextholder를 비우고, 성공하면 securitycontextholder에 authentication을 세팅
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		// refresh token 발급
 		String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
-		// access token 발급
 		String accessToken = jwtTokenProvider.createAccessToken(authentication, LoginType.WEAVER);
-		// refresh token redis에 저장
-		saveRefreshToken(member.getMemberId(), refreshToken);
+		saveRefreshToken(user.getUserId(), refreshToken);
 
-		// 기존 토큰 있으면 수정, 없으면 생성
-		// accessToken, refreshToken 리턴
 		return ResponseToken.builder()
 			.accessToken("Bearer " + accessToken)
 			.refreshToken(refreshToken)
@@ -77,13 +67,12 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 	}
 
 	private Authentication getAuthentication(final String principal, final String credentials) {
-		// 아직 인증되지 않은 객체로 추후 모든 인증이 완료되면 인증된 생성자로 authentication 객체가 생성된다.
+
 		UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
 				new UsernamePasswordAuthenticationToken(principal, credentials);
 		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(usernamePasswordAuthenticationToken);
 
 		log.info(authentication.getName());
-		// 실패하면 securitycontextholder를 비우고, 성공하면 securitycontextholder에 authentication을 세팅
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		return authentication;
 	}
@@ -92,16 +81,16 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 		refreshTokenRepository.save(new RefreshToken(uuid, refreshToken));
 	}
 
-	public ResponseToken authenticationOAuthUser(Member member) {
-		Authentication authentication = new UsernamePasswordAuthenticationToken(member.getMemberId(),
-				member.getLoginType());
+	public ResponseToken authenticationOAuthUser(UserOauthMember userOauthMember) {
+		Authentication authentication = new UsernamePasswordAuthenticationToken(userOauthMember.getId(),
+				userOauthMember.getLoginType());
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
 		log.info("Authentication Object = {}", SecurityContextHolder.getContext());
-		String accessToken = jwtTokenProvider.createAccessToken(authentication, member.getLoginType());
+		String accessToken = jwtTokenProvider.createAccessToken(authentication, userOauthMember.getLoginType());
 		String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
-		saveRefreshToken(member.getMemberId(), refreshToken);
+		saveRefreshToken(userOauthMember.getId(), refreshToken);
 
 		return ResponseToken.builder()
 				.accessToken("Bearer " + accessToken)
@@ -173,23 +162,17 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
 	@Override
 	public Boolean checkMail(String email) {
-		if(userRepository.findByEmail(email).isPresent())
-			return false;
-		return true;
+		return userRepository.findByEmail(email).isEmpty();
 	}
 
 	@Override
 	public Boolean checkId(String id) {
-		if(userRepository.findByUserId(id).isPresent())
-			return false;
-		return true;
+		return userRepository.findByUserId(id).isEmpty();
 	}
 
 	@Override
 	public Boolean checkNickname(String nickname) {
-		if(userRepository.findByNickname(nickname).isPresent())
-			return false;
-		return true;
+		return userRepository.findByNickname(nickname).isEmpty();
 	}
 
 	public static HttpHeaders setCookieAndHeader(final ResponseToken responseToken) {

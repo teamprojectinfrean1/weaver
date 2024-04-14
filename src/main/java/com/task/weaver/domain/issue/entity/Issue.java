@@ -8,6 +8,7 @@ import com.task.weaver.domain.member.Member;
 import com.task.weaver.domain.member.oauth.entity.OauthMember;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.member.user.entity.User;
+import com.task.weaver.domain.useroauthmember.entity.UserOauthMember;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,11 +40,11 @@ public class Issue extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id")
-    private Member creator;
+    private UserOauthMember creator;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id")
-    private Member manager;
+    private UserOauthMember manager;
 
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL)
     private List<Comment> comments;
@@ -63,7 +64,7 @@ public class Issue extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    public void updateIssue(UpdateIssueRequest updateIssueRequest, Task task, Member modifier, Member manager) {
+    public void updateIssue(UpdateIssueRequest updateIssueRequest, Task task, UserOauthMember modifier, UserOauthMember manager) {
         this.task = task;
         this.creator = modifier;
         this.manager = manager;

@@ -2,6 +2,7 @@ package com.task.weaver.domain.member.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.task.weaver.domain.BaseEntity;
+import com.task.weaver.domain.member.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,7 +25,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Getter
 @Setter
 @Builder
-public class User extends BaseEntity implements UserDetails {
+public class User extends BaseEntity implements UserDetails, Member {
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -37,9 +38,6 @@ public class User extends BaseEntity implements UserDetails {
 
     @Column(name = "nickname", length = 20)
     private String nickname;
-
-    @Column(name = "is_online", length = 20)
-    private boolean isOnline;
 
     @Column(name = "email", length = 100)
     private String email;
@@ -94,6 +92,11 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public boolean isWeaver() {
         return true;
     }
 }

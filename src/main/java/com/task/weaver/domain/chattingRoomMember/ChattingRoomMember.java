@@ -4,6 +4,7 @@ import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.member.Member;
 import com.task.weaver.domain.member.oauth.entity.OauthMember;
 import com.task.weaver.domain.member.user.entity.User;
+import com.task.weaver.domain.useroauthmember.entity.UserOauthMember;
 import com.task.weaver.domain.websocket.entity.ChattingRoom;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,5 +29,5 @@ public class ChattingRoomMember extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member member;
+    private UserOauthMember member;
 }

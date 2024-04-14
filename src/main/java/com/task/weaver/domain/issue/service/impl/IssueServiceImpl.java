@@ -1,11 +1,5 @@
 package com.task.weaver.domain.issue.service.impl;
 
-import com.task.weaver.domain.member.Member;
-import com.task.weaver.domain.member.MemberRepository;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import com.task.weaver.common.exception.AuthorizationException;
 import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.common.model.Status;
@@ -17,13 +11,18 @@ import com.task.weaver.domain.issue.dto.response.IssueResponse;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.issue.repository.IssueRepository;
 import com.task.weaver.domain.issue.service.IssueService;
+import com.task.weaver.domain.member.Member;
+import com.task.weaver.domain.member.user.repository.UserRepository;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.repository.TaskRepository;
-import com.task.weaver.domain.member.user.entity.User;
-import com.task.weaver.domain.member.user.repository.UserRepository;
-
+import com.task.weaver.domain.useroauthmember.entity.UserOauthMember;
+import com.task.weaver.domain.useroauthmember.repository.UserOauthMemberRepository;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -32,15 +31,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = false)
 public class IssueServiceImpl implements IssueService {
 	private final IssueRepository issueRepository;
 	private final UserRepository userRepository;
-	private final MemberRepository memberRepository;
+	private final UserOauthMemberRepository userOauthMemberRepository;
 	private final TaskRepository taskRepository;
 	private final ProjectRepository projectRepository;
 
@@ -66,12 +63,12 @@ public class IssueServiceImpl implements IssueService {
 				// status 확인
 				if(issue.getStatus().equals(Status.valueOf(status))){
 					issueList.add(new GetIssueListResponse(issue.getIssueId(),
-						issue.getTitle(),
-						task.getTaskId(),
-						task.getTaskTitle(),
-						issue.getManager().getMemberId().toString(),
-						issue.getManager().getWeaver().getNickname(),
-						issue.getManager().getWeaver().getProfileImage()));
+							issue.getTitle(),
+							task.getTaskId(),
+							task.getTaskTitle(),
+							issue.getManager().getId().toString(),
+							issue.getManager().getUser().getNickname(),
+							issue.getManager().getUser().getProfileImage()));
 				}
 			}
 		}
@@ -101,14 +98,14 @@ public class IssueServiceImpl implements IssueService {
 				for (Task task : project.getTaskList()) {
 					for(Issue issue : task.getIssueList()){
 						// manager 확인
-						if(issue.getManager().getWeaver().getNickname().contains(word)){
+						if (issue.getManager().getUser().getNickname().contains(word)) {
 							issueList.add(new GetIssueListResponse(issue.getIssueId(),
-								issue.getTitle(),
-								task.getTaskId(),
-								task.getTaskTitle(),
-								issue.getManager().getMemberId().toString(),
-								issue.getManager().getWeaver().getNickname(),
-								issue.getManager().getWeaver().getProfileImage()));
+									issue.getTitle(),
+									task.getTaskId(),
+									task.getTaskTitle(),
+									issue.getManager().getId().toString(),
+									issue.getManager().getUser().getNickname(),
+									issue.getManager().getUser().getProfileImage()));
 						}
 					}
 				}
@@ -118,12 +115,12 @@ public class IssueServiceImpl implements IssueService {
 					if(task.getTaskTitle().contains(word)){
 						for(Issue issue : task.getIssueList()){
 							issueList.add(new GetIssueListResponse(issue.getIssueId(),
-								issue.getTitle(),
-								task.getTaskId(),
-								task.getTaskTitle(),
-								issue.getManager().getMemberId().toString(),
-								issue.getManager().getWeaver().getNickname(),
-								issue.getManager().getWeaver().getProfileImage()));
+									issue.getTitle(),
+									task.getTaskId(),
+									task.getTaskTitle(),
+									issue.getManager().getId().toString(),
+									issue.getManager().getUser().getNickname(),
+									issue.getManager().getUser().getProfileImage()));
 						}
 					}
 				}
@@ -137,9 +134,9 @@ public class IssueServiceImpl implements IssueService {
 								issue.getTitle(),
 								task.getTaskId(),
 								task.getTaskTitle(),
-								issue.getManager().getMemberId().toString(),
-								issue.getManager().getWeaver().getNickname(),
-								issue.getManager().getWeaver().getProfileImage()));
+									issue.getManager().getId().toString(),
+									issue.getManager().getUser().getNickname(),
+									issue.getManager().getUser().getProfileImage()));
 						}
 					}
 				}
@@ -159,9 +156,9 @@ public class IssueServiceImpl implements IssueService {
 	public UUID addIssue(CreateIssueRequest createIssueRequest) throws AuthorizationException {
 		Task task = taskRepository.findById(createIssueRequest.taskId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
-		Member creator = memberRepository.findById(createIssueRequest.creatorId())
+		UserOauthMember creator = userOauthMemberRepository.findById(createIssueRequest.creatorId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
-		Member manager = memberRepository.findById(createIssueRequest.managerId())
+		UserOauthMember manager = userOauthMemberRepository.findById(createIssueRequest.managerId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
 
 		Issue issue = Issue.builder()
@@ -187,9 +184,9 @@ public class IssueServiceImpl implements IssueService {
 			.orElseThrow(() -> new IllegalArgumentException(""));
 		Task task = taskRepository.findById(updateIssueRequest.taskId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
-		Member modifier = memberRepository.findById(updateIssueRequest.modifierId())
+		UserOauthMember modifier = userOauthMemberRepository.findById(updateIssueRequest.modifierId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
-		Member manager = memberRepository.findById(updateIssueRequest.managerId())
+		UserOauthMember manager = userOauthMemberRepository.findById(updateIssueRequest.managerId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
 
 		issue.updateIssue(updateIssueRequest, task, modifier, manager);

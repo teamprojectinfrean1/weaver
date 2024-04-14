@@ -1,8 +1,5 @@
 package com.task.weaver.domain.member.oauth.service;
 
-import com.task.weaver.domain.member.LoginType;
-import com.task.weaver.domain.member.Member;
-import com.task.weaver.domain.member.MemberRepository;
 import com.task.weaver.domain.member.oauth.authcode.AuthCodeRequestUrlProviderComposite;
 import com.task.weaver.domain.member.oauth.client.OauthMemberClientComposite;
 import com.task.weaver.domain.member.oauth.entity.OauthMember;
@@ -10,6 +7,7 @@ import com.task.weaver.common.model.OauthServerType;
 import com.task.weaver.domain.member.oauth.repository.OauthMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +16,6 @@ public class OauthService {
     private final AuthCodeRequestUrlProviderComposite authCodeRequestUrlProviderComposite;
     private final OauthMemberClientComposite oauthMemberClientComposite;
     private final OauthMemberRepository oauthMemberRepository;
-    private final MemberRepository memberRepository;
 
     /**
      * @param oauthServerType
@@ -28,6 +25,7 @@ public class OauthService {
         return authCodeRequestUrlProviderComposite.provide(oauthServerType);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public OauthMember login(OauthServerType oauthServerType, String authCode) {
         OauthMember oauthMember = oauthMemberClientComposite.fetch(oauthServerType, authCode);
         return oauthMemberRepository.findByOauthId(oauthMember.oauthId())

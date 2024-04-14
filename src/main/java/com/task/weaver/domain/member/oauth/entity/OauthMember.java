@@ -1,6 +1,7 @@
 package com.task.weaver.domain.member.oauth.entity;
 
 import com.task.weaver.domain.BaseEntity;
+import com.task.weaver.domain.member.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -11,11 +12,13 @@ import jakarta.persistence.UniqueConstraint;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Builder
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "OAUTH_USER",
@@ -29,7 +32,7 @@ import org.hibernate.annotations.GenericGenerator;
                 ),
         }
 )
-public class OauthMember extends BaseEntity {
+public class OauthMember extends BaseEntity implements Member {
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -46,9 +49,6 @@ public class OauthMember extends BaseEntity {
     @Column(name = "profile_image_url")
     private String profileImageUrl;
 
-    @Column(name = "is_online", length = 20)
-    private boolean isOnline;
-
     public UUID id() {
         return id;
     }
@@ -63,5 +63,10 @@ public class OauthMember extends BaseEntity {
 
     public String profileImageUrl() {
         return profileImageUrl;
+    }
+
+    @Override
+    public boolean isWeaver() {
+        return false;
     }
 }

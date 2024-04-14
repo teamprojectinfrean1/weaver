@@ -14,7 +14,7 @@ public class HttpHeaderUtil {
 
     public static void setAccessToken(HttpHeaders headers, String accessToken) {
         // set access token header
-        headers.set(AUTHORIZATION, "Bearer " + accessToken);
+        headers.set(AUTHORIZATION, accessToken);
     }
 }
 

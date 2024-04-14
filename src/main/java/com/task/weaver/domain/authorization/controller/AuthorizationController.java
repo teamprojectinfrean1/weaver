@@ -14,8 +14,6 @@ import com.task.weaver.domain.member.user.dto.response.ResponseGetUser;
 import com.task.weaver.domain.member.user.dto.response.ResponseUserIdNickname;
 import com.task.weaver.domain.member.user.dto.response.ResponseUuid;
 import com.task.weaver.domain.member.user.service.UserService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import jakarta.validation.Valid;

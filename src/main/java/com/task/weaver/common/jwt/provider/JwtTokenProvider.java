@@ -123,8 +123,6 @@ public class JwtTokenProvider {
 	 */
 	public Authentication getAuthentication(String acceessToken) {
 		Claims claims = parseClaims(acceessToken);
-
-		// email 넣어줘야하는데 ... 확인해보자ㅏ
 		log.info("claims.getId : " + claims.getId() + ", claims.getSubject : " + claims.getSubject());
 		UserDetails userDetails = customUserDetailsService.loadUserByUsername(claims.getSubject());
 		return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());

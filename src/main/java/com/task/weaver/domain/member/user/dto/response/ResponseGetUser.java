@@ -14,6 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class ResponseGetUser {
+    private UUID memberId;
     private UUID userId;
     private String id;
     private String nickname;
@@ -21,7 +22,8 @@ public class ResponseGetUser {
     private String password;
     private URL profileImage;
 
-    public ResponseGetUser(User user){
+    public ResponseGetUser(User user, UUID memberId){
+        this.memberId = memberId;
         this.userId = user.getUserId();
         this.id = user.getId();
         this.nickname = user.getNickname();
