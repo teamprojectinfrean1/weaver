@@ -1,0 +1,61 @@
+version: '3'
+
+services:
+  spring-app:
+    build:
+          context: .
+          dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - maria-db
+      - redis
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mariadb://maria-db:3306/localdb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 1234
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+    networks:
+      - backendNetwork
+
+  #  spring-app2:
+  #    #    build:
+  #    #      context: .
+  #    #      dockerfile: Dockerfile
+  #    image: tlsdbstjd124/9uin-server
+  #    ports:
+  #      - "8081:8080"
+  #    depends_on:
+  #      - maria-db
+  #      - redis
+  #    environment:
+  #      SPRING_DATASOURCE_URL: jdbc:mariadb://maria-db:3306/springboot
+  #      SPRING_DATASOURCE_USERNAME: root
+  #      SPRING_DATASOURCE_PASSWORD: 1234
+  #      SPRING_REDIS_HOST: redis
+  #      SPRING_REDIS_PORT: 6379
+  #    networks:
+  #      - backendNetwork
+
+  maria-db:
+    image: mariadb:latest
+    environment:
+      MYSQL_DATABASE: springboot
+      MYSQL_ROOT_PASSWORD: 1234
+    ports:
+      - "3306:3306"
+    networks:
+      - backendNetwork
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - backendNetwork
+
+networks:
+  backendNetwork:
+
+#test
