@@ -107,7 +107,7 @@ public class JwtTokenProvider {
 	 * @param accessToken
 	 * @return Claim
 	 */
-	public Claims parseClaims(String accessToken) {
+	private Claims parseClaims(String accessToken) {
 		try {
 			// log.info();
 			return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
@@ -128,18 +128,18 @@ public class JwtTokenProvider {
 		return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
 	}
 
-	public String getUsername(HttpServletRequest request){
+	public String getMemberIdByAssessToken(HttpServletRequest request){
 		String header = request.getHeader(AUTHORIZATION_HEADER);
-		log.info("header : " + header);
 		String token = header.substring(7);
-		log.info("token : " + token);
-		String info = Jwts.parserBuilder().setSigningKey(key).build()
+		Claims claims = parseClaims(token);
+		log.info("claims subject = {}, claims id = {}", claims.getSubject(), claims.getId());
+
+		return Jwts.parserBuilder().setSigningKey(key).build()
 				.parseClaimsJws(token)
 				.getBody()
 				.getSubject();
-
-		return info;
 	}
+
 
 	public LoginType decodeAccessToken(String accessToken) {
 		Jws<Claims> claimsJws = Jwts.parserBuilder().build().parseClaimsJws(accessToken);

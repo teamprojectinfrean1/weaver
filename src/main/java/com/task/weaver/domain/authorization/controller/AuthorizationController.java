@@ -63,6 +63,7 @@ public class AuthorizationController {
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody RequestSignIn requestSignIn) {
 		ResponseToken responseToken = authorizationService.weaverLogin(requestSignIn);
+		log.info("accessToken = {}", responseToken.accessToken());
 		log.info("refreshToken : " + responseToken.refreshToken());
 		HttpHeaders headers = setCookieAndHeader(responseToken);
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.CREATED, "Weaver login successfully", headers, true),

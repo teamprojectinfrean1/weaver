@@ -12,6 +12,7 @@ import com.task.weaver.common.exception.user.MismatchedPassword;
 import com.task.weaver.common.exception.user.UnableSendMailException;
 import com.task.weaver.common.exception.user.UserNotFoundException;
 import com.task.weaver.common.jwt.provider.JwtTokenProvider;
+import com.task.weaver.common.redis.service.RedisService;
 import com.task.weaver.common.s3.S3Uploader;
 import com.task.weaver.domain.member.LoginType;
 import com.task.weaver.domain.member.oauth.entity.OauthMember;
@@ -65,6 +66,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final S3Uploader s3Uploader;
+    private final RedisService redisService;
     private final UserOauthMemberFactory userOauthMemberFactory;
     private final UserOauthMemberRepository userOauthMemberRepository;
 
@@ -105,12 +107,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseGetUserForFront getUserFromToken(HttpServletRequest request) {
-        String userId = jwtTokenProvider.getUsername(request);
+        String userId = jwtTokenProvider.getMemberIdByAssessToken(request);
         log.info("user id : " + userId);
-        User user = userRepository.findByEmail(userId)
+        User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(userId))));
-        ResponseGetUserForFront responseGetUser = new ResponseGetUserForFront(user);
-        return responseGetUser;
+        return new ResponseGetUserForFront(user);
     }
 
     @Override
