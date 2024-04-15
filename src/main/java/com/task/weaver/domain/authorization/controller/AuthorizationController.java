@@ -20,6 +20,7 @@ import jakarta.validation.Valid;
 import java.io.IOException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +35,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 @Tag(name = "Authorization Controller", description = "인증 관련 컨트롤러")
 @RestController
@@ -47,14 +47,12 @@ public class AuthorizationController {
 	private final UserService userService;
 
 	@Operation(summary = "회원가입", description = "사용자가 회원가입")
-	@PostMapping("/join")
+	@PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<DataResponse<ResponseGetUser>> addUser(RequestCreateUser requestCreateUser,
-												   MultipartHttpServletRequest multipartHttpServletRequest) throws IOException {
-
-		MultipartFile profileImage = multipartHttpServletRequest.getFile("profileImage");
+																 @RequestParam(required = false) MultipartFile multipartFile) throws IOException {
 
 		log.info("controller - join - before");
-		ResponseGetUser responseGetUser = userService.addUser(requestCreateUser, profileImage);
+		ResponseGetUser responseGetUser = userService.addUser(requestCreateUser, multipartFile);
 		log.info("controller - join - after");
 		return ResponseEntity.status(HttpStatus.OK).body(DataResponse.of(HttpStatus.OK, "회원 가입 성공", responseGetUser, true));
 	}
