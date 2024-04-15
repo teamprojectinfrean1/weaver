@@ -1,11 +1,8 @@
 package com.task.weaver.domain.projectmember.entity;
 
 import com.task.weaver.domain.BaseEntity;
-import com.task.weaver.domain.member.Member;
-import com.task.weaver.domain.member.oauth.entity.OauthMember;
 import com.task.weaver.domain.project.entity.Project;
-import com.task.weaver.domain.member.user.entity.User;
-import com.task.weaver.domain.useroauthmember.entity.UserOauthMember;
+import com.task.weaver.domain.authorization.entity.UserOauthMember;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

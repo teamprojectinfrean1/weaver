@@ -1,4 +1,4 @@
-package com.task.weaver.common.exception.user;
+package com.task.weaver.common.exception.member;
 
 import com.task.weaver.common.exception.BusinessException;
 import com.task.weaver.common.exception.ErrorCode;

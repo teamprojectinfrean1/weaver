@@ -2,12 +2,12 @@ package com.task.weaver.domain.member.user.repository.dsl.Impl;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.task.weaver.domain.authorization.entity.QUserOauthMember;
 import com.task.weaver.domain.member.user.entity.QUser;
 import com.task.weaver.domain.project.entity.QProject;
 import com.task.weaver.domain.projectmember.entity.QProjectMember;
 import com.task.weaver.domain.member.user.entity.User;
 import com.task.weaver.domain.member.user.repository.dsl.UserRepositoryDsl;
-import com.task.weaver.domain.useroauthmember.entity.QUserOauthMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,6 +47,6 @@ public class UserRepositoryImpl implements UserRepositoryDsl {
     }
 
     BooleanExpression NicknameEq(String nickname){
-        return nickname.isBlank() != true ? qUser.nickname.contains(nickname) : null;
+        return !nickname.isBlank() ? qUser.nickname.contains(nickname) : null;
     }
 }

@@ -4,7 +4,7 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
 import com.task.weaver.common.exception.ErrorCode;
-import com.task.weaver.common.exception.user.UnsupportedPlatformsException;
+import com.task.weaver.common.exception.member.UnsupportedPlatformsException;
 import com.task.weaver.common.model.OauthServerType;
 import java.util.Map;
 import java.util.Optional;

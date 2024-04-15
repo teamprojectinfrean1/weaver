@@ -1,5 +1,6 @@
 package com.task.weaver.domain.member.user.dto.request;
 
+import com.task.weaver.domain.member.user.entity.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -8,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Data
 @AllArgsConstructor
@@ -30,4 +32,13 @@ public class RequestCreateUser {
     @Pattern(regexp = "(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,20}",
             message = "비밀번호는 영문 대,소문자와 숫자, 특수기호가 적어도 1개 이상씩 포함된 8 - 20자의 비밀번호여야 합니다.")
     private String password;
+
+    public User toDomain(PasswordEncoder passwordEncoder) {
+        return User.builder()
+                .id(this.id)
+                .nickname(this.nickname)
+                .email(this.email)
+                .password(passwordEncoder.encode(this.password))
+                .build();
+    }
 }

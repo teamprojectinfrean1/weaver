@@ -4,7 +4,7 @@ import com.task.weaver.common.exception.AuthorizationException;
 import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.task.TaskNotFoundException;
-import com.task.weaver.common.exception.user.UserNotFoundException;
+import com.task.weaver.common.exception.member.UserNotFoundException;
 import com.task.weaver.domain.issue.dto.request.RequestIssueForTask;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;

@@ -1,8 +1,8 @@
-package com.task.weaver.domain.useroauthmember.repository;
+package com.task.weaver.domain.authorization.repository;
 
 import com.task.weaver.domain.member.oauth.entity.OauthMember;
 import com.task.weaver.domain.member.user.entity.User;
-import com.task.weaver.domain.useroauthmember.entity.UserOauthMember;
+import com.task.weaver.domain.authorization.entity.UserOauthMember;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;

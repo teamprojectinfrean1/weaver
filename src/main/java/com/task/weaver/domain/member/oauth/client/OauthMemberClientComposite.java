@@ -4,11 +4,9 @@ import static java.util.stream.Collectors.toMap;
 import static java.util.function.Function.identity;
 
 import com.task.weaver.common.exception.ErrorCode;
-import com.task.weaver.common.exception.user.UnsupportedPlatformsException;
+import com.task.weaver.common.exception.member.UnsupportedPlatformsException;
 import com.task.weaver.common.model.OauthServerType;
-import com.task.weaver.domain.member.Member;
 import com.task.weaver.domain.member.oauth.entity.OauthMember;
-import com.task.weaver.domain.project.repository.dsl.impl.ProjectRepositoryImpl;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;

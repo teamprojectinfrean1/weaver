@@ -2,7 +2,7 @@ package com.task.weaver.domain.websocket.service.impl;
 
 import com.task.weaver.common.exception.chatting.ChattingRoomNotFoundException;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
-import com.task.weaver.common.exception.user.UserNotFoundException;
+import com.task.weaver.common.exception.member.UserNotFoundException;
 import com.task.weaver.domain.chattingRoomMember.ChattingRoomMember;
 import com.task.weaver.domain.chattingRoomMember.ChattingRoomMemberRepository;
 import com.task.weaver.domain.project.entity.Project;

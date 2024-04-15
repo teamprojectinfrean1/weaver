@@ -4,37 +4,35 @@ import static com.task.weaver.domain.authorization.service.impl.AuthorizationSer
 
 import com.task.weaver.common.response.DataResponse;
 import com.task.weaver.common.response.MessageResponse;
-import com.task.weaver.domain.authorization.dto.request.EmailCheckDto;
-import com.task.weaver.domain.authorization.dto.request.EmailRequest;
-import com.task.weaver.domain.authorization.dto.response.EmailCode;
-import com.task.weaver.domain.authorization.service.impl.MailSendService;
-import com.task.weaver.domain.member.user.dto.request.RequestCreateUser;
-import com.task.weaver.domain.member.user.dto.request.RequestUpdatePassword;
-import com.task.weaver.domain.member.user.dto.response.ResponseGetUser;
-import com.task.weaver.domain.member.user.dto.response.ResponseUserIdNickname;
-import com.task.weaver.domain.member.user.dto.response.ResponseUuid;
-import com.task.weaver.domain.member.user.service.UserService;
+import com.task.weaver.domain.authorization.dto.response.ResponseToken;
+import com.task.weaver.domain.authorization.dto.response.ResponseUserOauth.AllMember;
+import com.task.weaver.domain.authorization.service.AuthorizationService;
+import com.task.weaver.domain.member.user.dto.request.RequestGetUserPage;
+import com.task.weaver.domain.member.user.dto.response.ResponseGetMember;
+import com.task.weaver.domain.member.user.dto.response.ResponseGetUserForFront;
+import com.task.weaver.domain.member.user.dto.response.ResponseGetUserList;
+import com.task.weaver.domain.member.user.entity.User;
+import com.task.weaver.domain.project.dto.response.ResponsePageResult;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import jakarta.validation.Valid;
-import java.io.IOException;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import com.task.weaver.domain.authorization.dto.request.RequestSignIn;
-import com.task.weaver.domain.authorization.dto.response.ResponseToken;
-import com.task.weaver.domain.authorization.service.AuthorizationService;
-
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Authorization Controller", description = "인증 관련 컨트롤러")
 @RestController
@@ -42,31 +40,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthorizationController {
+
 	private final AuthorizationService authorizationService;
-	private final MailSendService mailService;
-	private final UserService userService;
-
-	@Operation(summary = "회원가입", description = "사용자가 회원가입")
-	@PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<DataResponse<ResponseGetUser>> addUser(RequestCreateUser requestCreateUser,
-																 @RequestParam(required = false) MultipartFile multipartFile) throws IOException {
-
-		log.info("controller - join - before");
-		ResponseGetUser responseGetUser = userService.addUser(requestCreateUser, multipartFile);
-		log.info("controller - join - after");
-		return ResponseEntity.status(HttpStatus.OK).body(DataResponse.of(HttpStatus.OK, "회원 가입 성공", responseGetUser, true));
-	}
-
-	@Operation(summary = "로그인", description = "로그인")
-	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody RequestSignIn requestSignIn) {
-		ResponseToken responseToken = authorizationService.weaverLogin(requestSignIn);
-		log.info("accessToken = {}", responseToken.accessToken());
-		log.info("refreshToken : " + responseToken.refreshToken());
-		HttpHeaders headers = setCookieAndHeader(responseToken);
-		return new ResponseEntity<>(DataResponse.of(HttpStatus.CREATED, "Weaver login successfully", headers, true),
-				HttpStatus.CREATED);
-	}
 
 	@Operation(summary = "reissue", description = "refresh token 재발급")
 	@GetMapping("/reissue")
@@ -88,69 +63,42 @@ public class AuthorizationController {
 		return ResponseEntity.ok().body("-- logout --");
 	}
 
-	@Operation(summary = "이메일 중복 체크", description = "이메일 중복을 체크")
-	@GetMapping("/checkMail")
-	@Parameter(name = "email", description = "이메일 입력", in = ParameterIn.QUERY)
-	public ResponseEntity<DataResponse<Boolean>> checkMail(@RequestParam("email") String email){
-		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "중복 체크 동작", authorizationService.checkMail(email), true), HttpStatus.OK);
+	/**
+	 * 수정 작업 진행 중
+	 */
+	@Operation(summary = "사용자 한 명 조회", description = "사용자 한명을 조회")
+	@Parameter(name = "UUID", description = "사용자 id", in = ParameterIn.QUERY)
+	@GetMapping("/{uuid}")
+	public ResponseEntity<DataResponse<ResponseGetMember>> getMember(@PathVariable("uuid") UUID uuid) {
+		ResponseGetMember responseGetMember = authorizationService.getMember(uuid);
+		return ResponseEntity.ok().body(DataResponse.of(HttpStatus.OK, "UUID로 회원 조회 성공", responseGetMember, true));
 	}
 
-	@Operation(summary = "아이디 중복 체크", description = "아이디 중복을 체크")
-	@GetMapping("/checkId")
-	@Parameter(name = "id", description = "아이디 입력", in = ParameterIn.QUERY)
-	public ResponseEntity<DataResponse<Boolean>> checkId(@RequestParam("id") String id){
-		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "중복 체크 동작", authorizationService.checkId(id), true), HttpStatus.OK);
+	@Operation(summary = "프로젝트 구성원 조회", description = "프로젝트에 소속된 인원들 조회")
+	@Parameter(name = "projectId", description = "프로젝트 id", in = ParameterIn.PATH)
+	@GetMapping("/project/user-list")
+	public ResponseEntity<DataResponse<ResponsePageResult<ResponseGetUserList, User>>> getMembersFromProject(
+			@RequestBody RequestGetUserPage requestGetUserPage) {
+		ResponsePageResult<ResponseGetUserList, User> responseGetUserLists = authorizationService.getMembers(
+				requestGetUserPage);
+		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트 구성원 조회 성공", responseGetUserLists, true),
+				HttpStatus.OK);
 	}
 
-	@Operation(summary = "닉네임 중복 체크", description = "닉네임 중복을 체크")
-	@GetMapping("/checkNickname")
-	@Parameter(name = "nickname", description = "닉네임 입력", in = ParameterIn.QUERY)
-	public ResponseEntity<DataResponse<Boolean>> checkNickname(@RequestParam("nickname") String nickname){
-		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "중복 체크 동작", authorizationService.checkNickname(nickname), true), HttpStatus.OK);
+	@Operation(summary = "개발자용 유저 리스트 확인 api", description = "생성된 유저 전부 조회")
+	@GetMapping("/list/test")
+	public ResponseEntity<DataResponse<AllMember>> getMemberForTest() {
+		AllMember responseGetUsers = authorizationService.getMembersForTest();
+		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "유저 리스트 전부 조회", responseGetUsers, true),
+				HttpStatus.OK);
 	}
 
-	@Operation(summary = "이메일 전송", description = "랜덤 번호를 담은 이메일 전송")
-	@Parameter(name = "EmailRequest", description = "사용자 이메일", in = ParameterIn.QUERY)
-	@PostMapping("/findId/verification/request")
-	public ResponseEntity<DataResponse<EmailCode>> mailSendForId(@RequestBody @Valid EmailRequest emailDto) {
-		log.info("Find ID, verify email: {}", emailDto.email());
-		return ResponseEntity.ok(
-				DataResponse.of(HttpStatus.OK, "인증 코드 전송 성공", mailService.joinEmail(emailDto.email()), true));
-	}
-
-	@Operation(summary = "인증 번호 확인", description = "서버에 저장된 랜덤 번호와 사용자 입력 번호 검증")
-	@Parameter(name = "EmailCheckDto", description = "사용자 이메일, 인증 번호", in = ParameterIn.QUERY)
-	@PostMapping("/findId/verification/check")
-	public ResponseEntity<DataResponse<ResponseUserIdNickname>> AuthCheckForId(
-			@RequestBody @Valid EmailCheckDto emailCheckDto) {
-		Boolean checked = mailService.CheckAuthNum(emailCheckDto.email(), emailCheckDto.verificationCode());
-		ResponseUserIdNickname targetUser = userService.getUser(emailCheckDto.email(), checked);
-		return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "해당 유저를 반환합니다.", targetUser, true));
-	}
-
-	@Operation(summary = "이메일 전송", description = "랜덤 번호를 담은 이메일 전송")
-	@Parameter(name = "EmailRequest", description = "사용자 이메일", in = ParameterIn.QUERY)
-	@PostMapping("/findPassword/verification/request")
-	public ResponseEntity<DataResponse<EmailCode>> mailSendForPassword(@RequestBody @Valid EmailRequest emailDto) {
-		log.info("비밀번호 찾기 이메일 인증 :" + emailDto.email());
-		return ResponseEntity.ok(
-				DataResponse.of(HttpStatus.OK, "인증 코드 전송 성공", mailService.joinEmail(emailDto.email()), true));
-	}
-
-	@Operation(summary = "인증 번호 확인", description = "서버에 저장된 랜덤 번호와 사용자 입력 번호 검증")
-	@Parameter(name = "EmailCheckDto", description = "사용자 이메일, 인증 번호", in = ParameterIn.QUERY)
-	@PostMapping("/findPassword/verification/check")
-	public ResponseEntity<DataResponse<ResponseUuid>> AuthCheckForPassword(@RequestBody @Valid EmailCheckDto emailCheckDto) {
-		Boolean checked = mailService.CheckAuthNum(emailCheckDto.email(), emailCheckDto.verificationCode());
-		ResponseUuid targetUser = userService.getUuid(emailCheckDto.email(), checked);
-		return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "verificationCode 인증 성공", targetUser, true));
-	}
-
-	@Operation(summary = "비밀번호 재설정", description = "인증 확인된 사용자 비밀번호 재설정")
-	@Parameter(name = "RequestUpdatePassword", description = "UUID, 재설정 비밀번호", in = ParameterIn.QUERY)
-	@PutMapping("/findPassword/verification/update")
-	public ResponseEntity<MessageResponse> AuthPasswordUpdate(@RequestBody @Valid RequestUpdatePassword requestUpdatePassword) {
-		userService.updateUser(requestUpdatePassword);
-		return ResponseEntity.ok(MessageResponse.of(HttpStatus.OK, "비밀번호 변경 성공", true));
+	@Operation(summary = "토큰 기반 유저 조회", description = "로그인 직후, 토큰 기반으로 유저 정보 조회")
+	@Parameter(name = "Authorization", description = "토큰", in = ParameterIn.HEADER)
+	@GetMapping("/token")
+	public ResponseEntity<DataResponse<ResponseGetUserForFront>> getMemberFromToken(HttpServletRequest request) {
+		ResponseGetUserForFront responseGetUser = authorizationService.getMemberFromToken(request);
+		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "토큰 기반 유저 정보 반환 성공", responseGetUser, true),
+				HttpStatus.OK);
 	}
 }

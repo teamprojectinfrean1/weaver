@@ -1,10 +1,8 @@
 package com.task.weaver.domain.authorization.service.impl;
 
-import com.task.weaver.common.exception.user.UnableSendMailException;
+import com.task.weaver.common.exception.member.UnableSendMailException;
 import com.task.weaver.domain.authorization.dto.response.EmailCode;
 import com.task.weaver.common.redis.RedisEmailUtil;
-import com.task.weaver.domain.member.user.dto.response.ResponseGetUser;
-import com.task.weaver.domain.member.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;

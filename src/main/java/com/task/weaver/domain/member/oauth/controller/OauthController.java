@@ -8,8 +8,8 @@ import com.task.weaver.domain.authorization.dto.response.ResponseToken;
 import com.task.weaver.domain.authorization.service.impl.AuthorizationServiceImpl;
 import com.task.weaver.domain.member.oauth.entity.OauthMember;
 import com.task.weaver.domain.member.oauth.service.OauthService;
-import com.task.weaver.domain.useroauthmember.entity.UserOauthMember;
-import com.task.weaver.domain.useroauthmember.factory.UserOauthMemberFactory;
+import com.task.weaver.domain.authorization.entity.UserOauthMember;
+import com.task.weaver.domain.authorization.factory.UserOauthMemberFactory;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -33,7 +33,6 @@ public class OauthController {
     private final AuthorizationServiceImpl authorizationService;
     private final UserOauthMemberFactory userOauthMemberFactory;
 
-
     /**
      * @param oauthServerType OAuth 제공 서버 kakao.. naver..
      * @param response        Service 로직을 통해 생성된 URL로 사용자 Redirect
@@ -55,7 +54,7 @@ public class OauthController {
         log.info("Kakao OAuth --> 로그인 요청 성공");
         OauthMember oauthMember = oauthService.login(oauthServerType, code);
         UserOauthMember userOauthMember = userOauthMemberFactory.createUserOauthMember(oauthMember);
-        ResponseToken responseToken = authorizationService.authenticationOAuthUser(userOauthMember);
+        ResponseToken responseToken = authorizationService.getAuthentication(userOauthMember);
         HttpHeaders headers = setCookieAndHeader(responseToken);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.CREATED, "OAuth login successfully", headers, true), HttpStatus.CREATED);
     }

@@ -1,4 +1,4 @@
-package com.task.weaver.domain.useroauthmember.dto.response;
+package com.task.weaver.domain.authorization.dto.response;
 
 import com.task.weaver.domain.member.oauth.entity.OauthMember;
 import com.task.weaver.domain.member.user.entity.User;

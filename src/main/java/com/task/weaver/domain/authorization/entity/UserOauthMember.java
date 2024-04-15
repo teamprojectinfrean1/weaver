@@ -1,10 +1,12 @@
-package com.task.weaver.domain.useroauthmember.entity;
+package com.task.weaver.domain.authorization.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.chattingRoomMember.ChattingRoomMember;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.member.LoginType;
+import com.task.weaver.domain.member.Member;
 import com.task.weaver.domain.member.oauth.entity.OauthMember;
 import com.task.weaver.domain.member.user.entity.User;
 import com.task.weaver.domain.project.entity.Project;
@@ -14,6 +16,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -48,6 +51,7 @@ public class UserOauthMember extends BaseEntity {
     private UUID id;
 
     @OneToOne
+    @JsonBackReference
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -62,23 +66,27 @@ public class UserOauthMember extends BaseEntity {
     @Column(name = "is_online")
     private boolean isOnline;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<ChattingRoomMember> chattingRoomMemberList;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<ProjectMember> projectMemberList;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "main_project_id")
     private Project mainProject;
 
-    @OneToMany(mappedBy = "creator", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<Issue> creatorIssueList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "manager", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "manager", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<Issue> managerIssueList = new ArrayList<>();
 
     public void updateMainProject(final Project project) {
         this.mainProject = project;
+    }
+
+    public Member resolveMemberByLoginType(){
+        return loginType.equals(LoginType.OAUTH) ? oauthMember : user;
     }
 }

@@ -1,38 +1,46 @@
 package com.task.weaver.domain.member.user.controller;
 
-import static com.task.weaver.domain.useroauthmember.dto.response.ResponseUserOauth.*;
+import static com.task.weaver.domain.authorization.service.impl.AuthorizationServiceImpl.setCookieAndHeader;
 
 import com.task.weaver.common.response.DataResponse;
-import com.task.weaver.domain.project.dto.response.ResponsePageResult;
-import com.task.weaver.domain.member.user.dto.request.RequestGetUserPage;
+import com.task.weaver.common.response.MessageResponse;
+import com.task.weaver.domain.authorization.dto.request.EmailCheckDto;
+import com.task.weaver.domain.authorization.dto.request.EmailRequest;
+import com.task.weaver.domain.authorization.dto.request.RequestSignIn;
+import com.task.weaver.domain.authorization.dto.response.EmailCode;
+import com.task.weaver.domain.authorization.dto.response.ResponseToken;
+import com.task.weaver.domain.authorization.service.AuthorizationService;
+import com.task.weaver.domain.authorization.service.impl.MailSendService;
+import com.task.weaver.domain.member.user.dto.request.RequestCreateUser;
+import com.task.weaver.domain.member.user.dto.request.RequestUpdatePassword;
 import com.task.weaver.domain.member.user.dto.request.RequestUpdateUser;
-import com.task.weaver.domain.member.user.dto.response.ResponseGetUser;
-import com.task.weaver.domain.member.user.dto.response.ResponseGetUserForFront;
-import com.task.weaver.domain.member.user.dto.response.ResponseGetUserList;
-import com.task.weaver.domain.member.user.entity.User;
+import com.task.weaver.domain.member.user.dto.response.ResponseGetMember;
+import com.task.weaver.domain.member.user.dto.response.ResponseUserIdNickname;
+import com.task.weaver.domain.member.user.dto.response.ResponseUuid;
 import com.task.weaver.domain.member.user.service.UserService;
-import com.task.weaver.domain.useroauthmember.dto.response.ResponseUserOauth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.io.IOException;
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -42,55 +50,121 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+    private final AuthorizationService authorizationService;
+    private final MailSendService mailService;
 
-    @Operation(summary = "사용자 한 명 조회", description = "사용자 한명을 조회")
-    @Parameter(name = "userId", description = "사용자 id", in = ParameterIn.QUERY)
-    @GetMapping("/{userId}")
-    public ResponseEntity<ResponseGetUser> getUser(@PathVariable("userId") UUID userId){
-        ResponseGetUser responseGetUser = userService.getUser(userId);
-        return ResponseEntity.status(HttpStatus.OK).body(responseGetUser);
+    @Operation(summary = "회원가입", description = "사용자가 회원가입")
+    @PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<DataResponse<ResponseGetMember>> addUser(RequestCreateUser requestCreateUser,
+                                                                   @RequestParam(required = false) MultipartFile multipartFile)
+            throws IOException {
+
+        log.info("controller - join - before");
+        ResponseGetMember responseGetMember = userService.addUser(requestCreateUser, multipartFile);
+        log.info("controller - join - after");
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(DataResponse.of(HttpStatus.OK, "회원 가입 성공", responseGetMember, true));
     }
 
-    @Operation(summary = "프로젝트 구성원 조회", description = "프로젝트에 소속된 인원들 조회")
-    @Parameter(name = "projectId", description = "프로젝트 id", in = ParameterIn.PATH)
-    @GetMapping("/project/user-list")
-    public ResponseEntity<DataResponse<ResponsePageResult<ResponseGetUserList, User>>> getUsersFromProject(@RequestBody RequestGetUserPage requestGetUserPage){
-        ResponsePageResult<ResponseGetUserList, User> responseGetUserLists = userService.getUsers(requestGetUserPage);
-        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트 구성원 조회 성공", responseGetUserLists, true), HttpStatus.OK);
-    }
-
-    @Operation(summary = "개발자용 유저 리스트 확인 api", description = "생성된 유저 전부 조회")
-    @GetMapping("/list/test")
-    public ResponseEntity<DataResponse<AllMember>> getUsersForTest(){
-        AllMember responseGetUsers = userService.getUsersForTest();
-        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "유저 리스트 전부 조회", responseGetUsers, true), HttpStatus.OK);
-    }
-
-    @Operation(summary = "토큰 기반 유저 조회", description = "로그인 직후, 토큰 기반으로 유저 정보 조회")
-    @Parameter(name = "Authorization", description = "토큰", in = ParameterIn.HEADER)
-    @GetMapping("/token")
-    public ResponseEntity<DataResponse<ResponseGetUserForFront>> getUsersFromToken(HttpServletRequest request) {
-        ResponseGetUserForFront responseGetUser = userService.getUserFromToken(request);
-        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "토큰 기반 유저 정보 반환 성공", responseGetUser, true),
-                HttpStatus.OK);
+    @Operation(summary = "로그인", description = "로그인")
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody RequestSignIn requestSignIn) {
+        ResponseToken responseToken = userService.weaverLogin(requestSignIn);
+        log.info("accessToken = {}", responseToken.accessToken());
+        log.info("refreshToken : " + responseToken.refreshToken());
+        HttpHeaders headers = setCookieAndHeader(responseToken);
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.CREATED, "Weaver login successfully", headers, true),
+                HttpStatus.CREATED);
     }
 
     @Operation(summary = "사용자 정보 수정", description = "사용자의 정보 (프로필 이미지, 닉네임, 비밀번호) 업데이트")
     @Parameter(name = "userId", description = "사용자 id", in = ParameterIn.QUERY)
     @PutMapping("/update")
-    public ResponseEntity<DataResponse<ResponseGetUser>> updateUser(@RequestParam("userId") UUID userId,
-                                                                    @RequestBody RequestUpdateUser requestUpdateUser)
+    public ResponseEntity<DataResponse<ResponseGetMember>> updateUser(@RequestParam("userId") UUID userId,
+                                                                      @RequestBody RequestUpdateUser requestUpdateUser)
             throws ParseException, IOException {
 
-        ResponseGetUser responseGetUser = userService.updateUser(userId, requestUpdateUser);
-        return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "유저 정보 수정 성공", responseGetUser, true));
+        ResponseGetMember responseGetMember = userService.updateUser(userId, requestUpdateUser);
+        return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "유저 정보 수정 성공", responseGetMember, true));
     }
 
     @Operation(summary = "사용자 삭제", description = "사용자 정보 삭제, 사용자는 사용 불가")
     @Parameter(name = "userId", description = "사용자 id", in = ParameterIn.QUERY)
     @DeleteMapping()
-    public ResponseEntity<String> deleteUser(@RequestParam("userId") UUID userId){
+    public ResponseEntity<String> deleteUser(@RequestParam("userId") UUID userId) {
         userService.deleteUser(userId);
         return ResponseEntity.status(HttpStatus.OK).body("user deleted");
+    }
+
+    @Operation(summary = "이메일 중복 체크", description = "이메일 중복을 체크")
+    @GetMapping("/checkMail")
+    @Parameter(name = "email", description = "이메일 입력", in = ParameterIn.QUERY)
+    public ResponseEntity<DataResponse<Boolean>> checkMail(@RequestParam("email") String email) {
+        return new ResponseEntity<>(
+                DataResponse.of(HttpStatus.OK, "중복 체크 동작", authorizationService.checkMail(email), true), HttpStatus.OK);
+    }
+
+    @Operation(summary = "아이디 중복 체크", description = "아이디 중복을 체크")
+    @GetMapping("/checkId")
+    @Parameter(name = "id", description = "아이디 입력", in = ParameterIn.QUERY)
+    public ResponseEntity<DataResponse<Boolean>> checkId(@RequestParam("id") String id) {
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "중복 체크 동작", authorizationService.checkId(id), true),
+                HttpStatus.OK);
+    }
+
+    @Operation(summary = "닉네임 중복 체크", description = "닉네임 중복을 체크")
+    @GetMapping("/checkNickname")
+    @Parameter(name = "nickname", description = "닉네임 입력", in = ParameterIn.QUERY)
+    public ResponseEntity<DataResponse<Boolean>> checkNickname(@RequestParam("nickname") String nickname) {
+        return new ResponseEntity<>(
+                DataResponse.of(HttpStatus.OK, "중복 체크 동작", authorizationService.checkNickname(nickname), true),
+                HttpStatus.OK);
+    }
+
+    @Operation(summary = "이메일 전송", description = "랜덤 번호를 담은 이메일 전송")
+    @Parameter(name = "EmailRequest", description = "사용자 이메일", in = ParameterIn.QUERY)
+    @PostMapping("/findId/verification/request")
+    public ResponseEntity<DataResponse<EmailCode>> mailSendForId(@RequestBody @Valid EmailRequest emailDto) {
+        log.info("Find ID, verify email: {}", emailDto.email());
+        return ResponseEntity.ok(
+                DataResponse.of(HttpStatus.OK, "인증 코드 전송 성공", mailService.joinEmail(emailDto.email()), true));
+    }
+
+    @Operation(summary = "인증 번호 확인", description = "서버에 저장된 랜덤 번호와 사용자 입력 번호 검증")
+    @Parameter(name = "EmailCheckDto", description = "사용자 이메일, 인증 번호", in = ParameterIn.QUERY)
+    @PostMapping("/findId/verification/check")
+    public ResponseEntity<DataResponse<ResponseUserIdNickname>> AuthCheckForId(
+            @RequestBody @Valid EmailCheckDto emailCheckDto) {
+        Boolean checked = mailService.CheckAuthNum(emailCheckDto.email(), emailCheckDto.verificationCode());
+        ResponseUserIdNickname targetUser = authorizationService.getMember(emailCheckDto.email(), checked);
+        return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "해당 유저를 반환합니다.", targetUser, true));
+    }
+
+    @Operation(summary = "이메일 전송", description = "랜덤 번호를 담은 이메일 전송")
+    @Parameter(name = "EmailRequest", description = "사용자 이메일", in = ParameterIn.QUERY)
+    @PostMapping("/findPassword/verification/request")
+    public ResponseEntity<DataResponse<EmailCode>> mailSendForPassword(@RequestBody @Valid EmailRequest emailDto) {
+        log.info("비밀번호 찾기 이메일 인증 :" + emailDto.email());
+        return ResponseEntity.ok(
+                DataResponse.of(HttpStatus.OK, "인증 코드 전송 성공", mailService.joinEmail(emailDto.email()), true));
+    }
+
+    @Operation(summary = "인증 번호 확인", description = "서버에 저장된 랜덤 번호와 사용자 입력 번호 검증")
+    @Parameter(name = "EmailCheckDto", description = "사용자 이메일, 인증 번호", in = ParameterIn.QUERY)
+    @PostMapping("/findPassword/verification/check")
+    public ResponseEntity<DataResponse<ResponseUuid>> AuthCheckForPassword(
+            @RequestBody @Valid EmailCheckDto emailCheckDto) {
+        Boolean checked = mailService.CheckAuthNum(emailCheckDto.email(), emailCheckDto.verificationCode());
+        ResponseUuid targetUser = authorizationService.getUuid(emailCheckDto.email(), checked);
+        return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "verificationCode 인증 성공", targetUser, true));
+    }
+
+    @Operation(summary = "비밀번호 재설정", description = "인증 확인된 사용자 비밀번호 재설정")
+    @Parameter(name = "RequestUpdatePassword", description = "UUID, 재설정 비밀번호", in = ParameterIn.QUERY)
+    @PutMapping("/findPassword/verification/update")
+    public ResponseEntity<MessageResponse> AuthPasswordUpdate(
+            @RequestBody @Valid RequestUpdatePassword requestUpdatePassword) {
+        userService.updateUser(requestUpdatePassword);
+        return ResponseEntity.ok(MessageResponse.of(HttpStatus.OK, "비밀번호 변경 성공", true));
     }
 }
