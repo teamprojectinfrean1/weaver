@@ -15,6 +15,9 @@ import com.task.weaver.domain.authorization.factory.MemberFactory;
 import com.task.weaver.domain.authorization.repository.MemberRepository;
 import com.task.weaver.domain.authorization.service.MemberService;
 import com.task.weaver.domain.member.LoginType;
+import com.task.weaver.domain.member.UserOauthMember;
+import com.task.weaver.domain.member.oauth.entity.OauthUser;
+import com.task.weaver.domain.member.oauth.repository.OauthMemberRepository;
 import com.task.weaver.domain.member.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.member.user.dto.request.RequestUpdatePassword;
 import com.task.weaver.domain.member.user.dto.request.RequestUpdateUser;
@@ -46,6 +49,7 @@ public class UserServiceImpl implements UserService {
     private final S3Uploader s3Uploader;
     private final MemberFactory memberFactory;
     private final MemberRepository userOauthMemberRepository;
+    private final OauthMemberRepository oauthMemberRepository;
     private final MemberService memberService;
 
 
@@ -88,18 +92,6 @@ public class UserServiceImpl implements UserService {
         return ResponseGetMember.of(member.getUser());
     }
 
-    private User hasImage(final MultipartFile profileImage, final User user) throws IOException {
-        if (profileImage != null) {
-            updateProfileImage(s3Uploader.upload(profileImage, "images"), user);
-        }
-        return userRepository.save(user);
-    }
-
-    private void updateProfileImage(final String s3Uploader, final User user) throws IOException {
-        URL updatedImageUrlObject = new URL(s3Uploader);
-        user.updateProfileImage(updatedImageUrlObject);
-    }
-
     private void isExistEmail(String email) {
         userRepository.findByEmail(email).ifPresent(user -> {
             log.debug("userId : {}, 이메일 중복으로 회원가입 실패", email);
@@ -107,29 +99,54 @@ public class UserServiceImpl implements UserService {
         });
     }
 
+    private User hasImage(final MultipartFile profileImage, final User user) throws IOException {
+        if (profileImage != null) {
+            updateProfileImage(s3Uploader.upload(profileImage, "images"), user);
+        }
+        return userRepository.save(user);
+    }
+
     @Override
     public ResponseGetMember updateUser(UUID memberId, RequestUpdateUser requestUpdateUser) throws IOException {
         Member findMember = userOauthMemberRepository.findById(memberId)
-                .orElseThrow(() -> new UserNotFoundException(
-                        USER_NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
-
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
         if (findMember.getLoginType().equals(LoginType.WEAVER)) {
-            User user = findMember.getUser();
-            switch (requestUpdateUser.getType()) {
-                case "email" -> user.updateEmail((String) requestUpdateUser.getValue());
-                case "nickname" -> user.updateNickname((String) requestUpdateUser.getValue());
-                case "password" -> updatePassword(requestUpdateUser.getValue(), user);
-                case "profileImage" -> updateProfile(requestUpdateUser.getValue(), user);
-            }
-            userRepository.save(user);
-            return ResponseGetMember.of(user);
+            return getResponseGetMemberWithUser(requestUpdateUser, findMember.getUser());
         }
-        throw new UserNotFoundException(USER_NOT_FOUND, "해당 유저가 존재하지않습니다.");
+        return getResponseGetMemberWithOauth(requestUpdateUser, findMember.getOauthMember());
     }
 
-    private void updateProfile(final Object value, final User user) throws IOException {
-        String oldFileUrl = user.getProfileImage().getPath().substring(1);
-        updateProfileImage(s3Uploader.updateFile((MultipartFile) value, oldFileUrl, "images"), user);
+    private ResponseGetMember getResponseGetMemberWithOauth(final RequestUpdateUser requestUpdateUser,
+                                                            final OauthUser oauthMember) throws IOException {
+        switch (requestUpdateUser.getType()) {
+            case "nickname" -> oauthMember.updateNickname((String) requestUpdateUser.getValue());
+            case "profileImage" -> updateProfile(requestUpdateUser.getValue(), oauthMember);
+        }
+        oauthMemberRepository.save(oauthMember);
+        return ResponseGetMember.of(oauthMember);
+    }
+
+    private ResponseGetMember getResponseGetMemberWithUser(final RequestUpdateUser requestUpdateUser, final User user)
+            throws IOException {
+        switch (requestUpdateUser.getType()) {
+            case "email" -> user.updateEmail((String) requestUpdateUser.getValue());
+            case "nickname" -> user.updateNickname((String) requestUpdateUser.getValue());
+            case "password" -> updatePassword(requestUpdateUser.getValue(), user);
+            case "profileImage" -> updateProfile(requestUpdateUser.getValue(), user);
+        }
+        userRepository.save(user);
+        return ResponseGetMember.of(user);
+    }
+
+    private void updateProfile(final Object value, final UserOauthMember userOauthMember) throws IOException {
+        String oldFileUrl = userOauthMember.getProfileImage().getPath().substring(1);
+        updateProfileImage(s3Uploader.updateFile((MultipartFile) value, oldFileUrl, "images"), userOauthMember);
+    }
+
+
+    private void updateProfileImage(final String s3Uploader, final UserOauthMember userOauthMember) throws IOException {
+        URL updatedImageUrlObject = new URL(s3Uploader);
+        userOauthMember.updateProfileImage(updatedImageUrlObject);
     }
 
     private void updatePassword(final Object requestUpdateUser, final User user) {

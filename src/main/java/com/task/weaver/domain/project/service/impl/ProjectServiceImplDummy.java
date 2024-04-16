@@ -114,6 +114,7 @@ public class ProjectServiceImplDummy implements ProjectService {
         return responseGetProject;
     }
 
+    @Transactional
     @Override
     public UUID addProject(final RequestCreateProject dto, MultipartFile multipartFile) throws BusinessException, IOException {
         Project project = dtoToEntity(dto);

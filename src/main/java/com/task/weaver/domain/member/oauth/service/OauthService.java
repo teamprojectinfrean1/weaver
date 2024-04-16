@@ -33,9 +33,4 @@ public class OauthService {
         return oauthMemberRepository.findByOauthId(oauthMember.oauthId())
                 .orElseGet(() -> oauthMemberRepository.save(oauthMember));
     }
-
-//    public void updateAgent(final OauthUser oauthMember, final UserOauthMember userOauthMember) {
-//        oauthMember.agent(userOauthMember);
-//        oauthMemberRepository.save(oauthMember);
-//    }
 }

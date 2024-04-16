@@ -13,4 +13,6 @@ public interface UserOauthMember {
     String getNickname();
 
     URL getProfileImage();
+
+    void updateProfileImage(URL updatedImageUrlObject);
 }

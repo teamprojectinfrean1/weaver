@@ -78,13 +78,13 @@ public class UserController {
     }
 
     @Operation(summary = "사용자 정보 수정", description = "사용자의 정보 (프로필 이미지, 닉네임, 비밀번호) 업데이트")
-    @Parameter(name = "userId", description = "사용자 id", in = ParameterIn.QUERY)
+    @Parameter(name = "Member UUID", description = "Member UUID", in = ParameterIn.QUERY)
     @PutMapping("/update")
-    public ResponseEntity<DataResponse<ResponseGetMember>> updateUser(@RequestParam("userId") UUID userId,
+    public ResponseEntity<DataResponse<ResponseGetMember>> updateUser(@RequestParam("uuid") UUID uuid,
                                                                       @RequestBody RequestUpdateUser requestUpdateUser)
             throws ParseException, IOException {
 
-        ResponseGetMember responseGetMember = userService.updateUser(userId, requestUpdateUser);
+        ResponseGetMember responseGetMember = userService.updateUser(uuid, requestUpdateUser);
         return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "유저 정보 수정 성공", responseGetMember, true));
     }
 
