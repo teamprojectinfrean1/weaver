@@ -3,6 +3,7 @@ package com.task.weaver.domain.project.dto.response;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.task.dto.response.ResponseUpdateDetail;
 
+import java.net.URL;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,6 +23,7 @@ public class ResponseGetProject {
     private String projectContent;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    private URL projectImage;
     private List<String> projectTagList;
     private ResponseUpdateDetail lastUpdateDetail;
 
@@ -31,5 +33,6 @@ public class ResponseGetProject {
         this.projectContent = project.getDetail();
         this.startDate = project.getStartDate();
         this.endDate = project.getEndDate();
+        this.projectImage = project.getProjectImage();
     }
 }

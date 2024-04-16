@@ -55,8 +55,10 @@ public class Project extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE)
     private List<Task> taskList = new ArrayList<>();
+
     @Column(name = "project_image")
     private URL projectImage;
+
     @ManyToOne
     @JoinColumn(name = "last_update_member_id")
     private Member modifier;
