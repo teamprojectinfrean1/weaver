@@ -21,11 +21,6 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 
 public class MemberRepositoryDslImpl extends QuerydslRepositorySupport implements MemberRepositoryDsl {
 
-    /**
-     * Creates a new {@link QuerydslRepositorySupport} instance for the given domain type.
-     *
-     * @param domainClass must not be {@literal null}.
-     */
     public MemberRepositoryDslImpl() {
         super(Member.class);
     }
@@ -49,7 +44,6 @@ public class MemberRepositoryDslImpl extends QuerydslRepositorySupport implement
         JPQLQuery<Tuple> tuple = jpqlQuery.select(qMember, qUser, qOauthMember);
         tuple.offset(pageable.getOffset());
         tuple.limit(pageable.getPageSize());
-        tuple.groupBy(qMember);
 
         Objects.requireNonNull(this.getQuerydsl()).applyPagination(pageable, tuple);
         List<Tuple> result = tuple.fetch();
