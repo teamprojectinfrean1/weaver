@@ -1,13 +1,12 @@
 package com.task.weaver.domain.websocket.entity;
 
 import com.task.weaver.domain.BaseEntity;
-import com.task.weaver.domain.user.entity.User;
+import com.task.weaver.domain.member.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
@@ -25,7 +24,7 @@ public class Chatting extends BaseEntity {
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "member_id")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)

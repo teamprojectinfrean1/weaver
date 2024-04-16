@@ -9,9 +9,7 @@ import com.task.weaver.domain.issue.dto.response.GetIssueListResponse;
 import com.task.weaver.domain.issue.dto.response.IssueResponse;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
-
 import java.util.UUID;
-import org.springframework.data.domain.Page;
 
 public interface IssueService {
 
@@ -33,6 +31,6 @@ public interface IssueService {
     void deleteIssue(UUID issueId) throws NotFoundException, AuthorizationException;
 
     ResponsePageResult<GetIssueListResponse, Issue> getSearchIssues(String status, String filter, String word,
-                                               GetIssuePageRequest getIssuePageRequest)
+                                                                    GetIssuePageRequest getIssuePageRequest)
             throws NotFoundException, AuthorizationException;
 }
