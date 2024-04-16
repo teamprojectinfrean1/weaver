@@ -2,29 +2,24 @@ package com.task.weaver.domain.issue.entity;
 
 import com.task.weaver.common.model.Status;
 import com.task.weaver.domain.BaseEntity;
-import com.task.weaver.domain.authorization.entity.Member;
 import com.task.weaver.domain.comment.entity.Comment;
 import com.task.weaver.domain.issue.dto.request.UpdateIssueRequest;
 import com.task.weaver.domain.task.entity.Task;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
+import com.task.weaver.domain.user.entity.User;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.lang.reflect.Modifier;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.LastModifiedDate;
 
 @Entity
 @AllArgsConstructor
@@ -45,28 +40,21 @@ public class Issue extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id")
-    private Member creator;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_id")
-    private Member manager;
+    private User creator;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "modifier_id")
-    private Member modifier;
+    private User modifier;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assignee_id")
-    private Member assignee;
+    private User assignee;
 
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
     @Column(name = "issue_title", length = 100)
     private String issueTitle;
-
-    @Column(name = "content")
-    private String content;
 
     @Column(name = "issue_content")
     private String issueContent;
@@ -80,8 +68,7 @@ public class Issue extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-
-    public void updateIssue(UpdateIssueRequest updateIssueRequest, Task task, Member modifier, Member assignee) {
+    public void updateIssue(UpdateIssueRequest updateIssueRequest, Task task, User modifier, User assignee) {
         this.task = task;
         this.modifier = modifier;
         this.assignee = assignee;
@@ -91,15 +78,15 @@ public class Issue extends BaseEntity {
         this.endDate = updateIssueRequest.endDate();
     }
 
-    public void updateTask(Task task) {
+    public void updateTask(Task task){
         this.task = task;
     }
 
-    public void updateModifier(Member modifier) {
+    public void updateModifier(User modifier) {
         this.modifier = modifier;
     }
 
-    public void updateAssignee(Member assignee) {
+    public void updateAssignee(User assignee){
         this.assignee = assignee;
     }
 
@@ -123,4 +110,3 @@ public class Issue extends BaseEntity {
         this.status = status;
     }
 }
-

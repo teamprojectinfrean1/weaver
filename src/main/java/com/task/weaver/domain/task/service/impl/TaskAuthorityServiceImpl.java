@@ -9,7 +9,7 @@ import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.entity.TaskAuthority;
 import com.task.weaver.domain.task.repository.TaskAuthorityRepository;
 import com.task.weaver.domain.task.service.TaskAuthorityService;
-import com.task.weaver.domain.member.user.entity.User;
+import com.task.weaver.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;

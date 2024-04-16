@@ -1,11 +1,11 @@
 package com.task.weaver.common.oauth.google.client;
 
-import com.task.weaver.common.oauth.config.GoogleOauthConfig;
+import com.task.weaver.common.config.GoogleOauthConfig;
 import com.task.weaver.common.model.OauthServerType;
 import com.task.weaver.common.oauth.google.dto.GoogleMemberResponse;
 import com.task.weaver.common.oauth.google.dto.GoogleToken;
-import com.task.weaver.domain.member.oauth.client.OauthMemberClient;
-import com.task.weaver.domain.member.oauth.entity.OauthUser;
+import com.task.weaver.domain.oauth.client.OauthMemberClient;
+import com.task.weaver.domain.oauth.entity.OauthMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -24,7 +24,7 @@ public class GoogleMemberClient implements OauthMemberClient {
     }
 
     @Override
-    public OauthUser fetch(final String authCode) {
+    public OauthMember fetch(final String authCode) {
         GoogleToken tokenInfo = googleApiClient.fetchToken(tokenRequestParams(authCode));
         GoogleMemberResponse googleMemberResponse =
                 googleApiClient.fetchMember("Bearer " + tokenInfo.accessToken());

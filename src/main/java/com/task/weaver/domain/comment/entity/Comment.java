@@ -3,7 +3,8 @@ package com.task.weaver.domain.comment.entity;
 import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.comment.dto.request.RequestUpdateComment;
 import com.task.weaver.domain.issue.entity.Issue;
-import com.task.weaver.domain.member.user.entity.User;
+import com.task.weaver.domain.user.entity.User;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,7 +29,7 @@ public class Comment extends BaseEntity {
     private Issue issue;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(name = "content")
