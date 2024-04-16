@@ -14,13 +14,11 @@ public enum ErrorCode {
     HANDLE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "C005", "접근이 거부 되었습니다."),
     RESOURCE_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "R001", "해당 리소스에 대한 권한이 없습니다."),
     UNSUPPORTED_OAUTH(HttpStatus.NOT_ACCEPTABLE, "C006", "지원하지않는 플랫폼입니다."),
-    REFRESH_JWT_EXPIRED(HttpStatus.UNAUTHORIZED, "J003", "만료된 리프레시 토큰입니다."),
-
 
     // Project
     PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "P001", "해당 프로젝트를 찾을 수 없습니다."),
 
-    // UserOauthMember
+    // User
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "U001", "해당 유저를 찾을 수 없습니다."),
     EMAIL_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "U001", "이미 존재하는 이메일입니다."),
     USER_EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "U002", "사용자를 찾을 수 없습니다."),
@@ -28,7 +26,6 @@ public enum ErrorCode {
     EMPTY_FILE(HttpStatus.BAD_REQUEST, "U004", "파일 항목이 비어있습니다."),
     CANNOT_SAVED_FILE(HttpStatus.BAD_REQUEST, "U005", "파일 저장에 실패했습니다."),
     STORE_FILE_OUTSIDE_CURRENT_DIRECTORY_MESSAGE(HttpStatus.BAD_REQUEST, "U006", "유효하지 않은 저장 경로입니다."),
-    MEMBER_CANNOT_CONVERTED(HttpStatus.BAD_REQUEST, "U007", "해당 객체를 변환할 수 없습니다."),
 
     // Authorization
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "A001", "패스워드가 일치하지 않습니다."),

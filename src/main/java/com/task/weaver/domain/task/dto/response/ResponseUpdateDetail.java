@@ -1,6 +1,6 @@
 package com.task.weaver.domain.task.dto.response;
 
-import com.task.weaver.domain.member.user.entity.User;
+import com.task.weaver.domain.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -4,9 +4,8 @@ import static com.task.weaver.common.model.OauthServerType.KAKAO;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.task.weaver.domain.member.oauth.entity.OauthId;
-import com.task.weaver.domain.member.oauth.entity.OauthUser;
-import java.net.URL;
+import com.task.weaver.domain.oauth.entity.OauthId;
+import com.task.weaver.domain.oauth.entity.OauthMember;
 import java.time.LocalDateTime;
 
 @JsonNaming(SnakeCaseStrategy.class)
@@ -16,8 +15,8 @@ public record KakaoMemberResponse(Long id,
                                   KakaoAccount kakaoAccount
                                   ) {
 
-    public OauthUser toDomain() {
-        return OauthUser.builder()
+    public OauthMember toDomain() {
+        return OauthMember.builder()
                 .oauthId(new OauthId(String.valueOf(id), KAKAO))
                 .nickname(kakaoAccount.profile.nickname)
                 .profileImageUrl(kakaoAccount.profile.profileImageUrl)
@@ -57,7 +56,7 @@ public record KakaoMemberResponse(Long id,
     public record Profile(
             String nickname,
             String thumbnailImageUrl,
-            URL profileImageUrl,
+            String profileImageUrl,
             boolean isDefaultImage
     ) {
     }

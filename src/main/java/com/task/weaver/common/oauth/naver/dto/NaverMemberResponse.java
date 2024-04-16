@@ -4,9 +4,8 @@ import static com.task.weaver.common.model.OauthServerType.NAVER;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.task.weaver.domain.member.oauth.entity.OauthId;
-import com.task.weaver.domain.member.oauth.entity.OauthUser;
-import java.net.URL;
+import com.task.weaver.domain.oauth.entity.OauthId;
+import com.task.weaver.domain.oauth.entity.OauthMember;
 
 @JsonNaming(value = SnakeCaseStrategy.class)
 public record NaverMemberResponse(
@@ -15,8 +14,8 @@ public record NaverMemberResponse(
         Response response
 ) {
 
-    public OauthUser toDomain() {
-        return OauthUser.builder()
+    public OauthMember toDomain() {
+        return OauthMember.builder()
                 .oauthId(new OauthId(String.valueOf(response.id), NAVER))
                 .nickname(response.nickname)
                 .profileImageUrl(response.profileImage)
@@ -32,7 +31,7 @@ public record NaverMemberResponse(
             String gender,
             String age,
             String birthday,
-            URL profileImage,
+            String profileImage,
             String birthyear,
             String mobile
     ) {

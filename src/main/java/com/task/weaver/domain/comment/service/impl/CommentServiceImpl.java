@@ -4,7 +4,7 @@ import com.task.weaver.common.exception.AuthorizationException;
 import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.common.exception.comment.CommentNotFoundException;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
-import com.task.weaver.common.exception.member.UserNotFoundException;
+import com.task.weaver.common.exception.user.UserNotFoundException;
 import com.task.weaver.domain.comment.dto.request.CommentPageRequest;
 import com.task.weaver.domain.comment.dto.request.RequestCreateComment;
 import com.task.weaver.domain.comment.dto.request.RequestUpdateComment;
@@ -16,8 +16,8 @@ import com.task.weaver.domain.comment.repository.CommentRepository;
 import com.task.weaver.domain.comment.service.CommentService;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.issue.repository.IssueRepository;
-import com.task.weaver.domain.member.user.entity.User;
-import com.task.weaver.domain.member.user.repository.UserRepository;
+import com.task.weaver.domain.user.entity.User;
+import com.task.weaver.domain.user.repository.UserRepository;
 
 import java.util.function.Function;
 

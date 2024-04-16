@@ -2,7 +2,7 @@ package com.task.weaver.domain.task.entity;
 
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTaskAuthority;
-import com.task.weaver.domain.member.user.entity.User;
+import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -33,7 +33,7 @@ public class TaskAuthority {
     private Project project;
 
     @ManyToOne
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)

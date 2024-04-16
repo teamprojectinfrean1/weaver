@@ -12,9 +12,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ProjectRepository extends JpaRepository<Project, UUID>, ProjectRepositoryDsl {
-
-//    @Query("SELECT p FROM Project AS p WHERE p.writer.nickname = :nickname")
-//    Optional<List<Project>> findProjectsByNickname(@Param("nickname") String nickname);
+    @Query("SELECT p FROM Project AS p WHERE p.writer.nickname = :nickname")
+    Optional<List<Project>> findProjectsByNickname(@Param("nickname") String nickname);
 
 //    @Query("SELECT p FROM Project AS p WHERE p.user.id = :userId")
 //    Optional<List<Project>> findProjectsByUserId(@Param("userId") String userId);

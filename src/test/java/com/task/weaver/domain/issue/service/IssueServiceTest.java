@@ -1,9 +1,32 @@
 package com.task.weaver.domain.issue.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import static org.assertj.core.api.Assertions.*;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import com.task.weaver.domain.issue.dto.request.CreateIssueRequest;
+import com.task.weaver.domain.issue.dto.response.IssueResponse;
+import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.issue.repository.IssueRepository;
+import com.task.weaver.domain.issue.service.IssueService;
+import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.status.entity.Status;
+import com.task.weaver.domain.task.entity.Task;
+import com.task.weaver.domain.task.repository.TaskRepository;
+import com.task.weaver.domain.user.entity.User;
+import com.task.weaver.domain.user.repository.UserRepository;
 
 // @SpringBootTest -> 모든 빈을 IoC 컨테이너에 등록하고 테스트 진행하기 때문에 테스트 느려짐
 // @ExtendWith(MockitoExtension.class)

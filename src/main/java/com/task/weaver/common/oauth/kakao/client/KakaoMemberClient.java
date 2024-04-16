@@ -1,11 +1,11 @@
 package com.task.weaver.common.oauth.kakao.client;
 
-import com.task.weaver.common.oauth.config.KakaoOauthConfig;
-import com.task.weaver.domain.member.oauth.client.OauthMemberClient;
+import com.task.weaver.common.config.KakaoOauthConfig;
+import com.task.weaver.domain.oauth.client.OauthMemberClient;
 import com.task.weaver.common.model.OauthServerType;
 import com.task.weaver.common.oauth.kakao.dto.KakaoMemberResponse;
 import com.task.weaver.common.oauth.kakao.dto.KakaoToken;
-import com.task.weaver.domain.member.oauth.entity.OauthUser;
+import com.task.weaver.domain.oauth.entity.OauthMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -24,7 +24,7 @@ public class KakaoMemberClient implements OauthMemberClient {
     }
 
     @Override
-    public OauthUser fetch(String authCode) {
+    public OauthMember fetch(String authCode) {
         KakaoToken tokenInfo = kakaoApiClient.fetchToken(tokenRequestParams(authCode));
         KakaoMemberResponse kakaoMemberResponse =
                 kakaoApiClient.fetchMember("Bearer " + tokenInfo.accessToken());
