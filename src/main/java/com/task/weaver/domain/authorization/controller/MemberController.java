@@ -62,9 +62,6 @@ public class MemberController {
 		return ResponseEntity.ok().body("-- logout --");
 	}
 
-	/**
-	 * 수정 작업 진행 중
-	 */
 	@Operation(summary = "사용자 한 명 조회", description = "사용자 한명을 조회")
 	@Parameter(name = "UUID", description = "사용자 UUID", in = ParameterIn.QUERY)
 	@GetMapping("/{uuid}")

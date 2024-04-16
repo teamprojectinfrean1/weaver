@@ -60,14 +60,14 @@ public class IssueResponse {
 		this.issueTitle = issue.getIssueTitle();
 		this.issueContent = issue.getIssueContent();
 		this.status = issue.getStatus().toString();
-		this.assigneeId = issue.getAssignee().getUserId();
-		this.assigneeNickname = issue.getAssignee().getNickname();
-		this.assigneeProfileImage = issue.getAssignee().getProfileImage();
+		this.assigneeId = issue.getAssignee().getId();
+		this.assigneeNickname = issue.getAssignee().getUser() != null ? issue.getAssignee().getUser().getNickname() : issue.getAssignee().getOauthMember().nickname();
+		this.assigneeProfileImage = issue.getAssignee().getUser() != null ? issue.getAssignee().getUser().getProfileImage() : issue.getAssignee().getOauthMember().getProfileImage();
 		this.startDate = issue.getStartDate();
 		this.endDate = issue.getEndDate();
 		this.lastUpdateDetail = ResponseUpdateDetail.builder()
-			.userUuid(issue.getModifier().getUserId())
-			.userNickname(issue.getModifier().getNickname())
+			.userUuid(issue.getModifier().getId())
+			.userNickname(issue.getModifier().getUser() != null ? issue.getModifier().getUser().getNickname() : issue.getModifier().getOauthMember().nickname())
 			.updatedDate(issue.getModDate())
 			.build();
 	}
