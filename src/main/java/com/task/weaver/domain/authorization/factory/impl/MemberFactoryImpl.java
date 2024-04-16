@@ -1,11 +1,11 @@
 package com.task.weaver.domain.authorization.factory.impl;
 
-import com.task.weaver.domain.authorization.entity.UserOauthMember;
-import com.task.weaver.domain.authorization.factory.UserOauthMemberFactory;
-import com.task.weaver.domain.authorization.repository.UserOauthMemberRepository;
+import com.task.weaver.domain.authorization.entity.Member;
+import com.task.weaver.domain.authorization.factory.MemberFactory;
+import com.task.weaver.domain.authorization.repository.MemberRepository;
 import com.task.weaver.domain.member.LoginType;
-import com.task.weaver.domain.member.Member;
-import com.task.weaver.domain.member.oauth.entity.OauthMember;
+import com.task.weaver.domain.member.UserOauthMember;
+import com.task.weaver.domain.member.oauth.entity.OauthUser;
 import com.task.weaver.domain.member.oauth.repository.OauthMemberRepository;
 import com.task.weaver.domain.member.user.entity.User;
 import com.task.weaver.domain.member.user.repository.UserRepository;
@@ -14,41 +14,41 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class UserOauthMemberFactoryImpl implements UserOauthMemberFactory {
+public class MemberFactoryImpl implements MemberFactory {
 
-    private final UserOauthMemberRepository userOauthMemberRepository;
+    private final MemberRepository userOauthMemberRepository;
     private final UserRepository userRepository;
     private final OauthMemberRepository oauthMemberRepository;
 
     @Override
-    public UserOauthMember createUserOauthMember(final Member member) {
-        if (member.isWeaver()) {
-            return createNormalUser((User) member);
+    public Member createUserOauthMember(final UserOauthMember userOauthMember) {
+        if (userOauthMember.isWeaver()) {
+            return createNormalUser((User) userOauthMember);
         }
-        return createOauthUser((OauthMember) member);
+        return createOauthUser((OauthUser) userOauthMember);
     }
 
-    private UserOauthMember createNormalUser(final User user) {
-        UserOauthMember userOauthMember = UserOauthMember.builder()
+    private Member createNormalUser(final User user) {
+        Member member = Member.builder()
                 .loginType(LoginType.WEAVER)
                 .user(user)
                 .isOnline(true)
                 .build();
         return userOauthMemberRepository.findByUser(user)
-                .orElseGet(() -> userOauthMemberRepository.save(userOauthMember));
+                .orElseGet(() -> userOauthMemberRepository.save(member));
     }
 
-    private UserOauthMember createOauthUser(final OauthMember oauthMember) {
-        UserOauthMember userOauthMember = UserOauthMember.builder()
+    private Member createOauthUser(final OauthUser oauthMember) {
+        Member member = Member.builder()
                 .loginType(LoginType.OAUTH)
                 .oauthMember(oauthMember)
                 .isOnline(true)
                 .build();
         return userOauthMemberRepository.findByOauthMember(oauthMember)
-                .orElseGet(() -> userOauthMemberRepository.save(userOauthMember));
+                .orElseGet(() -> userOauthMemberRepository.save(member));
     }
 
-//    private UserOauthMember allocationOauthAgent(final OauthMember member, final UserOauthMember normalUser) {
+//    private UserOauthMember allocationOauthAgent(final OauthUser member, final UserOauthMember normalUser) {
 //        member.agent(normalUser);
 //        oauthMemberRepository.save(member);
 //        return member.getUserOauthMember();

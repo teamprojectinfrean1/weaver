@@ -6,8 +6,8 @@ import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.chattingRoomMember.ChattingRoomMember;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.member.LoginType;
-import com.task.weaver.domain.member.Member;
-import com.task.weaver.domain.member.oauth.entity.OauthMember;
+import com.task.weaver.domain.member.UserOauthMember;
+import com.task.weaver.domain.member.oauth.entity.OauthUser;
 import com.task.weaver.domain.member.user.entity.User;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
@@ -32,7 +32,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.security.provisioning.UserDetailsManager;
 
 @Entity
 @Getter
@@ -43,7 +42,7 @@ import org.springframework.security.provisioning.UserDetailsManager;
         @UniqueConstraint(name = "unique_user_id", columnNames = {"user_id"}),
         @UniqueConstraint(name = "unique_oauth_member_id", columnNames = {"oauth_member_id"})
 })
-public class UserOauthMember extends BaseEntity {
+public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -58,7 +57,7 @@ public class UserOauthMember extends BaseEntity {
 
     @OneToOne
     @JoinColumn(name = "oauth_id")
-    private OauthMember oauthMember;
+    private OauthUser oauthMember;
 
     @Column(name = "login_type")
     @Enumerated(EnumType.STRING)
@@ -87,7 +86,7 @@ public class UserOauthMember extends BaseEntity {
         this.mainProject = project;
     }
 
-    public Member resolveMemberByLoginType(){
+    public UserOauthMember resolveMemberByLoginType(){
         return loginType.equals(LoginType.OAUTH) ? oauthMember : user;
     }
 }

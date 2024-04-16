@@ -1,6 +1,6 @@
 package com.task.weaver.domain.member.user.controller;
 
-import static com.task.weaver.domain.authorization.service.impl.AuthorizationServiceImpl.setCookieAndHeader;
+import static com.task.weaver.domain.authorization.service.impl.MemberServiceImpl.setCookieAndHeader;
 
 import com.task.weaver.common.response.DataResponse;
 import com.task.weaver.common.response.MessageResponse;
@@ -9,7 +9,7 @@ import com.task.weaver.domain.authorization.dto.request.EmailRequest;
 import com.task.weaver.domain.authorization.dto.request.RequestSignIn;
 import com.task.weaver.domain.authorization.dto.response.EmailCode;
 import com.task.weaver.domain.authorization.dto.response.ResponseToken;
-import com.task.weaver.domain.authorization.service.AuthorizationService;
+import com.task.weaver.domain.authorization.service.MemberService;
 import com.task.weaver.domain.authorization.service.impl.MailSendService;
 import com.task.weaver.domain.member.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.member.user.dto.request.RequestUpdatePassword;
@@ -50,7 +50,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserController {
 
     private final UserService userService;
-    private final AuthorizationService authorizationService;
+    private final MemberService memberService;
     private final MailSendService mailService;
 
     @Operation(summary = "회원가입", description = "사용자가 회원가입")
@@ -101,14 +101,14 @@ public class UserController {
     @Parameter(name = "email", description = "이메일 입력", in = ParameterIn.QUERY)
     public ResponseEntity<DataResponse<Boolean>> checkMail(@RequestParam("email") String email) {
         return new ResponseEntity<>(
-                DataResponse.of(HttpStatus.OK, "중복 체크 동작", authorizationService.checkMail(email), true), HttpStatus.OK);
+                DataResponse.of(HttpStatus.OK, "중복 체크 동작", memberService.checkMail(email), true), HttpStatus.OK);
     }
 
     @Operation(summary = "아이디 중복 체크", description = "아이디 중복을 체크")
     @GetMapping("/checkId")
     @Parameter(name = "id", description = "아이디 입력", in = ParameterIn.QUERY)
     public ResponseEntity<DataResponse<Boolean>> checkId(@RequestParam("id") String id) {
-        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "중복 체크 동작", authorizationService.checkId(id), true),
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "중복 체크 동작", memberService.checkId(id), true),
                 HttpStatus.OK);
     }
 
@@ -117,7 +117,7 @@ public class UserController {
     @Parameter(name = "nickname", description = "닉네임 입력", in = ParameterIn.QUERY)
     public ResponseEntity<DataResponse<Boolean>> checkNickname(@RequestParam("nickname") String nickname) {
         return new ResponseEntity<>(
-                DataResponse.of(HttpStatus.OK, "중복 체크 동작", authorizationService.checkNickname(nickname), true),
+                DataResponse.of(HttpStatus.OK, "중복 체크 동작", memberService.checkNickname(nickname), true),
                 HttpStatus.OK);
     }
 
@@ -136,7 +136,7 @@ public class UserController {
     public ResponseEntity<DataResponse<ResponseUserIdNickname>> AuthCheckForId(
             @RequestBody @Valid EmailCheckDto emailCheckDto) {
         Boolean checked = mailService.CheckAuthNum(emailCheckDto.email(), emailCheckDto.verificationCode());
-        ResponseUserIdNickname targetUser = authorizationService.getMember(emailCheckDto.email(), checked);
+        ResponseUserIdNickname targetUser = memberService.getMember(emailCheckDto.email(), checked);
         return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "해당 유저를 반환합니다.", targetUser, true));
     }
 
@@ -155,7 +155,7 @@ public class UserController {
     public ResponseEntity<DataResponse<ResponseUuid>> AuthCheckForPassword(
             @RequestBody @Valid EmailCheckDto emailCheckDto) {
         Boolean checked = mailService.CheckAuthNum(emailCheckDto.email(), emailCheckDto.verificationCode());
-        ResponseUuid targetUser = authorizationService.getUuid(emailCheckDto.email(), checked);
+        ResponseUuid targetUser = memberService.getUuid(emailCheckDto.email(), checked);
         return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "verificationCode 인증 성공", targetUser, true));
     }
 

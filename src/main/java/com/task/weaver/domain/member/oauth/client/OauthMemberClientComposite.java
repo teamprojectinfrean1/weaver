@@ -6,7 +6,7 @@ import static java.util.function.Function.identity;
 import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.member.UnsupportedPlatformsException;
 import com.task.weaver.common.model.OauthServerType;
-import com.task.weaver.domain.member.oauth.entity.OauthMember;
+import com.task.weaver.domain.member.oauth.entity.OauthUser;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -31,9 +31,9 @@ public class OauthMemberClientComposite {
     /**
      * @param oauthServerType Kakao .. Naver ..
      * @param authCode 1차 요청으로 받은 Auth Code
-     * @return OauthMember, mapping된 ApiClient를 통해 회원 가입 or 로그인 처리 후 반환
+     * @return OauthUser, mapping된 ApiClient를 통해 회원 가입 or 로그인 처리 후 반환
      */
-    public OauthMember fetch(OauthServerType oauthServerType, String authCode) {
+    public OauthUser fetch(OauthServerType oauthServerType, String authCode) {
         return getClient(oauthServerType).fetch(authCode);
     }
 

@@ -3,6 +3,7 @@ package com.task.weaver.domain.project.service.impl;
 import com.task.weaver.common.exception.BusinessException;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.member.UserNotFoundException;
+import com.task.weaver.domain.authorization.entity.Member;
 import com.task.weaver.domain.project.dto.request.RequestCreateProject;
 import com.task.weaver.domain.project.dto.request.RequestPageProject;
 import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
@@ -13,8 +14,7 @@ import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
 import com.task.weaver.domain.project.service.ProjectService;
 
-import com.task.weaver.domain.authorization.entity.UserOauthMember;
-import com.task.weaver.domain.authorization.repository.UserOauthMemberRepository;
+import com.task.weaver.domain.authorization.repository.MemberRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +40,7 @@ public class ProjectServiceImplDummy implements ProjectService {
 
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
-    private final UserOauthMemberRepository userOauthMemberRepository;
+    private final MemberRepository userOauthMemberRepository;
     private final ProjectMemberRepository projectMemberRepository;
 
 
@@ -70,7 +70,7 @@ public class ProjectServiceImplDummy implements ProjectService {
     @Override
     public List<ResponseGetProjectList> getProejctsForMain(UUID memberId) throws BusinessException {
 
-        UserOauthMember member = userOauthMemberRepository.findById(memberId)
+        Member member = userOauthMemberRepository.findById(memberId)
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(memberId))));
 
         List<Project> result = projectRepository.findProjectsByMember(member)
@@ -95,7 +95,7 @@ public class ProjectServiceImplDummy implements ProjectService {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(projectId))));
 
-        UserOauthMember modifier = project.getModifier();
+        Member modifier = project.getModifier();
 
         ResponseUpdateDetail responseUpdateDetail = ResponseUpdateDetail.builder()
                 .userUuid(modifier.getId())
@@ -112,7 +112,7 @@ public class ProjectServiceImplDummy implements ProjectService {
     @Override
     public UUID addProject(final RequestCreateProject dto) throws BusinessException {
         Project project = dtoToEntity(dto);
-        UserOauthMember writer = userOauthMemberRepository.findById(dto.writerUuid())
+        Member writer = userOauthMemberRepository.findById(dto.writerUuid())
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(dto.writerUuid()))));
 
         if(writer.getMainProject() == null)   //작성자가 처음 만든 프로젝트면, 메인 프로젝트로 선정
@@ -122,7 +122,7 @@ public class ProjectServiceImplDummy implements ProjectService {
         List<ProjectMember> projectMemberList = new ArrayList<>();
 
         for (UUID memberId : dto.memberUuidList()) {
-            UserOauthMember member = userOauthMemberRepository.findById(memberId)
+            Member member = userOauthMemberRepository.findById(memberId)
                     .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(memberId))));
 
             if(member.getMainProject() == null){
@@ -158,7 +158,7 @@ public class ProjectServiceImplDummy implements ProjectService {
         Optional<Project> result = projectRepository.findById(projectId);
 
         if (result.isPresent()) {
-            UserOauthMember updater = userOauthMemberRepository.findById(dto.updaterUuid())
+            Member updater = userOauthMemberRepository.findById(dto.updaterUuid())
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(dto.updaterUuid()))));
             Project entity = result.get();
 //            entity.changeDetail(dto.projectContent());
@@ -178,7 +178,7 @@ public class ProjectServiceImplDummy implements ProjectService {
 
         UUID writerId = project.getWriter().getId();
 
-        UserOauthMember writer = userOauthMemberRepository.findById(writerId)
+        Member writer = userOauthMemberRepository.findById(writerId)
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(writerId))));
 
         writer.updateMainProject(project);

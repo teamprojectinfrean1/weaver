@@ -13,6 +13,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 public class RequestGetUserPage {
+
     private int page;
     private int size;
     private UUID projectId;

@@ -3,7 +3,7 @@ package com.task.weaver.common.oauth.naver.client;
 import com.task.weaver.common.oauth.config.NaverOauthConfig;
 import com.task.weaver.domain.member.oauth.client.OauthMemberClient;
 import com.task.weaver.common.model.OauthServerType;
-import com.task.weaver.domain.member.oauth.entity.OauthMember;
+import com.task.weaver.domain.member.oauth.entity.OauthUser;
 import com.task.weaver.common.oauth.naver.dto.NaverMemberResponse;
 import com.task.weaver.common.oauth.naver.dto.NaverToken;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class NaverMemberClient implements OauthMemberClient {
     }
 
     @Override
-    public OauthMember fetch(final String authCode) {
+    public OauthUser fetch(final String authCode) {
         NaverToken tokenInfo = naverApiClient.fetchToken(tokenRequestParams(authCode));
         NaverMemberResponse naverMemberResponse = naverApiClient.fetchMember("Bearer " + tokenInfo.accessToken());
         return naverMemberResponse.toDomain();

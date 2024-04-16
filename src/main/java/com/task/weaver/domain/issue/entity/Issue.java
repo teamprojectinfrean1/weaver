@@ -2,10 +2,10 @@ package com.task.weaver.domain.issue.entity;
 
 import com.task.weaver.common.model.Status;
 import com.task.weaver.domain.BaseEntity;
+import com.task.weaver.domain.authorization.entity.Member;
 import com.task.weaver.domain.comment.entity.Comment;
 import com.task.weaver.domain.issue.dto.request.UpdateIssueRequest;
 import com.task.weaver.domain.task.entity.Task;
-import com.task.weaver.domain.authorization.entity.UserOauthMember;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,11 +37,11 @@ public class Issue extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id")
-    private UserOauthMember creator;
+    private Member creator;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id")
-    private UserOauthMember manager;
+    private Member manager;
 
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL)
     private List<Comment> comments;
@@ -61,7 +61,7 @@ public class Issue extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    public void updateIssue(UpdateIssueRequest updateIssueRequest, Task task, UserOauthMember modifier, UserOauthMember manager) {
+    public void updateIssue(UpdateIssueRequest updateIssueRequest, Task task, Member modifier, Member manager) {
         this.task = task;
         this.creator = modifier;
         this.manager = manager;

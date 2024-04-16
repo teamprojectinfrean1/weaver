@@ -2,13 +2,12 @@ package com.task.weaver.domain.member.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.task.weaver.domain.BaseEntity;
-import com.task.weaver.domain.member.Member;
+import com.task.weaver.domain.member.UserOauthMember;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import java.net.URL;
-import java.util.Collection;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +15,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.security.core.GrantedAuthority;
 
 @Entity
 @AllArgsConstructor
@@ -24,7 +22,7 @@ import org.springframework.security.core.GrantedAuthority;
 @Getter
 @Setter
 @Builder
-public class User extends BaseEntity implements Member {
+public class User extends BaseEntity implements UserOauthMember {
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -65,7 +63,22 @@ public class User extends BaseEntity implements Member {
     }
 
     @Override
+    public URL getProfileImage() {
+        return this.profileImage;
+    }
+
+    @Override
     public boolean isWeaver() {
         return true;
+    }
+
+    @Override
+    public UUID getUuid() {
+        return this.userId;
+    }
+
+    @Override
+    public String getNickname() {
+        return this.nickname;
     }
 }

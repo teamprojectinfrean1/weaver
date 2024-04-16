@@ -1,17 +1,16 @@
 package com.task.weaver.domain.authorization.controller;
 
-import static com.task.weaver.domain.authorization.service.impl.AuthorizationServiceImpl.setCookieAndHeader;
+import static com.task.weaver.domain.authorization.service.impl.MemberServiceImpl.setCookieAndHeader;
 
 import com.task.weaver.common.response.DataResponse;
 import com.task.weaver.common.response.MessageResponse;
+import com.task.weaver.domain.authorization.dto.MemberProjectDTO;
 import com.task.weaver.domain.authorization.dto.response.ResponseToken;
 import com.task.weaver.domain.authorization.dto.response.ResponseUserOauth.AllMember;
-import com.task.weaver.domain.authorization.service.AuthorizationService;
+import com.task.weaver.domain.authorization.service.MemberService;
 import com.task.weaver.domain.member.user.dto.request.RequestGetUserPage;
 import com.task.weaver.domain.member.user.dto.response.ResponseGetMember;
 import com.task.weaver.domain.member.user.dto.response.ResponseGetUserForFront;
-import com.task.weaver.domain.member.user.dto.response.ResponseGetUserList;
-import com.task.weaver.domain.member.user.entity.User;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -39,9 +38,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 @Slf4j
-public class AuthorizationController {
+public class MemberController {
 
-	private final AuthorizationService authorizationService;
+	private final MemberService memberService;
 
 	@Operation(summary = "reissue", description = "refresh token 재발급")
 	@GetMapping("/reissue")
@@ -49,7 +48,7 @@ public class AuthorizationController {
 									 @RequestParam String loginType) {
 		log.info("reissue controller - refreshToken : " + refreshToken);
 
-		ResponseToken responseToken = authorizationService.reissue(refreshToken, loginType);
+		ResponseToken responseToken = memberService.reissue(refreshToken, loginType);
 		HttpHeaders headers = setCookieAndHeader(responseToken);
 		return new ResponseEntity<>(MessageResponse.of(HttpStatus.CREATED, "Token 재발급 성공", true), headers, HttpStatus.CREATED);
 	}
@@ -57,7 +56,7 @@ public class AuthorizationController {
 	@Operation(summary = "로그아웃", description = "로그아웃")
 	@GetMapping("/logout")
 	public ResponseEntity<?> logout(@CookieValue(value = "refresh-token", required = false) Cookie cookie, HttpServletResponse res) {
-		authorizationService.logout(cookie.getValue());
+		memberService.logout(cookie.getValue());
 		cookie.setMaxAge(0);
 		res.setHeader("Set-Cookie", cookie.toString());
 		return ResponseEntity.ok().body("-- logout --");
@@ -70,16 +69,16 @@ public class AuthorizationController {
 	@Parameter(name = "UUID", description = "사용자 UUID", in = ParameterIn.QUERY)
 	@GetMapping("/{uuid}")
 	public ResponseEntity<DataResponse<ResponseGetMember>> getMember(@PathVariable("uuid") UUID uuid) {
-		ResponseGetMember responseGetMember = authorizationService.getMember(uuid);
+		ResponseGetMember responseGetMember = memberService.getMember(uuid);
 		return ResponseEntity.ok().body(DataResponse.of(HttpStatus.OK, "UUID로 회원 조회 성공", responseGetMember, true));
 	}
 
 	@Operation(summary = "프로젝트 구성원 조회", description = "프로젝트에 소속된 인원들 조회")
 	@Parameter(name = "projectId", description = "프로젝트 id", in = ParameterIn.PATH)
 	@GetMapping("/project/user-list")
-	public ResponseEntity<DataResponse<ResponsePageResult<ResponseGetUserList, User>>> getMembersFromProject(
+	public ResponseEntity<DataResponse<ResponsePageResult<MemberProjectDTO, Object[]>>> getMembersFromProject(
 			@RequestBody RequestGetUserPage requestGetUserPage) {
-		ResponsePageResult<ResponseGetUserList, User> responseGetUserLists = authorizationService.getMembers(
+		ResponsePageResult<MemberProjectDTO, Object[]> responseGetUserLists = memberService.getMembers(
 				requestGetUserPage);
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트 구성원 조회 성공", responseGetUserLists, true),
 				HttpStatus.OK);
@@ -88,7 +87,7 @@ public class AuthorizationController {
 	@Operation(summary = "개발자용 유저 리스트 확인 api", description = "생성된 유저 전부 조회")
 	@GetMapping("/list/test")
 	public ResponseEntity<DataResponse<AllMember>> getMemberForTest() {
-		AllMember responseGetUsers = authorizationService.getMembersForTest();
+		AllMember responseGetUsers = memberService.getMembersForTest();
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "유저 리스트 전부 조회", responseGetUsers, true),
 				HttpStatus.OK);
 	}
@@ -97,7 +96,7 @@ public class AuthorizationController {
 	@Parameter(name = "Authorization", description = "토큰", in = ParameterIn.HEADER)
 	@GetMapping("/token")
 	public ResponseEntity<DataResponse<ResponseGetUserForFront>> getMemberFromToken(HttpServletRequest request) {
-		ResponseGetUserForFront responseGetUser = authorizationService.getMemberFromToken(request);
+		ResponseGetUserForFront responseGetUser = memberService.getMemberFromToken(request);
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "토큰 기반 유저 정보 반환 성공", responseGetUser, true),
 				HttpStatus.OK);
 	}

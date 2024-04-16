@@ -1,15 +1,15 @@
 package com.task.weaver.domain.member.oauth.controller;
 
-import static com.task.weaver.domain.authorization.service.impl.AuthorizationServiceImpl.setCookieAndHeader;
+import static com.task.weaver.domain.authorization.service.impl.MemberServiceImpl.setCookieAndHeader;
 
 import com.task.weaver.common.model.OauthServerType;
 import com.task.weaver.common.response.DataResponse;
 import com.task.weaver.domain.authorization.dto.response.ResponseToken;
-import com.task.weaver.domain.authorization.service.impl.AuthorizationServiceImpl;
-import com.task.weaver.domain.member.oauth.entity.OauthMember;
+import com.task.weaver.domain.authorization.service.impl.MemberServiceImpl;
+import com.task.weaver.domain.member.oauth.entity.OauthUser;
 import com.task.weaver.domain.member.oauth.service.OauthService;
-import com.task.weaver.domain.authorization.entity.UserOauthMember;
-import com.task.weaver.domain.authorization.factory.UserOauthMemberFactory;
+import com.task.weaver.domain.authorization.entity.Member;
+import com.task.weaver.domain.authorization.factory.MemberFactory;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -30,8 +30,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class OauthController {
 
     private final OauthService oauthService;
-    private final AuthorizationServiceImpl authorizationService;
-    private final UserOauthMemberFactory userOauthMemberFactory;
+    private final MemberServiceImpl authorizationService;
+    private final MemberFactory memberFactory;
 
     /**
      * @param oauthServerType OAuth 제공 서버 kakao.. naver..
@@ -52,9 +52,9 @@ public class OauthController {
     ResponseEntity<?> login(@PathVariable OauthServerType oauthServerType,
                                                       @RequestParam("code") String code) {
         log.info("Kakao OAuth --> 로그인 요청 성공");
-        OauthMember oauthMember = oauthService.login(oauthServerType, code);
-        UserOauthMember userOauthMember = userOauthMemberFactory.createUserOauthMember(oauthMember);
-        ResponseToken responseToken = authorizationService.getAuthentication(userOauthMember);
+        OauthUser oauthMember = oauthService.login(oauthServerType, code);
+        Member member = memberFactory.createUserOauthMember(oauthMember);
+        ResponseToken responseToken = authorizationService.getAuthentication(member);
         HttpHeaders headers = setCookieAndHeader(responseToken);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.CREATED, "OAuth login successfully", headers, true), HttpStatus.CREATED);
     }

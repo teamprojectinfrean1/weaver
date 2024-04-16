@@ -1,7 +1,7 @@
 package com.task.weaver.domain.member.user.dto.response;
 
 import com.task.weaver.domain.member.oauth.entity.OauthId;
-import com.task.weaver.domain.member.oauth.entity.OauthMember;
+import com.task.weaver.domain.member.oauth.entity.OauthUser;
 import com.task.weaver.domain.member.user.entity.User;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -33,18 +33,18 @@ public class ResponseGetMember {
         this.profileImageUrl = String.valueOf(user.getProfileImage());
     }
 
-    private ResponseGetMember(OauthMember oauthMember) {
-        this.oauthId = oauthMember.id();
+    private ResponseGetMember(OauthUser oauthMember) {
+        this.oauthId = oauthMember.getUuid();
         this.oauthServerId = oauthMember.oauthId();
         this.nickname = oauthMember.getNickname();
-        this.profileImageUrl = oauthMember.profileImageUrl();
+        this.profileImageUrl = String.valueOf(oauthMember.getProfileImage());
     }
 
     public static ResponseGetMember of(User user) {
         return new ResponseGetMember(user);
     }
 
-    public static ResponseGetMember of(OauthMember oauthMember) {
+    public static ResponseGetMember of(OauthUser oauthMember) {
         return new ResponseGetMember(oauthMember);
     }
 }

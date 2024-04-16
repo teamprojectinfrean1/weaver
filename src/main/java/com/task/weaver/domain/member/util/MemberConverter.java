@@ -2,12 +2,11 @@ package com.task.weaver.domain.member.util;
 
 import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.member.MemberCannotConvertedException;
-import com.task.weaver.domain.member.Member;
-import com.task.weaver.domain.member.oauth.entity.OauthMember;
+import com.task.weaver.domain.member.UserOauthMember;
+import com.task.weaver.domain.member.oauth.entity.OauthUser;
 import com.task.weaver.domain.member.user.dto.response.ResponseGetMember;
 import com.task.weaver.domain.member.user.dto.response.ResponseGetUserForFront;
 import com.task.weaver.domain.member.user.entity.User;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,46 +16,46 @@ import org.springframework.stereotype.Component;
 @Component
 public class MemberConverter {
 
-    private final Map<Class<? extends Member>, List<Function<Member, ?>>> converters = new HashMap<>();
+    private final Map<Class<? extends UserOauthMember>, List<Function<UserOauthMember, ?>>> converters = new HashMap<>();
 
     public MemberConverter() {
         converters.put(User.class, List.of(this::convertUser, this::convertForFrontByUser));
-        converters.put(OauthMember.class, List.of(this::convertOauthMember, this::convertForFrontByOauth));
+        converters.put(OauthUser.class, List.of(this::convertOauthMember, this::convertForFrontByOauth));
     }
 
-    public <T> T convert(Member member, Class<T> targetType) {
-        List<Function<Member, ?>> converterList = converters.get(member.getClass());
+    public <T> T convert(UserOauthMember userOauthMember, Class<T> targetType) {
+        List<Function<UserOauthMember, ?>> converterList = converters.get(userOauthMember.getClass());
         validConverted(converterList);
-        for (Function<Member, ?> converter : converterList) {
-            Object result = converter.apply(member);
-            if (targetType.isInstance(result)) {
-                return targetType.cast(result);
-            }
-        }
-        return null;
+        return converterList.stream()
+                .map(converter -> converter.apply(userOauthMember))
+                .filter(targetType::isInstance)
+                .map(targetType::cast)
+                .findFirst()
+                .orElseThrow(() ->
+                        new MemberCannotConvertedException(ErrorCode.MEMBER_CANNOT_CONVERTED, "해당 타입으로 변환할 수 없습니다."));
     }
 
-    private static void validConverted(final List<Function<Member, ?>> converterList) {
+    private static void validConverted(final List<Function<UserOauthMember, ?>> converterList) {
         if (converterList == null) {
             throw new MemberCannotConvertedException(ErrorCode.MEMBER_CANNOT_CONVERTED, "해당 타입으로 변환할 수 없습니다.");
         }
     }
 
-    private ResponseGetMember convertUser(Member member) {
-        User user = (User) member;
+    private ResponseGetMember convertUser(UserOauthMember userOauthMember) {
+        User user = (User) userOauthMember;
         return ResponseGetMember.of(user);
     }
 
-    private ResponseGetMember convertOauthMember(Member member) {
-        OauthMember oauthMember = (OauthMember) member;
+    private ResponseGetMember convertOauthMember(UserOauthMember userOauthMember) {
+        OauthUser oauthMember = (OauthUser) userOauthMember;
         return ResponseGetMember.of(oauthMember);
     }
 
-    private ResponseGetUserForFront convertForFrontByUser(Member member) {
-        return ResponseGetUserForFront.of((User) member);
+    private ResponseGetUserForFront convertForFrontByUser(UserOauthMember userOauthMember) {
+        return ResponseGetUserForFront.of((User) userOauthMember);
     }
 
-    private ResponseGetUserForFront convertForFrontByOauth(Member member) {
-        return ResponseGetUserForFront.of((OauthMember) member);
+    private ResponseGetUserForFront convertForFrontByOauth(UserOauthMember userOauthMember) {
+        return ResponseGetUserForFront.of((OauthUser) userOauthMember);
     }
 }

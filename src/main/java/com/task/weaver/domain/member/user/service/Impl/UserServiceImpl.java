@@ -10,10 +10,10 @@ import com.task.weaver.common.exception.member.UserNotFoundException;
 import com.task.weaver.common.s3.S3Uploader;
 import com.task.weaver.domain.authorization.dto.request.RequestSignIn;
 import com.task.weaver.domain.authorization.dto.response.ResponseToken;
-import com.task.weaver.domain.authorization.entity.UserOauthMember;
-import com.task.weaver.domain.authorization.factory.UserOauthMemberFactory;
-import com.task.weaver.domain.authorization.repository.UserOauthMemberRepository;
-import com.task.weaver.domain.authorization.service.AuthorizationService;
+import com.task.weaver.domain.authorization.entity.Member;
+import com.task.weaver.domain.authorization.factory.MemberFactory;
+import com.task.weaver.domain.authorization.repository.MemberRepository;
+import com.task.weaver.domain.authorization.service.MemberService;
 import com.task.weaver.domain.member.LoginType;
 import com.task.weaver.domain.member.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.member.user.dto.request.RequestUpdatePassword;
@@ -44,9 +44,10 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final S3Uploader s3Uploader;
-    private final UserOauthMemberFactory userOauthMemberFactory;
-    private final UserOauthMemberRepository userOauthMemberRepository;
-    private final AuthorizationService authorizationService;
+    private final MemberFactory memberFactory;
+    private final MemberRepository userOauthMemberRepository;
+    private final MemberService memberService;
+
 
     @Override
     @Transactional(readOnly = true)
@@ -55,9 +56,9 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUserId(requestSignIn.id())
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, " 해당 ID가 존재하지 않습니다."));
         hasMatched(requestSignIn);
-        UserOauthMember byUser = userOauthMemberRepository.findByUser(user)
+        Member byUser = userOauthMemberRepository.findByUser(user)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, " 해당 유저가 존재하지 않습니다."));
-        return authorizationService.getAuthentication(byUser);
+        return memberService.getAuthentication(byUser);
     }
 
     private void hasMatched(final RequestSignIn requestSignIn) {
@@ -82,9 +83,9 @@ public class UserServiceImpl implements UserService {
 
         isExistEmail(requestCreateUser.getEmail());
         User user = hasImage(profileImage, requestCreateUser.toDomain(passwordEncoder));
-        UserOauthMember userOauthMember = userOauthMemberFactory.createUserOauthMember(user);
+        Member member = memberFactory.createUserOauthMember(user);
         log.info("user uuid : " + user.getUserId());
-        return ResponseGetMember.of(userOauthMember.getUser());
+        return ResponseGetMember.of(member.getUser());
     }
 
     private User hasImage(final MultipartFile profileImage, final User user) throws IOException {
@@ -108,7 +109,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseGetMember updateUser(UUID memberId, RequestUpdateUser requestUpdateUser) throws IOException {
-        UserOauthMember findMember = userOauthMemberRepository.findById(memberId)
+        Member findMember = userOauthMemberRepository.findById(memberId)
                 .orElseThrow(() -> new UserNotFoundException(
                         USER_NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
 

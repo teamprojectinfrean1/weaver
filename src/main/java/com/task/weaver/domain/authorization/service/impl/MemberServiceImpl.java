@@ -14,19 +14,19 @@ import com.task.weaver.common.redis.RefreshTokenRepository;
 import com.task.weaver.common.redis.service.RedisService;
 import com.task.weaver.common.util.CookieUtil;
 import com.task.weaver.common.util.HttpHeaderUtil;
+import com.task.weaver.domain.authorization.dto.MemberProjectDTO;
 import com.task.weaver.domain.authorization.dto.response.ResponseReIssueToken;
 import com.task.weaver.domain.authorization.dto.response.ResponseToken;
 import com.task.weaver.domain.authorization.dto.response.ResponseUserOauth.AllMember;
-import com.task.weaver.domain.authorization.entity.UserOauthMember;
-import com.task.weaver.domain.authorization.repository.UserOauthMemberRepository;
-import com.task.weaver.domain.authorization.service.AuthorizationService;
+import com.task.weaver.domain.authorization.entity.Member;
+import com.task.weaver.domain.authorization.repository.MemberRepository;
+import com.task.weaver.domain.authorization.service.MemberService;
 import com.task.weaver.domain.member.LoginType;
-import com.task.weaver.domain.member.Member;
-import com.task.weaver.domain.member.oauth.entity.OauthMember;
+import com.task.weaver.domain.member.UserOauthMember;
+import com.task.weaver.domain.member.oauth.entity.OauthUser;
 import com.task.weaver.domain.member.user.dto.request.RequestGetUserPage;
 import com.task.weaver.domain.member.user.dto.response.ResponseGetMember;
 import com.task.weaver.domain.member.user.dto.response.ResponseGetUserForFront;
-import com.task.weaver.domain.member.user.dto.response.ResponseGetUserList;
 import com.task.weaver.domain.member.user.dto.response.ResponseUserIdNickname;
 import com.task.weaver.domain.member.user.dto.response.ResponseUuid;
 import com.task.weaver.domain.member.user.entity.User;
@@ -54,9 +54,9 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AuthorizationServiceImpl implements AuthorizationService {
+public class MemberServiceImpl implements MemberService {
 
-	private final UserOauthMemberRepository userOauthMemberRepository;
+	private final MemberRepository memberRepository;
 	private final UserRepository userRepository;
 	private final ProjectRepository projectRepository;
 	private final RedisService redisService;
@@ -145,10 +145,10 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
 	@Override
 	public ResponseGetMember getMember(UUID uuid) {
-		UserOauthMember member = userOauthMemberRepository.findById(uuid)
+		Member member = memberRepository.findById(uuid)
 				.orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND.getMessage()));
-		Member memberData = member.resolveMemberByLoginType();
-		return memberConverter.convert(memberData, ResponseGetMember.class);
+		UserOauthMember userOauthMemberData = member.resolveMemberByLoginType();
+		return memberConverter.convert(userOauthMemberData, ResponseGetMember.class);
 	}
 
 	@Override
@@ -170,14 +170,13 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 	public ResponseGetUserForFront getMemberFromToken(HttpServletRequest request) {
 		String memberUuid = jwtTokenProvider.getMemberIdByAssessToken(request);
 		log.info("member uuid : " + memberUuid);
-		UserOauthMember member = userOauthMemberRepository.findById(UUID.fromString(memberUuid))
+		Member member = memberRepository.findById(UUID.fromString(memberUuid))
 				.orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
 		return memberConverter.convert(member.resolveMemberByLoginType(), ResponseGetUserForFront.class);
 	}
 
 	@Override
-	public ResponsePageResult<ResponseGetUserList, User> getMembers(
-			RequestGetUserPage requestGetUserPage) throws BusinessException {
+	public ResponsePageResult<MemberProjectDTO, Object[]> getMembers(RequestGetUserPage requestGetUserPage) throws BusinessException {
 		UUID projectId = requestGetUserPage.getProjectId();
 
 		Project project = projectRepository.findById(projectId)
@@ -185,34 +184,32 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
 		Pageable pageable = requestGetUserPage.getPageable(Sort.by("userId").descending());
 
-		Page<User> users = userRepository.findUsersForProject(projectId, requestGetUserPage.getNickname(), pageable);
+		Function<Object[], MemberProjectDTO> fn = (en -> entityToDTO((Member) en[0], (User) en[1], (OauthUser) en[2]));
+		Page<Object[]> members = memberRepository.findMembersByProject(projectId,
+				requestGetUserPage.getNickname(), pageable);
 
-		Function<User, ResponseGetUserList> fn = (ResponseGetUserList::new);
-
-		return new ResponsePageResult<>(users, fn);
+		return new ResponsePageResult<>(members, fn);
 	}
 
 	@Override
 	public AllMember getMembersForTest() {
-		List<UserOauthMember> userOauthMembers = userOauthMemberRepository.findAll();
-		List<User> users = userOauthMembers
-				.stream().map(UserOauthMember::getUser).toList();
-		List<OauthMember> members = userOauthMembers
-				.stream().map(UserOauthMember::getOauthMember).toList();
+		List<Member> userOauthMembers = memberRepository.findAll();
+		List<User> users = userOauthMembers.stream().map(Member::getUser).toList();
+		List<OauthUser> members = userOauthMembers.stream().map(Member::getOauthMember).toList();
 		return AllMember.create(users, members);
 	}
 
 	@Override
-	public ResponseToken getAuthentication(UserOauthMember userOauthMember) {
-		Authentication authentication = new UsernamePasswordAuthenticationToken(userOauthMember.getId(),
-				userOauthMember.getLoginType());
+	public ResponseToken getAuthentication(Member member) {
+		Authentication authentication = new UsernamePasswordAuthenticationToken(member.getId(),
+				member.getLoginType());
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
 		log.info("Authentication Object = {}", SecurityContextHolder.getContext());
-		String accessToken = jwtTokenProvider.createAccessToken(authentication, userOauthMember.getLoginType());
+		String accessToken = jwtTokenProvider.createAccessToken(authentication, member.getLoginType());
 		String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
-		saveRefreshToken(userOauthMember.getId(), refreshToken);
+		saveRefreshToken(member.getId(), refreshToken);
 
 		return ResponseToken.builder()
 				.accessToken("Bearer " + accessToken)
