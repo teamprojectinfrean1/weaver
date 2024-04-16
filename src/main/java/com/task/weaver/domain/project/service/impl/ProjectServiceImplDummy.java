@@ -3,6 +3,7 @@ package com.task.weaver.domain.project.service.impl;
 import com.task.weaver.common.exception.BusinessException;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.user.UserNotFoundException;
+import com.task.weaver.common.s3.S3Uploader;
 import com.task.weaver.domain.project.dto.request.RequestCreateProject;
 import com.task.weaver.domain.project.dto.request.RequestPageProject;
 import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
@@ -12,19 +13,11 @@ import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
 import com.task.weaver.domain.project.service.ProjectService;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Function;
-
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import com.task.weaver.domain.projectmember.repository.ProjectMemberRepository;
 import com.task.weaver.domain.task.dto.response.ResponseUpdateDetail;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.UserRepository;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,6 +25,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -41,8 +43,7 @@ public class ProjectServiceImplDummy implements ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final ProjectMemberRepository projectMemberRepository;
-
-
+    private final S3Uploader s3Uploader;
     @Override
     public ResponsePageResult<RequestCreateProject, Project> getProjects(final RequestPageProject requestPageProject)
             throws BusinessException {
@@ -108,7 +109,7 @@ public class ProjectServiceImplDummy implements ProjectService {
     }
 
     @Override
-    public UUID addProject(final RequestCreateProject dto) throws BusinessException {
+    public UUID addProject(final RequestCreateProject dto, MultipartFile multipartFile) throws BusinessException, IOException {
         Project project = dtoToEntity(dto);
         User writer = userRepository.findById(dto.writerUuid())
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(dto.writerUuid()))));
@@ -139,6 +140,11 @@ public class ProjectServiceImplDummy implements ProjectService {
         savedProject.setProjectMemberList(projectMemberList);
         savedProject.setWriter(writer);
         savedProject.setModifier(writer);
+
+        String storedFileName = s3Uploader.upload(multipartFile, "images");
+        URL updatedImageUrlObject = new URL(storedFileName);
+
+        savedProject.setProjectImage(updatedImageUrlObject);
 
         log.info("project uuid : " + savedProject.getProjectId());
         projectRepository.save(savedProject);

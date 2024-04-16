@@ -6,13 +6,14 @@ import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.user.entity.User;
 import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
+
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Builder
@@ -60,7 +61,8 @@ public class Project extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE)
     private List<Task> taskList = new ArrayList<>();
-
+    @Column(name = "project_image")
+    private URL projectImage;
     @ManyToOne
     @JoinColumn(name = "last_update_user_id")
     private User modifier;
