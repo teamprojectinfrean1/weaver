@@ -1,5 +1,9 @@
 package com.task.weaver.common.config;
 
+import com.task.weaver.common.jwt.filter.JwtAuthenticationFilter;
+import com.task.weaver.common.jwt.handler.JwtAuthenticationEntryPoint;
+import com.task.weaver.common.jwt.provider.JwtTokenProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,12 +22,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import com.task.weaver.common.filter.JwtAuthenticationFilter;
-import com.task.weaver.common.handler.JwtAuthenticationEntryPoint;
-import com.task.weaver.domain.authorization.util.JwtTokenProvider;
-
-import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
@@ -52,7 +50,8 @@ public class SecurityConfig {
 		"/h2-console/**",
 		"/favicon.ico",
 		"/api/v1/auth/findId/**",
-		"/api/v1/auth/findPassword/**"
+		"/api/v1/auth/findPassword/**",
+		"/api/v1/oauth/**"
 	};
 
 	@Bean
@@ -95,20 +94,17 @@ public class SecurityConfig {
 	@Bean
 	protected SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity
-			.csrf(CsrfConfigurer::disable) // rest api이므로 기본 설정 미사용
-			.httpBasic(HttpBasicConfigurer::disable) // header에 id, pw가 아닌 jwt 달고감. 따라서 basic 아닌 bearer 사용
-			// by default uses a Bean by the name of corsConfigurationSource
-			.cors(Customizer.withDefaults())
-			// 인증에 관한 예외처리
-			.exceptionHandling(handler -> handler
-				.authenticationEntryPoint(jwtAuthenticationEntryPoint))
-			// JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣는다
-			.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
-				UsernamePasswordAuthenticationFilter.class)
-			// session 미사용
-			.sessionManagement(sessionManagement -> sessionManagement
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
+				.csrf(CsrfConfigurer::disable) // rest api이므로 기본 설정 미사용
+				.httpBasic(HttpBasicConfigurer::disable) // header에 id, pw가 아닌 jwt 달고감. 따라서 basic 아닌 bearer 사용
+				.cors(Customizer.withDefaults())
+				.exceptionHandling(handler -> handler
+						.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+				// JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣는다
+				.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+						UsernamePasswordAuthenticationFilter.class)
+				// session 미사용
+				.sessionManagement(sessionManagement -> sessionManagement
+						.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 		return httpSecurity.build();
 	}
 
@@ -121,8 +117,7 @@ public class SecurityConfig {
 
 		// 추후 설정
 		configuration.addAllowedOriginPattern("*");
-		// configuration.addAllowedOrigin("http://localhost:8080");
-
+		configuration.addAllowedOrigin("*");
 		configuration.addAllowedHeader("*");
 		configuration.addAllowedMethod("*");
 		configuration.setAllowCredentials(true);

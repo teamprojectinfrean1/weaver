@@ -49,7 +49,7 @@ VALUES
 -- INSERT INTO TASK_AUTHORITY (task_authority_id, project_id, user_id, task_id, code, regdate, moddate)
 -- VALUES
 --     (NULL, (SELECT project_id FROM PROJECT WHERE name = 'Project A' LIMIT 1), (SELECT user_id FROM `USER` WHERE id = 'user1' LIMIT 1), (SELECT task_id FROM TASK WHERE task_title = 'Task 1' LIMIT 1), 'admin', NOW(), NOW()),
---     (NULL, (SELECT project_id FROM PROJECT WHERE name = 'Project B' LIMIT 1), (SELECT user_id FROM `USER` WHERE id = 'user2' LIMIT 1), (SELECT task_id FROM TASK WHERE task_title = 'Task 2' LIMIT 1), 'member', NOW(), NOW());
+--     (NULL, (SELECT project_id FROM PROJECT WHERE name = 'Project B' LIMIT 1), (SELECT user_id FROM `USER` WHERE id = 'user2' LIMIT 1), (SELECT task_id FROM TASK WHERE task_title = 'Task 2' LIMIT 1), 'userOauthMember', NOW(), NOW());
 --
 -- -- 더미 태스크 상태 데이터 삽입
 -- INSERT INTO TASK_STATUS (task_tag_id, task_id, status_id, tag, regdate, moddate)

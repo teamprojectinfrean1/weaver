@@ -4,7 +4,7 @@ import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
-import com.task.weaver.domain.user.entity.User;
+import com.task.weaver.domain.member.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -33,7 +33,7 @@ public class Task extends BaseEntity {
     private Project project;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "creator_user_id")
+    @JoinColumn(name = "creator_member_id")
     private User user;
 
     @OneToMany(mappedBy = "task")
@@ -41,7 +41,7 @@ public class Task extends BaseEntity {
     private List<Issue> issueList = new ArrayList<>();
 
     @OneToOne
-    @JoinColumn(name = "last_update_user_id")
+    @JoinColumn(name = "last_update_member_id")
     private User modifier;
 
     @Column(name = "task_title", length = 100)

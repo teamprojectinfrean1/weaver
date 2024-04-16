@@ -1,10 +1,9 @@
 package com.task.weaver.domain.issue.service.impl;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import com.task.weaver.domain.authorization.entity.Member;
+import com.task.weaver.domain.authorization.repository.MemberRepository;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -22,13 +21,9 @@ import com.task.weaver.domain.issue.service.IssueService;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
-import com.task.weaver.domain.task.dto.response.ResponseUpdateDetail;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.repository.TaskRepository;
-import com.task.weaver.domain.user.entity.User;
-import com.task.weaver.domain.user.repository.UserRepository;
 
-import org.hamcrest.core.Is;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -44,7 +39,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = false)
 public class IssueServiceImpl implements IssueService {
 	private final IssueRepository issueRepository;
-	private final UserRepository userRepository;
+	private final MemberRepository memberRepository;
 	private final TaskRepository taskRepository;
 	private final ProjectRepository projectRepository;
 
@@ -57,12 +52,15 @@ public class IssueServiceImpl implements IssueService {
 		return issueResponse;
 	}
 
+	/**
+	 * 수정 필요
+	 */
 	@Override
 	public ResponsePageResult<GetIssueListResponse, Issue> getIssues(String status,
-		GetIssuePageRequest getIssuePageRequest) throws NotFoundException, AuthorizationException {
+																	 GetIssuePageRequest getIssuePageRequest) throws NotFoundException, AuthorizationException {
 
 		Project project = projectRepository.findById(getIssuePageRequest.projectId())
-			.orElseThrow(() -> new IllegalArgumentException(""));
+				.orElseThrow(() -> new IllegalArgumentException(""));
 
 		List<Issue> issueList = new ArrayList<>();
 
@@ -83,17 +81,22 @@ public class IssueServiceImpl implements IssueService {
 		int end = Math.min((start + pageable.getPageSize()), issueList.size());
 		Page<Issue> issuePage = new PageImpl<>(issueList.subList(start, end), pageRequest, issueList.size());
 
-		Function<Issue, GetIssueListResponse> fn = Issue -> (new GetIssueListResponse(Issue.getIssueId(), Issue.getIssueTitle(), Issue.getTask().getTaskId(), Issue.getTask().getTaskTitle(), Issue.getAssignee().getId(), Issue.getAssignee().getNickname(), Issue.getAssignee().getProfileImage()));
+//		Function<Issue, GetIssueListResponse> fn = Issue -> (new GetIssueListResponse(Issue.getIssueId(), Issue.getIssueTitle(),
+//				Issue.getTask().getTaskId(), Issue.getTask().getTaskTitle(), Issue.getAssignee().getId(),
+//				Issue.getAssignee().getNickname(), Issue.getAssignee().getProfileImage()));
 
-		return new ResponsePageResult<>(issuePage, fn);
+		return null;
 	}
 
+	/**
+	 * 수정 필요
+	 */
 	@Override
 	public ResponsePageResult<GetIssueListResponse, Issue> getSearchIssues(String status, String filter, String word,
-		GetIssuePageRequest getIssuePageRequest) throws NotFoundException, AuthorizationException {
+																		   GetIssuePageRequest getIssuePageRequest) throws NotFoundException, AuthorizationException {
 
 		Project project = projectRepository.findById(getIssuePageRequest.projectId())
-			.orElseThrow(() -> new IllegalArgumentException(""));
+				.orElseThrow(() -> new IllegalArgumentException(""));
 
 		List<Issue> issueList = new ArrayList<>();
 
@@ -106,9 +109,10 @@ public class IssueServiceImpl implements IssueService {
 				for (Task task : project.getTaskList()) {
 					for(Issue issue : task.getIssueList()){
 						// manager 확인
-						if(issue.getAssignee().getNickname().contains(word)){
-							issueList.add(issue);
-						}
+//						if(issue.getAssignee().getNickname().contains(word)){
+//							issueList.add(issue);
+//						}
+						issueList.add(issue);
 					}
 				}
 				break;
@@ -141,34 +145,37 @@ public class IssueServiceImpl implements IssueService {
 		int end = Math.min((start + pageable.getPageSize()), issueList.size());
 		Page<Issue> issuePage = new PageImpl<>(issueList.subList(start, end), pageRequest, issueList.size());
 
-
-		Function<Issue, GetIssueListResponse> fn = Issue -> (new GetIssueListResponse(Issue.getIssueId(), Issue.getIssueTitle(), Issue.getTask().getTaskId(), Issue.getTask().getTaskTitle(), Issue.getAssignee().getId(), Issue.getAssignee().getNickname(), Issue.getAssignee().getProfileImage()));
+//
+//		Function<Issue, GetIssueListResponse> fn = Issue -> (new GetIssueListResponse(Issue.getIssueId(), Issue.getIssueTitle(), Issue.getTask().getTaskId(),
+//				Issue.getTask().getTaskTitle(), Issue.getAssignee().getId(),
+//				Issue.getAssignee().getNickname(), Issue.getAssignee().getProfileImage()));
 
 		// ResponsePageResult<> result = new ResponsePageResult()
 
 		// Function<Issue, GetIssueListResponse> fn = Issue -> (new GetIssueListResponse(Issue));
-		return new ResponsePageResult<>(issuePage, fn);
+//		return new ResponsePageResult<>(issuePage, fn);
+		return null;
 	}
 
 	@Override
 	public IssueResponse addIssue(CreateIssueRequest createIssueRequest) throws AuthorizationException {
 		Task task = taskRepository.findById(createIssueRequest.taskId())
-			.orElseThrow(() -> new IllegalArgumentException(""));
-		User creator = userRepository.findById(createIssueRequest.creatorId())
-			.orElseThrow(() -> new IllegalArgumentException(""));
-		User assignee = userRepository.findById(createIssueRequest.managerId())
-			.orElseThrow(() -> new IllegalArgumentException(""));
+				.orElseThrow(() -> new IllegalArgumentException(""));
+		Member creator = memberRepository.findById(createIssueRequest.creatorId())
+				.orElseThrow(() -> new IllegalArgumentException(""));
+		Member assignee = memberRepository.findById(createIssueRequest.managerId())
+				.orElseThrow(() -> new IllegalArgumentException(""));
 
 		Issue issue = Issue.builder()
-			.task(task)
-			.modifier(creator)
-			.assignee(assignee)
-			.issueTitle(createIssueRequest.title())
-			.issueContent(createIssueRequest.content())
-			.startDate(createIssueRequest.startDate())
-			.endDate(createIssueRequest.endDate())
-			.status(Status.valueOf(createIssueRequest.status()))
-			.build();
+				.task(task)
+				.modifier(creator)
+				.assignee(assignee)
+				.issueTitle(createIssueRequest.title())
+				.issueContent(createIssueRequest.content())
+				.startDate(createIssueRequest.startDate())
+				.endDate(createIssueRequest.endDate())
+				.status(Status.valueOf(createIssueRequest.status()))
+				.build();
 		issueRepository.save(issue).getIssueId();
 
 		return new IssueResponse(issue);
@@ -177,23 +184,23 @@ public class IssueServiceImpl implements IssueService {
 	@Override
 	@Transactional
 	public IssueResponse updateIssue(UUID issueId, UpdateIssueRequest updateIssueRequest) throws
-		NotFoundException,
-		AuthorizationException {
+			NotFoundException,
+			AuthorizationException {
 
 		// assignee만 수정 가능하게 ?
 		// 수정할 때 DynamicUpdate를 사용 X (성능 오버헤드 발생) -> 더티체킹으로 ㄱㄱ
 
 		Issue issue = issueRepository.findById(issueId)
-			.orElseThrow(() -> new IllegalArgumentException(""));
+				.orElseThrow(() -> new IllegalArgumentException(""));
 
 		if(updateIssueRequest.taskId() != null){
 			Task task = taskRepository.findById(updateIssueRequest.taskId())
-				.orElseThrow(() -> new IllegalArgumentException(""));
+					.orElseThrow(() -> new IllegalArgumentException(""));
 			issue.updateTask(task);
 		}
 		if(updateIssueRequest.assigneeId() != null){
-			User assignee = userRepository.findById(updateIssueRequest.assigneeId())
-				.orElseThrow(() -> new IllegalArgumentException(""));
+			Member assignee = memberRepository.findById(updateIssueRequest.assigneeId())
+					.orElseThrow(() -> new IllegalArgumentException(""));
 			issue.updateAssignee(assignee);
 		}
 		if(updateIssueRequest.issueTitle() != null){
@@ -210,8 +217,8 @@ public class IssueServiceImpl implements IssueService {
 		}
 
 		// modifier 변경
-		User modifier = userRepository.findById(updateIssueRequest.modifierId())
-			.orElseThrow(() -> new IllegalArgumentException(""));
+		Member modifier = memberRepository.findById(updateIssueRequest.modifierId())
+				.orElseThrow(() -> new IllegalArgumentException(""));
 
 		issue.updateModifier(modifier);
 
@@ -221,7 +228,7 @@ public class IssueServiceImpl implements IssueService {
 	@Override
 	public void updateIssueStatus(UUID issueId, String status) throws NotFoundException, AuthorizationException {
 		Issue issue = issueRepository.findById(issueId)
-			.orElseThrow(() -> new IllegalArgumentException(""));
+				.orElseThrow(() -> new IllegalArgumentException(""));
 
 		issue.updateStatus(Status.valueOf(status));
 	}

@@ -1,10 +1,8 @@
 package com.task.weaver.domain.authorization.service.impl;
 
-import com.task.weaver.common.exception.user.UnableSendMailException;
+import com.task.weaver.common.exception.member.UnableSendMailException;
 import com.task.weaver.domain.authorization.dto.response.EmailCode;
-import com.task.weaver.domain.authorization.redis.RedisEmailUtil;
-import com.task.weaver.domain.user.dto.response.ResponseGetUser;
-import com.task.weaver.domain.user.service.UserService;
+import com.task.weaver.common.redis.RedisEmailUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -21,16 +19,10 @@ public class MailSendService {
 
     private final JavaMailSender mailSender;
     private final RedisEmailUtil redisEmailUtil;
-    private final UserService userService;
 
     @Value("${spring.mail.auth-code-expiration-millis}")
     private String authCodeExpirationMillis;
     public int authNumber;
-
-    public EmailCode sendVerificationEmail(final String email) {
-        ResponseGetUser user = userService.getUserByMail(email);
-        return joinEmail(user.getEmail());
-    }
 
     public boolean CheckAuthNum(String email, String authNum) {
         if (redisEmailUtil.getData(authNum) == null) {
