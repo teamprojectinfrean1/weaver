@@ -8,7 +8,9 @@ import com.task.weaver.domain.project.dto.response.ResponseGetProject;
 import com.task.weaver.domain.project.dto.response.ResponseGetProjectList;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,7 +44,7 @@ public interface ProjectService {
 
     ResponseGetProject getProject(UUID projectId) throws BusinessException;
 
-    UUID addProject(RequestCreateProject dto) throws BusinessException;
+    UUID addProject(RequestCreateProject dto, MultipartFile multipartFile) throws BusinessException, IOException;
 
     void updateProjectView(Long projectId) throws BusinessException;
 
