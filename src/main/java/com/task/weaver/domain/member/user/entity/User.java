@@ -17,7 +17,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @AllArgsConstructor
@@ -25,7 +24,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Getter
 @Setter
 @Builder
-public class User extends BaseEntity implements UserDetails, Member {
+public class User extends BaseEntity implements Member {
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -63,36 +62,6 @@ public class User extends BaseEntity implements UserDetails, Member {
 
     public void updateProfileImage(final URL storedFileName) {
         this.profileImage = storedFileName;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
-
-    @Override
-    public String getUsername() {
-        return this.nickname;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
     }
 
     @Override

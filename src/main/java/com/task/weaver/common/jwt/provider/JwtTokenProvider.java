@@ -1,6 +1,8 @@
 package com.task.weaver.common.jwt.provider;
 
 import com.task.weaver.domain.member.LoginType;
+import com.task.weaver.domain.member.oauth.PrincipalDetailService;
+import com.task.weaver.domain.member.oauth.PrincipalDetails;
 import io.jsonwebtoken.Jws;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -13,8 +15,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-
-import com.task.weaver.domain.member.user.service.Impl.CustomUserDetailsService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -39,7 +39,8 @@ public class JwtTokenProvider {
 	// refresh token -> 7days
 	public static final Long REFRESH_TOKEN_VALID_TIME = 7 * 24 * 60 * 60 * 1000L;
 
-	private final CustomUserDetailsService customUserDetailsService;
+	private PrincipalDetails principalDetails;
+	private final PrincipalDetailService principalDetailService;
 	private static final String AUTHORIZATION_HEADER = "Authorization";
 	/**
 	 * 객체 초기화, secretKey를 Base64로 인코딩
@@ -124,7 +125,7 @@ public class JwtTokenProvider {
 	public Authentication getAuthentication(String acceessToken) {
 		Claims claims = parseClaims(acceessToken);
 		log.info("claims.getId : " + claims.getId() + ", claims.getSubject : " + claims.getSubject());
-		UserDetails userDetails = customUserDetailsService.loadUserByUsername(claims.getSubject());
+		UserDetails userDetails = principalDetailService.loadUserByUsername(claims.getSubject());
 		return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
 	}
 
@@ -139,7 +140,6 @@ public class JwtTokenProvider {
 				.getBody()
 				.getSubject();
 	}
-
 
 	public LoginType decodeAccessToken(String accessToken) {
 		Jws<Claims> claimsJws = Jwts.parserBuilder().build().parseClaimsJws(accessToken);

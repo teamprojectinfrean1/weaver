@@ -5,9 +5,9 @@ import static com.task.weaver.common.exception.ErrorCode.USER_EMAIL_NOT_FOUND;
 import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.task.weaver.common.exception.BusinessException;
-import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.member.UnableSendMailException;
 import com.task.weaver.common.exception.member.UserNotFoundException;
+import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.jwt.provider.JwtTokenProvider;
 import com.task.weaver.common.redis.RefreshToken;
 import com.task.weaver.common.redis.RefreshTokenRepository;
@@ -148,7 +148,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 		UserOauthMember member = userOauthMemberRepository.findById(uuid)
 				.orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND.getMessage()));
 		Member memberData = member.resolveMemberByLoginType();
-		return memberConverter.convert(memberData);
+		return memberConverter.convert(memberData, ResponseGetMember.class);
 	}
 
 	@Override
@@ -168,11 +168,11 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
 	@Override
 	public ResponseGetUserForFront getMemberFromToken(HttpServletRequest request) {
-		String userId = jwtTokenProvider.getMemberIdByAssessToken(request);
-		log.info("user id : " + userId);
-		User user = userRepository.findByUserId(userId)
-				.orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(userId))));
-		return new ResponseGetUserForFront(user);
+		String memberUuid = jwtTokenProvider.getMemberIdByAssessToken(request);
+		log.info("member uuid : " + memberUuid);
+		UserOauthMember member = userOauthMemberRepository.findById(UUID.fromString(memberUuid))
+				.orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
+		return memberConverter.convert(member.resolveMemberByLoginType(), ResponseGetUserForFront.class);
 	}
 
 	@Override
@@ -196,11 +196,9 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 	public AllMember getMembersForTest() {
 		List<UserOauthMember> userOauthMembers = userOauthMemberRepository.findAll();
 		List<User> users = userOauthMembers
-				.stream()
-				.map(UserOauthMember::getUser).toList();
+				.stream().map(UserOauthMember::getUser).toList();
 		List<OauthMember> members = userOauthMembers
-				.stream()
-				.map(UserOauthMember::getOauthMember).toList();
+				.stream().map(UserOauthMember::getOauthMember).toList();
 		return AllMember.create(users, members);
 	}
 
