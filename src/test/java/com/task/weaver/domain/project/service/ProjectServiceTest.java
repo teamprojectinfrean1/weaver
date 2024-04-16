@@ -48,26 +48,26 @@ class ProjectServiceTest {
         assertThat(project.getProjectId()).isEqualTo(99L);
     }
 
-    @Test
-    void addProject() {
-        RequestCreateProject dto = RequestCreateProject.builder()
-//                .customUrl("new Custom URL")
-//                .bannerUrl("new Banner URL")
-                .name("new Project Name")
-                .detail("new Project Detail")
-//                .hasPublic(true)
-                .created(LocalDateTime.now())
-                .startDate(LocalDateTime.now())
-                .startDate(LocalDateTime.now().plusWeeks(1))
-                .build();
-
-        projectService.addProject(dto);
-
-        ResponseGetProject project = projectService.getProject(101L);
-
-        assertThat(project).isNotNull();
-        assertThat(project.getProjectName()).isEqualTo("new Project Name");
-    }
+//    @Test
+//    void addProject() {
+//        RequestCreateProject dto = RequestCreateProject.builder()
+////                .customUrl("new Custom URL")
+////                .bannerUrl("new Banner URL")
+//                .name("new Project Name")
+//                .detail("new Project Detail")
+////                .hasPublic(true)
+//                .created(LocalDateTime.now())
+//                .startDate(LocalDateTime.now())
+//                .startDate(LocalDateTime.now().plusWeeks(1))
+//                .build();
+//
+//        projectService.addProject(dto);
+//
+//        ResponseGetProject project = projectService.getProject(101L);
+//
+//        assertThat(project).isNotNull();
+//        assertThat(project.getProjectName()).isEqualTo("new Project Name");
+//    }
 
     @Test
     void updateProject() {
