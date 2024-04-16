@@ -69,7 +69,16 @@ public class OauthUser extends BaseEntity implements UserOauthMember {
     }
 
     @Override
+    public void updateProfileImage(final URL updatedImageUrlObject) {
+        this.profileImageUrl = updatedImageUrlObject;
+    }
+
+    @Override
     public boolean isWeaver() {
         return false;
+    }
+
+    public void updateNickname(final String value) {
+        this.nickname = value;
     }
 }

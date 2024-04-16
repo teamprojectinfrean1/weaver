@@ -17,13 +17,12 @@ public class ProjectRepositoryImpl implements ProjectRepositoryDsl {
     private final JPAQueryFactory jpaQueryFactory;
     private QProjectMember qProjectMember = QProjectMember.projectMember;
     private QProject qProject = QProject.project;
-    QMember qMember = QMember.member;
 
     @Override
     public Optional<List<Project>> findProjectsByMember(Member member) {
         List<Project> projects = jpaQueryFactory.selectFrom(qProject)
                 .join(qProject.projectMemberList, qProjectMember)
-                .where(qMember.loginType.eq(member.getLoginType()))
+                .where(qProjectMember.member.loginType.eq(member.getLoginType()))
                 .orderBy(qProject.created.desc())
                 .fetch();
 

@@ -81,4 +81,6 @@ public class User extends BaseEntity implements UserOauthMember {
     public String getNickname() {
         return this.nickname;
     }
+
+
 }

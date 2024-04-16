@@ -184,7 +184,7 @@ public class MemberServiceImpl implements MemberService {
 
 		Pageable pageable = requestGetUserPage.getPageable(Sort.by("userId").descending());
 
-		Function<Object[], MemberProjectDTO> fn = (en -> entityToDTO((Member) en[0], (User) en[1], (OauthUser) en[2]));
+		Function<Object[], MemberProjectDTO> fn = (en -> entityToDTO((Member) en[0], (UserOauthMember) en[1]));
 		Page<Object[]> members = memberRepository.findMembersByProject(projectId,
 				requestGetUserPage.getNickname(), pageable);
 

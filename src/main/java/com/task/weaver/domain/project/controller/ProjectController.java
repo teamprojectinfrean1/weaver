@@ -50,6 +50,7 @@ public class ProjectController {
         List<ResponseGetProjectList> projects = projectService.getProejctsForMain(memberId);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "유저의 프로젝트 리스트 조회 성공", projects, true), HttpStatus.OK);
     }
+
     @Operation(summary = "개발자용 프로젝트 리스트 확인 api", description = "사용되지 않는 api로, 모든 프로젝트를 가져옵니다.")
     @GetMapping("/list/test")
     public ResponseEntity<DataResponse<List<ResponseGetProject>>> getProjectsForTest(){

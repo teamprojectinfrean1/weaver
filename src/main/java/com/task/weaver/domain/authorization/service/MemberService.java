@@ -5,6 +5,7 @@ import com.task.weaver.domain.authorization.dto.response.ResponseReIssueToken;
 import com.task.weaver.domain.authorization.dto.response.ResponseToken;
 import com.task.weaver.domain.authorization.dto.response.ResponseUserOauth;
 import com.task.weaver.domain.authorization.entity.Member;
+import com.task.weaver.domain.member.UserOauthMember;
 import com.task.weaver.domain.member.oauth.entity.OauthUser;
 import com.task.weaver.domain.member.user.dto.request.RequestGetUserPage;
 import com.task.weaver.domain.member.user.dto.response.ResponseGetMember;
@@ -39,13 +40,12 @@ public interface MemberService {
 		return null;
 	}
 
-	default MemberProjectDTO entityToDTO(Member member, User user, OauthUser oauthUser) {
+	default MemberProjectDTO entityToDTO(Member member, UserOauthMember userOauthMember) {
 		return MemberProjectDTO.builder()
 				.memberId(member.getId())
-				.userId(user.getUuid())
-				.userProfileImage(String.valueOf(user.getProfileImage()))
-				.oauthUserId(oauthUser.getId())
-				.oauthProfileImage(String.valueOf(oauthUser.getProfileImage()))
+				.userId(userOauthMember.getUuid())
+				.nickname(userOauthMember.getNickname())
+				.userProfileImage(String.valueOf(userOauthMember.getProfileImage()))
 				.build();
 	}
 }

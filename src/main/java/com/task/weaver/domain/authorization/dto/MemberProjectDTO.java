@@ -13,8 +13,6 @@ import lombok.NoArgsConstructor;
 public class MemberProjectDTO {
     private UUID memberId;
     private UUID userId;
-    private UUID oauthUserId;
     private String nickname;
     private String userProfileImage;
-    private String oauthProfileImage;
 }
