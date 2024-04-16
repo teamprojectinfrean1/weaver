@@ -92,7 +92,6 @@ public class ProjectServiceImplDummy implements ProjectService {
 
             responseGetProjectLists.add(responseGetProjectList);
         }
-
         return responseGetProjectLists;
     }
 
