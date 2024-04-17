@@ -7,7 +7,6 @@ import com.task.weaver.domain.authorization.entity.QMember;
 import com.task.weaver.domain.authorization.repository.MemberRepositoryDsl;
 import com.task.weaver.domain.member.oauth.entity.QOauthUser;
 import com.task.weaver.domain.member.user.entity.QUser;
-import com.task.weaver.domain.project.entity.QProject;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import com.task.weaver.domain.projectmember.entity.QProjectMember;
 import java.util.List;
@@ -27,14 +26,12 @@ public class MemberRepositoryDslImpl extends QuerydslRepositorySupport implement
 
 
     @Override
-    public Page<Object[]> findMembersByProject(final UUID projectId, final String nickname,
-                                               final Pageable pageable) {
+    public Page<Object[]> findMembersByProject(final UUID projectId, final Pageable pageable) {
 
         QProjectMember qProjectMember = QProjectMember.projectMember;
         QMember qMember = QMember.member;
         QUser qUser = QUser.user;
         QOauthUser qOauthMember = QOauthUser.oauthUser;
-        QProject qProject = QProject.project;
 
         JPQLQuery<ProjectMember> jpqlQuery = from(qProjectMember);
         jpqlQuery.leftJoin(qMember).on(qProjectMember.project.projectId.eq(projectId));

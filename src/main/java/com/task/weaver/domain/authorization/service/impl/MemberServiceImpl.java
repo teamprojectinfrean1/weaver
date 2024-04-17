@@ -39,6 +39,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -180,8 +181,7 @@ public class MemberServiceImpl implements MemberService {
 		Pageable pageable = requestGetUserPage.getPageable(Sort.by("userId").descending());
 
 		Function<Object[], MemberProjectDTO> fn = (en -> entityToDTO((Member) en[0], (UserOauthMember) en[1]));
-		Page<Object[]> members = memberRepository.findMembersByProject(projectId,
-				requestGetUserPage.getNickname(), pageable);
+		Page<Object[]> members = memberRepository.findMembersByProject(projectId, pageable);
 
 		return new ResponsePageResult<>(members, fn);
 	}

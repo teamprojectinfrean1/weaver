@@ -57,11 +57,13 @@ public class UserController {
 
     @Operation(summary = "회원가입", description = "사용자가 회원가입")
     @PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DataResponse<ResponseGetMember>> addUser(@RequestPart(value = "requestCreateUser") @Parameter(schema =@Schema(type = "string", format = "binary")) RequestCreateUser requestCreateUser,
-                                                                   @RequestPart(value = "multipartFile", required = false) MultipartFile multipartFile)
-            throws IOException {
+    public ResponseEntity<DataResponse<ResponseGetMember>> addUser(
+                                                                    @RequestPart(value = "requestCreateUser")
+                                                                    @Parameter(schema = @Schema(type = "string", format = "binary"))
+                                                                    RequestCreateUser requestCreateUser,
+                                                                    @RequestPart(value = "multipartFile", required = false) MultipartFile multipartFile)
+                                                                    throws IOException {
 
-        log.info("Image File name = {}", multipartFile.getOriginalFilename());
         log.info("controller - join - before");
         ResponseGetMember responseGetMember = userService.addUser(requestCreateUser, multipartFile);
         log.info("controller - join - after");

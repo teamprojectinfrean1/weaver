@@ -41,6 +41,9 @@ public class OauthUser extends BaseEntity implements UserOauthMember {
     @Column(name = "oauth_member_id")
     private UUID id;
 
+    @Column(name = "member_uuid")
+    private UUID memberUuid;
+
     @Embedded
     private OauthId oauthId;
 
@@ -71,6 +74,11 @@ public class OauthUser extends BaseEntity implements UserOauthMember {
     @Override
     public void updateProfileImage(final URL updatedImageUrlObject) {
         this.profileImageUrl = updatedImageUrlObject;
+    }
+
+    @Override
+    public void updateMemberUuid(UUID memberUuid) {
+        this.memberUuid = memberUuid;
     }
 
     @Override

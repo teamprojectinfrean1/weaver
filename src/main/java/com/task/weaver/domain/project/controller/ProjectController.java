@@ -10,9 +10,11 @@ import com.task.weaver.domain.project.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -59,9 +61,10 @@ public class ProjectController {
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "모든 프로젝트 조회", projects, true), HttpStatus.OK);
     }
     @Operation(summary = "프로젝트 생성", description = "프로젝트 생성")
-    @PostMapping()
-    public ResponseEntity<DataResponse<UUID>> addProject(@RequestBody RequestCreateProject project, MultipartHttpServletRequest multipartHttpServletRequest) throws IOException {
-        MultipartFile multipartFile = multipartHttpServletRequest.getFile("projectImage");
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<DataResponse<UUID>> addProject(@RequestPart(value = "project")
+                                                         @Parameter(schema = @Schema(type = "string", format = "binary")) RequestCreateProject project,
+                                                         @RequestPart(value = "multipartFile", required = false) MultipartFile multipartFile) throws IOException {
         UUID aLong = projectService.addProject(project, multipartFile);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.CREATED, "프로젝트 추가 성공", aLong, true), HttpStatus.CREATED);
     }

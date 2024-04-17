@@ -30,6 +30,9 @@ public class User extends BaseEntity implements UserOauthMember {
     @Column(columnDefinition = "BINARY(16)", name = "user_id")
     private UUID userId;
 
+    @Column(name = "member_uuid")
+    private UUID memberUuid;
+
     @Column(length = 30)
     private String id;
 
@@ -63,6 +66,11 @@ public class User extends BaseEntity implements UserOauthMember {
     }
 
     @Override
+    public void updateMemberUuid(final UUID memberUuid) {
+        this.memberUuid = memberUuid;
+    }
+
+    @Override
     public URL getProfileImage() {
         return this.profileImage;
     }
@@ -81,6 +89,4 @@ public class User extends BaseEntity implements UserOauthMember {
     public String getNickname() {
         return this.nickname;
     }
-
-
 }
