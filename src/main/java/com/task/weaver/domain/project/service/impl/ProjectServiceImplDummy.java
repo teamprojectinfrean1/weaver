@@ -148,10 +148,11 @@ public class ProjectServiceImplDummy implements ProjectService {
         savedProject.setWriter(writer);
         savedProject.setModifier(writer);
 
-        String storedFileName = s3Uploader.upload(multipartFile, "images");
-        URL updatedImageUrlObject = new URL(storedFileName);
-
-        savedProject.setProjectImage(updatedImageUrlObject);
+        if (multipartFile != null) {
+            String storedFileName = s3Uploader.upload(multipartFile, "images");
+            URL updatedImageUrlObject = new URL(storedFileName);
+            savedProject.setProjectImage(updatedImageUrlObject);
+        }
 
         log.info("project uuid : " + savedProject.getProjectId());
         projectRepository.save(savedProject);

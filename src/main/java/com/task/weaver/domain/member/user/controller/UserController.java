@@ -21,7 +21,6 @@ import com.task.weaver.domain.member.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.io.IOException;
@@ -56,12 +55,9 @@ public class UserController {
     private final MailSendService mailService;
 
     @Operation(summary = "회원가입", description = "사용자가 회원가입")
-    @PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DataResponse<ResponseGetMember>> addUser(
-                                                                    @RequestPart(value = "requestCreateUser")
-                                                                    @Parameter(schema = @Schema(type = "string", format = "binary"))
-                                                                    RequestCreateUser requestCreateUser,
-                                                                    @RequestPart(value = "multipartFile", required = false) MultipartFile multipartFile)
+    @PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<DataResponse<ResponseGetMember>> addUser(@RequestPart(value = "requestCreateUser") RequestCreateUser requestCreateUser,
+                                                                   @RequestPart(value = "multipartFile", required = false) MultipartFile multipartFile)
                                                                     throws IOException {
 
         log.info("controller - join - before");
