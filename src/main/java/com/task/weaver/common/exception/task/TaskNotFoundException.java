@@ -7,4 +7,8 @@ public class TaskNotFoundException extends BusinessException {
     public TaskNotFoundException(Throwable cause) {
         super(ErrorCode.TASK_NOT_FOUND, cause);
     }
+
+    public TaskNotFoundException(final ErrorCode errorCode, final String message) {
+        super(errorCode, message);
+    }
 }

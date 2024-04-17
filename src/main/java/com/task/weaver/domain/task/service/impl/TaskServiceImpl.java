@@ -78,8 +78,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Page<Task> getTasks(String status, Pageable pageable) throws NotFoundException, AuthorizationException {
-        Page<Task> tasks = taskRepository.findByStatus(status, pageable);
-        return tasks;
+        return taskRepository.findByStatus(status, pageable);
     }
 
     @Override
@@ -110,6 +109,7 @@ public class TaskServiceImpl implements TaskService {
     public ResponseGetTask updateTask(Task originalTask, Task newTask) throws NotFoundException, AuthorizationException {
         Task task = taskRepository.findById(originalTask.getTaskId()).get();
         task.updateTask(newTask);
+        task = taskRepository.save(task);
         return new ResponseGetTask(task);
     }
 
@@ -119,6 +119,7 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new TaskNotFoundException(new Throwable(String.valueOf(originalTaskId))));
 
         task.updateTask(newTask);
+        taskRepository.save(task);
         return new ResponseGetTask(task);
     }
 
@@ -132,17 +133,16 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(requestUpdateTask.getUpdaterUuid()))));
 
         findTask.updateTask(requestUpdateTask, updater);
-
+        taskRepository.save(findTask);
         return new ResponseGetTask(findTask);
     }
 
     @Override
     public ResponseGetTask updateTaskStatus(UUID taskId, String status) {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new TaskNotFoundException(new Throwable(String.valueOf(taskId))));
-
+                .orElseThrow(() -> new TaskNotFoundException(ErrorCode.TASK_NOT_FOUND, ErrorCode.TASK_NOT_FOUND.getMessage()));
         task.setStatus(status);
-
+        taskRepository.save(task);
         return new ResponseGetTask(task);
     }
 }
