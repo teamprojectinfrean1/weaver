@@ -1,5 +1,6 @@
 package com.task.weaver.domain.member.oauth.service;
 
+import com.task.weaver.domain.authorization.entity.Member;
 import com.task.weaver.domain.member.oauth.authcode.AuthCodeRequestUrlProviderComposite;
 import com.task.weaver.domain.member.oauth.client.OauthMemberClientComposite;
 import com.task.weaver.domain.member.oauth.entity.OauthUser;
@@ -32,5 +33,10 @@ public class OauthService {
         OauthUser oauthMember = oauthMemberClientComposite.fetch(oauthServerType, authCode);
         return oauthMemberRepository.findByOauthId(oauthMember.oauthId())
                 .orElseGet(() -> oauthMemberRepository.save(oauthMember));
+    }
+
+    public void updateMemberUuid(final OauthUser oauthMember, final Member member) {
+        oauthMember.updateMemberUuid(member.getId());
+        oauthMemberRepository.save(oauthMember);
     }
 }

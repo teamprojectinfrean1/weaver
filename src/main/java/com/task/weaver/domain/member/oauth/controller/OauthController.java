@@ -54,6 +54,7 @@ public class OauthController {
         log.info("Kakao OAuth --> 로그인 요청 성공");
         OauthUser oauthMember = oauthService.login(oauthServerType, code);
         Member member = memberFactory.createUserOauthMember(oauthMember);
+        oauthService.updateMemberUuid(oauthMember, member);
         ResponseToken responseToken = authorizationService.getAuthentication(member);
         HttpHeaders headers = setCookieAndHeader(responseToken);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.CREATED, "OAuth login successfully", headers, true), HttpStatus.CREATED);
