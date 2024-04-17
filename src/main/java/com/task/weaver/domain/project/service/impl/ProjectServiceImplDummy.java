@@ -103,7 +103,7 @@ public class ProjectServiceImplDummy implements ProjectService {
         Member modifier = project.getModifier();
 
         ResponseUpdateDetail responseUpdateDetail = ResponseUpdateDetail.builder()
-                .userUuid(modifier.getId())
+                .memberUuid(modifier.getId())
                 .userNickname(modifier.getUser().getNickname())
                 .updatedDate(project.getModDate())
                 .build();

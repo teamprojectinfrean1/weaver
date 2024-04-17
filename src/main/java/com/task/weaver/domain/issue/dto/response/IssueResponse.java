@@ -66,7 +66,7 @@ public class IssueResponse {
 		this.startDate = issue.getStartDate();
 		this.endDate = issue.getEndDate();
 		this.lastUpdateDetail = ResponseUpdateDetail.builder()
-			.userUuid(issue.getModifier().getId())
+			.memberUuid(issue.getModifier().getId())
 			.userNickname(issue.getModifier().getUser() != null ? issue.getModifier().getUser().getNickname() : issue.getModifier().getOauthMember().nickname())
 			.updatedDate(issue.getModDate())
 			.build();
