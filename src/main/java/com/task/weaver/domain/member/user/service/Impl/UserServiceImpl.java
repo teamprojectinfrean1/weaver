@@ -100,7 +100,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private User hasImage(final MultipartFile profileImage, final User user) throws IOException {
-        if (profileImage != null) {
+        if (!profileImage.isEmpty()) {
             updateProfileImage(s3Uploader.upload(profileImage, "images"), user);
         }
         return userRepository.save(user);

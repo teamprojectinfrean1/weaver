@@ -17,8 +17,6 @@ import org.springframework.stereotype.Service;
 public class MemberFactoryImpl implements MemberFactory {
 
     private final MemberRepository userOauthMemberRepository;
-    private final UserRepository userRepository;
-    private final OauthMemberRepository oauthMemberRepository;
 
     @Override
     public Member createUserOauthMember(final UserOauthMember userOauthMember) {
@@ -47,16 +45,4 @@ public class MemberFactoryImpl implements MemberFactory {
         return userOauthMemberRepository.findByOauthMember(oauthMember)
                 .orElseGet(() -> userOauthMemberRepository.save(member));
     }
-
-//    private UserOauthMember allocationOauthAgent(final OauthUser member, final UserOauthMember normalUser) {
-//        member.agent(normalUser);
-//        oauthMemberRepository.save(member);
-//        return member.getUserOauthMember();
-//    }
-
-//    private UserOauthMember allocationUserAgent(final User member, final UserOauthMember normalUser) {
-//        member.agent(normalUser);
-//        userRepository.save(member);
-//        return member.getUserOauthMember();
-//    }
 }

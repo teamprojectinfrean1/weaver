@@ -21,6 +21,7 @@ import com.task.weaver.domain.member.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.io.IOException;
@@ -39,6 +40,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -54,11 +56,12 @@ public class UserController {
     private final MailSendService mailService;
 
     @Operation(summary = "회원가입", description = "사용자가 회원가입")
-    @PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<DataResponse<ResponseGetMember>> addUser(RequestCreateUser requestCreateUser,
-                                                                   @RequestParam(required = false) MultipartFile multipartFile)
+    @PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<DataResponse<ResponseGetMember>> addUser(@RequestPart(value = "requestCreateUser") @Parameter(schema =@Schema(type = "string", format = "binary")) RequestCreateUser requestCreateUser,
+                                                                   @RequestPart(value = "multipartFile", required = false) MultipartFile multipartFile)
             throws IOException {
 
+        log.info("Image File name = {}", multipartFile.getOriginalFilename());
         log.info("controller - join - before");
         ResponseGetMember responseGetMember = userService.addUser(requestCreateUser, multipartFile);
         log.info("controller - join - after");

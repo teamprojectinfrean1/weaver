@@ -56,7 +56,7 @@ public class CommentController {
     @GetMapping("/{issueId}")
     public ResponseEntity<DataResponse<ResponsePageComment<ResponseCommentList, Comment>>> getComments(@PathVariable("issueId") UUID issueId,
                                                                                                        @RequestBody CommentPageRequest commentPageRequest) {
-        ResponsePageComment responsePageComment = commentService.getComments(commentPageRequest);
+        ResponsePageComment<ResponseCommentList, Comment> responsePageComment = commentService.getComments(commentPageRequest);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK,"이슈에 연결된 코멘트 조회 성공",responsePageComment, true),HttpStatus.OK);
     }
 }
