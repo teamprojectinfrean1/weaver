@@ -10,7 +10,7 @@ public record GetIssueListResponse(UUID issueId,
 								   String issueTitle,
 								   UUID taskId,
 								   String taskTitle,
-								   String assigneeId,
+								   UUID assigneeId,
 								   String assigneeNickname,
 								   URL assigneeProfileImage) {
 	// public GetIssueListResponse(Issue issue) {
