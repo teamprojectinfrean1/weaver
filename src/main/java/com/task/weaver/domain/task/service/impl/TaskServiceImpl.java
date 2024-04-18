@@ -8,6 +8,8 @@ import com.task.weaver.common.exception.task.TaskNotFoundException;
 import com.task.weaver.common.exception.member.UserNotFoundException;
 import com.task.weaver.domain.authorization.entity.Member;
 import com.task.weaver.domain.authorization.repository.MemberRepository;
+import com.task.weaver.domain.issue.dto.request.RequestIssueForTask;
+import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.member.UserOauthMember;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
@@ -23,6 +25,8 @@ import com.task.weaver.domain.task.repository.TaskRepository;
 import com.task.weaver.domain.task.service.TaskService;
 import com.task.weaver.domain.member.user.entity.User;
 import com.task.weaver.domain.member.user.repository.UserRepository;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -50,8 +54,11 @@ public class TaskServiceImpl implements TaskService {
 
         Member modifier = task.getModifier();
         UserOauthMember userOauthMember = modifier.resolveMemberByLoginType();
-        ResponseGetTask responseTask = new ResponseGetTask(task);
 
+        List<RequestIssueForTask> requestIssueForTasks = task.getIssueList().stream()
+                .map(issue -> new RequestIssueForTask(issue.getIssueId(), issue.getIssueTitle())).toList();
+
+        ResponseGetTask responseTask = new ResponseGetTask(task, requestIssueForTasks);
         ResponseUpdateDetail responseUpdateDetail = ResponseUpdateDetail.builder()
                 .memberUuid(modifier.getId())
                 .userNickname(userOauthMember.getNickname())
@@ -110,7 +117,9 @@ public class TaskServiceImpl implements TaskService {
         Task task = taskRepository.findById(originalTask.getTaskId()).get();
         task.updateTask(newTask);
         task = taskRepository.save(task);
-        return new ResponseGetTask(task);
+        List<RequestIssueForTask> requestIssueForTasks = task.getIssueList().stream()
+                .map(issue -> new RequestIssueForTask(issue.getIssueId(), issue.getIssueTitle())).toList();
+        return new ResponseGetTask(task, requestIssueForTasks);
     }
 
     @Override
@@ -120,7 +129,9 @@ public class TaskServiceImpl implements TaskService {
 
         task.updateTask(newTask);
         taskRepository.save(task);
-        return new ResponseGetTask(task);
+        List<RequestIssueForTask> requestIssueForTasks = task.getIssueList().stream()
+                .map(issue -> new RequestIssueForTask(issue.getIssueId(), issue.getIssueTitle())).toList();
+        return new ResponseGetTask(task, requestIssueForTasks);
     }
 
 
@@ -134,7 +145,9 @@ public class TaskServiceImpl implements TaskService {
 
         findTask.updateTask(requestUpdateTask, updater);
         taskRepository.save(findTask);
-        return new ResponseGetTask(findTask);
+        List<RequestIssueForTask> requestIssueForTasks = findTask.getIssueList().stream()
+                .map(issue -> new RequestIssueForTask(issue.getIssueId(), issue.getIssueTitle())).toList();
+        return new ResponseGetTask(findTask, requestIssueForTasks);
     }
 
     @Override
@@ -143,6 +156,8 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new TaskNotFoundException(ErrorCode.TASK_NOT_FOUND, ErrorCode.TASK_NOT_FOUND.getMessage()));
         task.setStatus(status);
         taskRepository.save(task);
-        return new ResponseGetTask(task);
+        List<RequestIssueForTask> requestIssueForTasks = task.getIssueList().stream()
+                .map(issue -> new RequestIssueForTask(issue.getIssueId(), issue.getIssueTitle())).toList();
+        return new ResponseGetTask(task, requestIssueForTasks);
     }
 }

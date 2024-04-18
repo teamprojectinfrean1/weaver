@@ -3,13 +3,13 @@ package com.task.weaver.domain.websocket.service.impl;
 import com.task.weaver.common.exception.chatting.ChattingRoomNotFoundException;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.member.UserNotFoundException;
+import com.task.weaver.domain.authorization.entity.Member;
+import com.task.weaver.domain.authorization.repository.MemberRepository;
 import com.task.weaver.domain.chattingRoomMember.ChattingRoomMember;
 import com.task.weaver.domain.chattingRoomMember.ChattingRoomMemberRepository;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
-import com.task.weaver.domain.member.user.entity.User;
-import com.task.weaver.domain.member.user.repository.UserRepository;
 import com.task.weaver.domain.websocket.dto.request.RequestCreateChatting;
 import com.task.weaver.domain.websocket.dto.response.ResponseGetChattings;
 import com.task.weaver.domain.websocket.dto.response.ResponseCreateChattingRoom;
@@ -30,7 +30,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ChattingServiceImpl implements ChattingService {
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final ProjectRepository projectRepository;
     private final ChattingRepository chattingRepository;
     private final ChattingRoomRepository chattingRoomRepository;
@@ -61,13 +61,13 @@ public class ChattingServiceImpl implements ChattingService {
     public void save(Long chattingId, RequestCreateChatting requestCreateChatting) {
         UUID userId = requestCreateChatting.getSenderId();
 
-        User sender = userRepository.findById(userId)
+        Member sender = memberRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(userId))));
         ChattingRoom chattingRoom = chattingRoomRepository.findById(chattingId)
                 .orElseThrow(() -> new ChattingRoomNotFoundException(new Throwable(String.valueOf(chattingId))));
 
         Chatting chatting = Chatting.builder()
-                .user(sender)
+                .member(sender)
                 .chattingRoom(chattingRoom)
                 .content(requestCreateChatting.getContent())
                 .build();
