@@ -1,6 +1,7 @@
 package com.task.weaver.domain.websocket.entity;
 
 import com.task.weaver.domain.BaseEntity;
+import com.task.weaver.domain.authorization.entity.Member;
 import com.task.weaver.domain.member.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,7 +26,7 @@ public class Chatting extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private User user;
+    private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chatting_room_id")
