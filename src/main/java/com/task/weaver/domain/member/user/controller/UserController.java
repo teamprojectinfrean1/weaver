@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -55,9 +56,9 @@ public class UserController {
 
     @Operation(summary = "회원가입", description = "사용자가 회원가입")
     @PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<DataResponse<ResponseGetMember>> addUser(RequestCreateUser requestCreateUser,
-                                                                   @RequestParam(required = false) MultipartFile multipartFile)
-            throws IOException {
+    public ResponseEntity<DataResponse<ResponseGetMember>> addUser(@RequestPart(value = "requestCreateUser") RequestCreateUser requestCreateUser,
+                                                                   @RequestPart(value = "multipartFile", required = false) MultipartFile multipartFile)
+                                                                    throws IOException {
 
         log.info("controller - join - before");
         ResponseGetMember responseGetMember = userService.addUser(requestCreateUser, multipartFile);

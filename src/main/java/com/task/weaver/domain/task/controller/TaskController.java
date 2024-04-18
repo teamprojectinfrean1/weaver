@@ -1,5 +1,7 @@
 package com.task.weaver.domain.task.controller;
 
+import static com.task.weaver.domain.task.dto.response.ResponseTask.*;
+
 import com.task.weaver.common.response.DataResponse;
 import com.task.weaver.common.response.MessageResponse;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
@@ -15,13 +17,14 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.bridge.Message;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+@Slf4j
 @Tag(name = "Task Controller", description = "태스크 관련 컨트롤러")
 @RestController
 @RequestMapping("/api/v1/task")
@@ -35,20 +38,28 @@ public class TaskController {
         ResponseGetTask responseTask = taskService.getTask(taskId);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "태스크 상세 조회 성공", responseTask, true), HttpStatus.OK);
     }
+
     @Operation(summary = "프로젝트 태스크 다수 조회", description = "프로젝트에 생성된 태스크들을 조회합니다.")
-    @GetMapping()
-    public ResponseEntity<DataResponse<ResponsePageResult<ResponseGetTaskList, Task>>> getTasks(RequestGetTaskPage requestGetTaskPage) {
-        ResponsePageResult responsePageResult = taskService.getTasks(requestGetTaskPage);
+    @GetMapping
+    public ResponseEntity<DataResponse<ResponsePageResult<ResponseGetTaskList, Task>>> getTasks(@RequestBody RequestGetTaskPage requestGetTaskPage) {
+        log.info("Project ID ={}", requestGetTaskPage.getProjectId());
+        ResponsePageResult<ResponseGetTaskList, Task> responsePageResult = taskService.getTasks(requestGetTaskPage);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트에 연결된 태스크들 조회 성공", responsePageResult, true), HttpStatus.OK);
     }
 
+    /**TODO: 2024-04-17, 수, 17:5  -JEON
+    *  TASK: 태스크 생성시 조인 3번 발생 -> 2번으로 줄여야함
+    */
     @Operation(summary = "태스크 생성", description = "프로젝트에 태스크 하나를 생성합니다.")
     @PostMapping()
-    public ResponseEntity<DataResponse<UUID>> addTask(@RequestBody RequestCreateTask requestCreateTask){
+    public ResponseEntity<DataResponse<SimpleResponse>> addTask(@RequestBody RequestCreateTask requestCreateTask){
         UUID taskId = taskService.addTask(requestCreateTask);
-        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "태스크 생성 성공", taskId, true), HttpStatus.OK);
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "태스크 생성 성공", SimpleResponse.of(taskId), true), HttpStatus.OK);
     }
 
+    /**TODO: 2024-04-17, 수, 17:40  -JEON
+    *  TASK: Response 항목 (lastUpdateDetail, taskTagList 항목 삭제 여부 확인 필요)
+    */
     @Operation(summary = "태스크 수정", description = "태스크 하나의 정보를 수정합니다.")
     @PutMapping()
     public ResponseEntity<DataResponse<ResponseGetTask>> updateTask(@RequestParam UUID taskId,
@@ -72,6 +83,4 @@ public class TaskController {
         taskService.deleteTask(taskId);
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "태스크 삭제 성공", true), HttpStatus.OK);
     }
-
-
 }

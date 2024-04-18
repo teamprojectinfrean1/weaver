@@ -1,7 +1,6 @@
 package com.task.weaver.domain.task.dto.response;
 
 import com.task.weaver.domain.member.user.entity.User;
-import java.net.URL;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,12 +14,12 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class ResponseUpdateDetail {
-    private UUID userUuid;
+    private UUID memberUuid;
     private String userNickname;
     private LocalDateTime updatedDate;
 
     public ResponseUpdateDetail(User modifier, LocalDateTime modDate){
-        this.userUuid = modifier.getUserId();
+        this.memberUuid = modifier.getUserId();
         this.userNickname = modifier.getNickname();
         this.updatedDate = modDate;
     }

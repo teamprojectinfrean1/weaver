@@ -88,8 +88,14 @@ public class UserServiceImpl implements UserService {
         isExistEmail(requestCreateUser.getEmail());
         User user = hasImage(profileImage, requestCreateUser.toDomain(passwordEncoder));
         Member member = memberFactory.createUserOauthMember(user);
+        addMemberUuid(user, member);
         log.info("user uuid : " + user.getUserId());
         return ResponseGetMember.of(member.getUser());
+    }
+
+    private void addMemberUuid(final User user, final Member member) {
+        user.updateMemberUuid(member.getId());
+        userRepository.save(user);
     }
 
     private void isExistEmail(String email) {
@@ -99,9 +105,9 @@ public class UserServiceImpl implements UserService {
         });
     }
 
-    private User hasImage(final MultipartFile profileImage, final User user) throws IOException {
-        if (profileImage != null) {
-            updateProfileImage(s3Uploader.upload(profileImage, "images"), user);
+    private User hasImage(final MultipartFile multipartFile, final User user) throws IOException {
+        if (multipartFile != null) {
+            updateProfileImage(s3Uploader.upload(multipartFile, "images"), user);
         }
         return userRepository.save(user);
     }

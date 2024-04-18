@@ -176,7 +176,7 @@ public class IssueServiceImpl implements IssueService {
 				.endDate(createIssueRequest.endDate())
 				.status(Status.valueOf(createIssueRequest.status()))
 				.build();
-		issueRepository.save(issue).getIssueId();
+		issueRepository.save(issue);
 
 		return new IssueResponse(issue);
 	}

@@ -103,7 +103,7 @@ public class ProjectServiceImplDummy implements ProjectService {
         Member modifier = project.getModifier();
 
         ResponseUpdateDetail responseUpdateDetail = ResponseUpdateDetail.builder()
-                .userUuid(modifier.getId())
+                .memberUuid(modifier.getId())
                 .userNickname(modifier.getUser().getNickname())
                 .updatedDate(project.getModDate())
                 .build();
@@ -148,10 +148,11 @@ public class ProjectServiceImplDummy implements ProjectService {
         savedProject.setWriter(writer);
         savedProject.setModifier(writer);
 
-        String storedFileName = s3Uploader.upload(multipartFile, "images");
-        URL updatedImageUrlObject = new URL(storedFileName);
-
-        savedProject.setProjectImage(updatedImageUrlObject);
+        if (multipartFile != null) {
+            String storedFileName = s3Uploader.upload(multipartFile, "images");
+            URL updatedImageUrlObject = new URL(storedFileName);
+            savedProject.setProjectImage(updatedImageUrlObject);
+        }
 
         log.info("project uuid : " + savedProject.getProjectId());
         projectRepository.save(savedProject);

@@ -1,10 +1,14 @@
 package com.task.weaver.domain.task.service.impl;
 
 import com.task.weaver.common.exception.AuthorizationException;
+import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.task.TaskNotFoundException;
 import com.task.weaver.common.exception.member.UserNotFoundException;
+import com.task.weaver.domain.authorization.entity.Member;
+import com.task.weaver.domain.authorization.repository.MemberRepository;
+import com.task.weaver.domain.member.UserOauthMember;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
@@ -37,20 +41,20 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     private final ProjectRepository projectRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     public ResponseGetTask getTask(UUID taskId) throws NotFoundException, AuthorizationException {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException(new Throwable(String.valueOf(taskId))));
 
-        User modifier = task.getModifier();
-
+        Member modifier = task.getModifier();
+        UserOauthMember userOauthMember = modifier.resolveMemberByLoginType();
         ResponseGetTask responseTask = new ResponseGetTask(task);
 
         ResponseUpdateDetail responseUpdateDetail = ResponseUpdateDetail.builder()
-                .userUuid(modifier.getUserId())
-                .userNickname(modifier.getNickname())
+                .memberUuid(modifier.getId())
+                .userNickname(userOauthMember.getNickname())
                 .updatedDate(task.getModDate())
                 .build();
 
@@ -59,60 +63,37 @@ public class TaskServiceImpl implements TaskService {
         return responseTask;
     }
 
-//    @Override
-//    public ResponseTask getTask(Issue issue) throws NotFoundException, AuthorizationException {
-//        return null;
-//    }
-
     @Override
     public ResponsePageResult<ResponseGetTaskList, Task> getTasks(RequestGetTaskPage requestGetTaskPage) throws NotFoundException, AuthorizationException {
-//        Page<Task> tasks = taskRepository.findByProject(project, pageable);
+        log.info("Project ID ={}", requestGetTaskPage.getProjectId());
         Project project = projectRepository.findById(requestGetTaskPage.getProjectId())
-                .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(requestGetTaskPage.getProjectId()))));
+                .orElseThrow(() -> new ProjectNotFoundException(ErrorCode.PROJECT_NOT_FOUND, ErrorCode.PROJECT_NOT_FOUND.getMessage()));
 
         Pageable pageable = requestGetTaskPage.getPageable(Sort.by("taskId").descending());
         Page<Task> taskPage = taskRepository.findByProject(project, pageable);
 
-        Function<Task, ResponseGetTaskList> fn = Task -> (new ResponseGetTaskList(Task));
+        Function<Task, ResponseGetTaskList> fn = ResponseGetTaskList::new;
         return new ResponsePageResult<>(taskPage, fn);
     }
 
     @Override
     public Page<Task> getTasks(String status, Pageable pageable) throws NotFoundException, AuthorizationException {
-        Page<Task> tasks = taskRepository.findByStatus(status, pageable);
-        return tasks;
+        return taskRepository.findByStatus(status, pageable);
     }
-
-//    @Override
-//    public Page<Task> getTasks(User user, Pageable pageable) throws NotFoundException, AuthorizationException {
-//        Page<Task> tasks = taskRepository.findByUser(user, pageable);
-//        return tasks;
-//    }
 
     @Override
     public UUID addTask(RequestCreateTask request) throws AuthorizationException {
-        User writer = userRepository.findById(request.getWriterUuid())
+        Member writer = memberRepository.findById(request.getWriterUuid())
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(request.getProjectId()))));
 
         Project project = projectRepository.findById(request.getProjectId())
                 .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(request.getProjectId()))));
-
         log.info("writer id : " + request.getWriterUuid());
         log.info("project id : " + request.getProjectId());
-
         Task entity = request.toEntity(writer, project);
-
         Task save = taskRepository.save(entity);
-
         return save.getTaskId();
     }
-
-//    @Override
-//    public ResponseTask addTask(Task task) throws AuthorizationException {
-//        Task save = taskRepository.save(task);
-//        ResponseTask responseTask = new ResponseTask(save);
-//        return responseTask;
-//    }
 
     @Override
     public void deleteTask(Task task) throws NotFoundException, AuthorizationException {
@@ -128,6 +109,7 @@ public class TaskServiceImpl implements TaskService {
     public ResponseGetTask updateTask(Task originalTask, Task newTask) throws NotFoundException, AuthorizationException {
         Task task = taskRepository.findById(originalTask.getTaskId()).get();
         task.updateTask(newTask);
+        task = taskRepository.save(task);
         return new ResponseGetTask(task);
     }
 
@@ -137,6 +119,7 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new TaskNotFoundException(new Throwable(String.valueOf(originalTaskId))));
 
         task.updateTask(newTask);
+        taskRepository.save(task);
         return new ResponseGetTask(task);
     }
 
@@ -146,23 +129,20 @@ public class TaskServiceImpl implements TaskService {
         Task findTask = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException(new Throwable(String.valueOf(taskId))));
 
-        User updater = userRepository.findById(requestUpdateTask.getUpdaterUuid())
+        Member updater = memberRepository.findById(requestUpdateTask.getUpdaterUuid())
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(requestUpdateTask.getUpdaterUuid()))));
 
         findTask.updateTask(requestUpdateTask, updater);
-
-        ResponseGetTask responseTask = new ResponseGetTask(findTask);
-        return responseTask;
+        taskRepository.save(findTask);
+        return new ResponseGetTask(findTask);
     }
 
     @Override
     public ResponseGetTask updateTaskStatus(UUID taskId, String status) {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new TaskNotFoundException(new Throwable(String.valueOf(taskId))));
-
+                .orElseThrow(() -> new TaskNotFoundException(ErrorCode.TASK_NOT_FOUND, ErrorCode.TASK_NOT_FOUND.getMessage()));
         task.setStatus(status);
-
-        ResponseGetTask responseGetTask = new ResponseGetTask(task);
-        return responseGetTask;
+        taskRepository.save(task);
+        return new ResponseGetTask(task);
     }
 }

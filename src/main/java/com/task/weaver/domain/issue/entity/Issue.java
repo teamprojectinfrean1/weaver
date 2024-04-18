@@ -44,14 +44,6 @@ public class Issue extends BaseEntity {
     private Task task;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "creator_id")
-    private Member creator;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_id")
-    private Member manager;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "modifier_id")
     private Member modifier;
 
@@ -64,9 +56,6 @@ public class Issue extends BaseEntity {
 
     @Column(name = "issue_title", length = 100)
     private String issueTitle;
-
-    @Column(name = "content")
-    private String content;
 
     @Column(name = "issue_content")
     private String issueContent;

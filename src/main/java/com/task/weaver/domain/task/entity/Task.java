@@ -1,10 +1,10 @@
 package com.task.weaver.domain.task.entity;
 
 import com.task.weaver.domain.BaseEntity;
+import com.task.weaver.domain.authorization.entity.Member;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
-import com.task.weaver.domain.member.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -34,7 +34,7 @@ public class Task extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_member_id")
-    private User user;
+    private Member member;
 
     @OneToMany(mappedBy = "task")
     @Builder.Default
@@ -42,7 +42,7 @@ public class Task extends BaseEntity {
 
     @OneToOne
     @JoinColumn(name = "last_update_member_id")
-    private User modifier;
+    private Member modifier;
 
     @Column(name = "task_title", length = 100)
     private String taskTitle;
@@ -68,14 +68,14 @@ public class Task extends BaseEntity {
 
     public void updateTask(Task newTask) {
         this.project = newTask.getProject();
-        this.user = newTask.getUser();
+        this.member = newTask.getMember();
         this.taskTitle = newTask.getTitle();
         this.taskContent = newTask.getTaskContent();
         this.startDate = newTask.getStartDate();
         this.endDate = newTask.getEndDate();
     }
 
-    public void updateTask(RequestUpdateTask requestUpdateTask, User updater) {
+    public void updateTask(RequestUpdateTask requestUpdateTask, Member updater) {
         this.taskTitle = requestUpdateTask.getTaskTitle();
         this.taskContent = requestUpdateTask.getTaskContent();
         this.startDate = requestUpdateTask.getStartDate().atStartOfDay();

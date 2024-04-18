@@ -117,7 +117,6 @@ public class SecurityConfig {
 
 		// 추후 설정
 		configuration.addAllowedOriginPattern("*");
-		configuration.addAllowedOrigin("*");
 		configuration.addAllowedHeader("*");
 		configuration.addAllowedMethod("*");
 		configuration.setAllowCredentials(true);

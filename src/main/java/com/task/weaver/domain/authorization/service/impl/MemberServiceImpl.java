@@ -39,6 +39,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -66,7 +67,6 @@ public class MemberServiceImpl implements MemberService {
 
 	public ResponseToken reissue(String refreshToken, String loginType) {
 
-		// refresh token 유효성 검증
 		jwtTokenProvider.validateToken(refreshToken);
 
 		Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
@@ -80,15 +80,11 @@ public class MemberServiceImpl implements MemberService {
 		if(!refreshToken.equals(currentRefreshToken.getRefreshToken()))
 			throw new IllegalArgumentException("");
 
-		// accessToken과 refreshToken 모두 재발행
 		String newRefreshToken = jwtTokenProvider.createRefreshToken(authentication);
 		String newAccessToken = jwtTokenProvider.createAccessToken(authentication, LoginType.fromName(loginType));
 
 		redisService.deleteRefreshToken(currentRefreshToken);
-
-		// redis 에 새로 발급한 refreshtoken 저장
 		refreshTokenRepository.save(new RefreshToken(currentRefreshToken.getId(), newRefreshToken));
-
 
 		return ResponseToken.builder()
 			.accessToken("Bearer "+ newAccessToken)
@@ -185,8 +181,7 @@ public class MemberServiceImpl implements MemberService {
 		Pageable pageable = requestGetUserPage.getPageable(Sort.by("userId").descending());
 
 		Function<Object[], MemberProjectDTO> fn = (en -> entityToDTO((Member) en[0], (UserOauthMember) en[1]));
-		Page<Object[]> members = memberRepository.findMembersByProject(projectId,
-				requestGetUserPage.getNickname(), pageable);
+		Page<Object[]> members = memberRepository.findMembersByProject(projectId, pageable);
 
 		return new ResponsePageResult<>(members, fn);
 	}

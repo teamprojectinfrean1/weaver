@@ -11,16 +11,23 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "Project Controller", description = "프로젝트 관련 컨트롤러")
 @RequestMapping("/api/v1/project")
@@ -53,15 +60,17 @@ public class ProjectController {
 
     @Operation(summary = "개발자용 프로젝트 리스트 확인 api", description = "사용되지 않는 api로, 모든 프로젝트를 가져옵니다.")
     @GetMapping("/list/test")
-    public ResponseEntity<DataResponse<List<ResponseGetProject>>> getProjectsForTest(){
+    public ResponseEntity<DataResponse<List<ResponseGetProject>>> getProjectsForTest() {
         List<ResponseGetProject> projects = projectService.getProjectsForTest();
 
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "모든 프로젝트 조회", projects, true), HttpStatus.OK);
     }
+
     @Operation(summary = "프로젝트 생성", description = "프로젝트 생성")
-    @PostMapping()
-    public ResponseEntity<DataResponse<UUID>> addProject(@RequestBody RequestCreateProject project, MultipartHttpServletRequest multipartHttpServletRequest) throws IOException {
-        MultipartFile multipartFile = multipartHttpServletRequest.getFile("projectImage");
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<DataResponse<UUID>> addProject(@RequestPart(value = "project") RequestCreateProject project,
+                                                         @RequestPart(value = "multipartFile", required = false) MultipartFile multipartFile)
+            throws IOException {
         UUID aLong = projectService.addProject(project, multipartFile);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.CREATED, "프로젝트 추가 성공", aLong, true), HttpStatus.CREATED);
     }

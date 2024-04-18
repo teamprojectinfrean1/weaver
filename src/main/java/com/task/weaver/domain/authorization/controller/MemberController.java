@@ -39,7 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Authorization Controller", description = "인증 관련 컨트롤러")
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/v1/member")
 @RequiredArgsConstructor
 @Slf4j
 public class MemberController {
