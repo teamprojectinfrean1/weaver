@@ -5,6 +5,8 @@ import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.common.exception.comment.CommentNotFoundException;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.member.UserNotFoundException;
+import com.task.weaver.domain.authorization.entity.Member;
+import com.task.weaver.domain.authorization.repository.MemberRepository;
 import com.task.weaver.domain.comment.dto.request.CommentPageRequest;
 import com.task.weaver.domain.comment.dto.request.RequestCreateComment;
 import com.task.weaver.domain.comment.dto.request.RequestUpdateComment;
@@ -34,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final IssueRepository issueRepository;
 
     @Override
@@ -59,12 +61,12 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public Long addComment(RequestCreateComment requestComment) throws NotFoundException {
-        User writer = userRepository.findById(requestComment.writerId())
+        Member writer = memberRepository.findById(requestComment.writerId())
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(requestComment.writerId().toString())));
         Issue issue = issueRepository.findById(requestComment.issueId())
                 .orElseThrow(() -> new IllegalArgumentException(""));
         Comment comment = Comment.builder()
-                .user(writer)
+                .member(writer)
                 .issue(issue)
                 .body(requestComment.body())
                 .build();
@@ -86,24 +88,23 @@ public class CommentServiceImpl implements CommentService {
     public ResponseComment updateComment(Long originalCommentId, RequestUpdateComment requestUpdateComment) throws NotFoundException {
         Comment comment = commentRepository.findById(originalCommentId)
                 .orElseThrow(() -> new CommentNotFoundException(new Throwable(originalCommentId.toString())));
-        User updater = userRepository.findById(requestUpdateComment.getUpdaterUUID())
+        Member updater = memberRepository.findById(requestUpdateComment.getUpdaterUUID())
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(requestUpdateComment.getUpdaterUUID().toString())));
-        if (!validate(comment.getUser(), updater)) {
+        if (!validate(comment.getMember(), updater)) {
             throw new NotFoundException();
         }
         Issue issue = issueRepository.findById(requestUpdateComment.getIssueId())
                 .orElseThrow(() -> new IllegalArgumentException(""));
         comment.updateComment(requestUpdateComment, issue);
-        ResponseComment responseComment
-                = ResponseComment
-                .builder()
-                .commentId(comment.getComment_id())
-                .body(requestUpdateComment.getCommentBody())
-                .build();
-        return responseComment;
+
+        return ResponseComment
+        .builder()
+        .commentId(comment.getComment_id())
+        .body(requestUpdateComment.getCommentBody())
+        .build();
     }
 
-    private boolean validate(User user, User updater) {
-        return user.getUserId().equals(updater.getUserId());
+    private boolean validate(Member member, Member updater) {
+        return member.getId().equals(updater.getId());
     }
 }

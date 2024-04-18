@@ -76,11 +76,11 @@ public class Member extends BaseEntity {
     @JoinColumn(name = "main_project_id")
     private Project mainProject;
 
-    @OneToMany(mappedBy = "creator", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<Issue> creatorIssueList = new ArrayList<>();
+    @OneToMany(mappedBy = "modifier", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<Issue> modifierIssueList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "manager", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<Issue> managerIssueList = new ArrayList<>();
+    @OneToMany(mappedBy = "assignee", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<Issue> assigneeIssueList = new ArrayList<>();
 
     public void updateMainProject(final Project project) {
         this.mainProject = project;
