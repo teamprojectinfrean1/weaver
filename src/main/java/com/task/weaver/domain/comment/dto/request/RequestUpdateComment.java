@@ -16,5 +16,4 @@ public class RequestUpdateComment {
     private UUID updaterUUID;
     private UUID issueId;
     private String commentBody;
-    private LocalDateTime date;
 }

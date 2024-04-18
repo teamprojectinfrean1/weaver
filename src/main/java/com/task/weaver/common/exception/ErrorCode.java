@@ -16,7 +16,6 @@ public enum ErrorCode {
     UNSUPPORTED_OAUTH(HttpStatus.NOT_ACCEPTABLE, "C006", "지원하지않는 플랫폼입니다."),
     REFRESH_JWT_EXPIRED(HttpStatus.UNAUTHORIZED, "J003", "만료된 리프레시 토큰입니다."),
 
-
     // Project
     PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "P001", "해당 프로젝트를 찾을 수 없습니다."),
 
@@ -29,6 +28,7 @@ public enum ErrorCode {
     CANNOT_SAVED_FILE(HttpStatus.BAD_REQUEST, "U005", "파일 저장에 실패했습니다."),
     STORE_FILE_OUTSIDE_CURRENT_DIRECTORY_MESSAGE(HttpStatus.BAD_REQUEST, "U006", "유효하지 않은 저장 경로입니다."),
     MEMBER_CANNOT_CONVERTED(HttpStatus.BAD_REQUEST, "U007", "해당 객체를 변환할 수 없습니다."),
+    MISMATCHED_MEMBER(HttpStatus.NOT_ACCEPTABLE, "U008", "입력 유저가 일치하지 않습니다."),
 
     // Authorization
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "A001", "패스워드가 일치하지 않습니다."),
@@ -52,7 +52,10 @@ public enum ErrorCode {
     INVALID_STATUS(HttpStatus.BAD_REQUEST, "S001", "유효하지않은 STATUS입니다."),
 
     // Comment
-    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "CM001", "해당 코멘트를 찾을 수 없습니다");
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "CM001", "해당 코멘트를 찾을 수 없습니다"),
+
+    // Issue
+    ISSUE_NOT_FOUND(HttpStatus.NOT_FOUND, "I001", "해당 이슈를 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final String code;

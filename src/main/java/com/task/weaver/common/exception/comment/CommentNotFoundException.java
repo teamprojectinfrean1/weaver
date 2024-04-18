@@ -7,4 +7,8 @@ public class CommentNotFoundException extends BusinessException {
     public CommentNotFoundException(Throwable cause) {
         super(ErrorCode.CHATTINGROOM_NOT_FOUND, cause);
     }
+
+    public CommentNotFoundException(final ErrorCode errorCode, final String message) {
+        super(errorCode, message);
+    }
 }

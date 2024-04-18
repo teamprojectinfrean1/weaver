@@ -20,6 +20,6 @@ public class ResponseCommentList {
     public ResponseCommentList(Comment comment){
         this.commentId = comment.getComment_id();
         this.body = comment.getBody();
-        this.userId = comment.getIssue().getIssueId();
+        this.userId = comment.getIssue().getModifier().getId();
     }
 }

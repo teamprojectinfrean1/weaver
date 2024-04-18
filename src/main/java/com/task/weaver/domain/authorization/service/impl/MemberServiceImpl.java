@@ -216,7 +216,6 @@ public class MemberServiceImpl implements MemberService {
 		refreshTokenRepository.save(new RefreshToken(uuid, refreshToken));
 	}
 
-
 	public static HttpHeaders setCookieAndHeader(final ResponseToken responseToken) {
 		HttpHeaders headers = new HttpHeaders();
 		HttpHeaderUtil.setAccessToken(headers, responseToken.accessToken());

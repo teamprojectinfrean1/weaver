@@ -1,9 +1,12 @@
 package com.task.weaver.domain.comment.service.impl;
 
+import static com.task.weaver.common.exception.ErrorCode.*;
+
 import com.task.weaver.common.exception.AuthorizationException;
 import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.common.exception.comment.CommentNotFoundException;
-import com.task.weaver.common.exception.project.ProjectNotFoundException;
+import com.task.weaver.common.exception.issue.IssueNotFoundException;
+import com.task.weaver.common.exception.member.MismatchedMember;
 import com.task.weaver.common.exception.member.UserNotFoundException;
 import com.task.weaver.domain.authorization.entity.Member;
 import com.task.weaver.domain.authorization.repository.MemberRepository;
@@ -18,18 +21,21 @@ import com.task.weaver.domain.comment.repository.CommentRepository;
 import com.task.weaver.domain.comment.service.CommentService;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.issue.repository.IssueRepository;
-import com.task.weaver.domain.member.user.entity.User;
-import com.task.weaver.domain.member.user.repository.UserRepository;
 
+import java.util.List;
 import java.util.function.Function;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
@@ -48,19 +54,20 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public ResponsePageComment<ResponseCommentList, Comment> getComments(CommentPageRequest commentPageRequest) throws NotFoundException, AuthorizationException {
+        log.info("Issue ID={}", commentPageRequest.getIssueId());
         Issue issue = issueRepository.findById(commentPageRequest.getIssueId())
-                .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(commentPageRequest.getIssueId()))));
+                .orElseThrow(() -> new IssueNotFoundException(ISSUE_NOT_FOUND, ISSUE_NOT_FOUND.getMessage()));
         Pageable pageable = commentPageRequest.getPageable(Sort.by("issue_id").descending());
-        Page<Comment> commentPage = commentRepository.findByIssue(issue, pageable);
+        List<Comment> comments = issue.getComments();
+        Page<Comment> commentPage = new PageImpl<>(comments, pageable, comments.size());
 
-        Function<Comment, ResponseCommentList> fn = Comment -> (new ResponseCommentList(Comment));
+        Function<Comment, ResponseCommentList> fn = ResponseCommentList::new;
         return new ResponsePageComment<>(commentPage, fn);
-
     }
 
     @Override
     @Transactional
-    public Long addComment(RequestCreateComment requestComment) throws NotFoundException {
+    public ResponseComment addComment(RequestCreateComment requestComment) throws NotFoundException {
         Member writer = memberRepository.findById(requestComment.writerId())
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(requestComment.writerId().toString())));
         Issue issue = issueRepository.findById(requestComment.issueId())
@@ -70,7 +77,8 @@ public class CommentServiceImpl implements CommentService {
                 .issue(issue)
                 .body(requestComment.body())
                 .build();
-        return commentRepository.save(comment).getComment_id();
+        commentRepository.save(comment);
+        return new ResponseComment(comment);
     }
 
     @Override
@@ -87,24 +95,19 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public ResponseComment updateComment(Long originalCommentId, RequestUpdateComment requestUpdateComment) throws NotFoundException {
         Comment comment = commentRepository.findById(originalCommentId)
-                .orElseThrow(() -> new CommentNotFoundException(new Throwable(originalCommentId.toString())));
+                .orElseThrow(() -> new CommentNotFoundException(COMMENT_NOT_FOUND, COMMENT_NOT_FOUND.getMessage()));
         Member updater = memberRepository.findById(requestUpdateComment.getUpdaterUUID())
-                .orElseThrow(() -> new UserNotFoundException(new Throwable(requestUpdateComment.getUpdaterUUID().toString())));
-        if (!validate(comment.getMember(), updater)) {
-            throw new NotFoundException();
-        }
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
+        validMemberUuid(comment, updater);
         Issue issue = issueRepository.findById(requestUpdateComment.getIssueId())
-                .orElseThrow(() -> new IllegalArgumentException(""));
+                .orElseThrow(() -> new IssueNotFoundException(ISSUE_NOT_FOUND, ISSUE_NOT_FOUND.getMessage()));
         comment.updateComment(requestUpdateComment, issue);
-
-        return ResponseComment
-        .builder()
-        .commentId(comment.getComment_id())
-        .body(requestUpdateComment.getCommentBody())
-        .build();
+        return new ResponseComment(comment);
     }
 
-    private boolean validate(Member member, Member updater) {
-        return member.getId().equals(updater.getId());
+    private static void validMemberUuid(final Comment comment, final Member updater) {
+        if (!(comment.getMember().getId().equals(updater.getId()))) {
+            throw new MismatchedMember(MISMATCHED_MEMBER, MISMATCHED_MEMBER.getMessage());
+        }
     }
 }
