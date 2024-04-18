@@ -1,10 +1,15 @@
 package com.task.weaver.domain.authorization.service.impl;
 
 import static com.task.weaver.common.exception.ErrorCode.NO_MATCHED_VERIFICATION_CODE;
+import static com.task.weaver.common.exception.ErrorCode.PROJECT_NOT_FOUND;
+import static com.task.weaver.common.exception.ErrorCode.REFRESH_TOKEN_RESOLVE;
 import static com.task.weaver.common.exception.ErrorCode.USER_EMAIL_NOT_FOUND;
 import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
 
+import com.task.weaver.common.aop.annotation.Logger;
 import com.task.weaver.common.exception.BusinessException;
+import com.task.weaver.common.exception.ErrorCode;
+import com.task.weaver.common.exception.jwt.CannotResolveToken;
 import com.task.weaver.common.exception.member.UnableSendMailException;
 import com.task.weaver.common.exception.member.UserNotFoundException;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
@@ -39,7 +44,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -76,7 +80,6 @@ public class MemberServiceImpl implements MemberService {
 			.orElseThrow(() -> new RuntimeException(""));
 
 		log.info("resolvedToken : " + refreshToken);
-		log.info("findrefreshtoken : " + currentRefreshToken.getRefreshToken());
 		if(!refreshToken.equals(currentRefreshToken.getRefreshToken()))
 			throw new IllegalArgumentException("");
 
@@ -100,8 +103,7 @@ public class MemberServiceImpl implements MemberService {
 	private String resolveToken(String accessToken) {
 		if(accessToken.startsWith("Bearer "))
 			return accessToken.substring(7);
-		// 예외 처리 추후 수정
-		throw new RuntimeException("not valid refresh token");
+		throw new CannotResolveToken(REFRESH_TOKEN_RESOLVE, REFRESH_TOKEN_RESOLVE.getMessage());
 	}
 
 	@Override
@@ -128,7 +130,7 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public ResponseUuid getUuid(final String email, final Boolean checked) {
 		if (!checked) {
-			throw new UnableSendMailException(NO_MATCHED_VERIFICATION_CODE, ": Redis to SMTP DATA");
+			throw new UnableSendMailException(NO_MATCHED_VERIFICATION_CODE, NO_MATCHED_VERIFICATION_CODE.getMessage());
 		}
 
 		User findUser = userRepository.findByEmail(email)
@@ -165,7 +167,6 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public ResponseGetUserForFront getMemberFromToken(HttpServletRequest request) {
 		String memberUuid = jwtTokenProvider.getMemberIdByAssessToken(request);
-		log.info("member uuid : " + memberUuid);
 		Member member = memberRepository.findById(UUID.fromString(memberUuid))
 				.orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
 		return memberConverter.convert(member.resolveMemberByLoginType(), ResponseGetUserForFront.class);
@@ -176,7 +177,7 @@ public class MemberServiceImpl implements MemberService {
 		UUID projectId = requestGetUserPage.getProjectId();
 
 		Project project = projectRepository.findById(projectId)
-				.orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(projectId))));
+				.orElseThrow(() -> new ProjectNotFoundException(PROJECT_NOT_FOUND, PROJECT_NOT_FOUND.getMessage()));
 
 		Pageable pageable = requestGetUserPage.getPageable(Sort.by("userId").descending());
 
@@ -186,6 +187,7 @@ public class MemberServiceImpl implements MemberService {
 		return new ResponsePageResult<>(members, fn);
 	}
 
+	@Logger
 	@Override
 	public AllMember getMembersForTest() {
 		List<Member> userOauthMembers = memberRepository.findAll();

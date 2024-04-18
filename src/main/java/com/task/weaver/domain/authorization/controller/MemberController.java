@@ -2,6 +2,7 @@ package com.task.weaver.domain.authorization.controller;
 
 import static com.task.weaver.domain.authorization.service.impl.MemberServiceImpl.setCookieAndHeader;
 
+import com.task.weaver.common.aop.annotation.Logger;
 import com.task.weaver.common.response.DataResponse;
 import com.task.weaver.common.response.MessageResponse;
 import com.task.weaver.domain.authorization.dto.MemberProjectDTO;
@@ -46,6 +47,7 @@ public class MemberController {
 
 	private final MemberService memberService;
 
+	@Logger
 	@Operation(summary = "reissue", description = "refresh token 재발급")
 	@GetMapping("/reissue")
 	public ResponseEntity<?> reissue(@CookieValue(value = "refreshToken") String refreshToken,
@@ -57,6 +59,7 @@ public class MemberController {
 		return new ResponseEntity<>(MessageResponse.of(HttpStatus.CREATED, "Token 재발급 성공", true), headers, HttpStatus.CREATED);
 	}
 
+	@Logger
 	@Operation(summary = "로그아웃", description = "로그아웃")
 	@GetMapping("/logout")
 	public ResponseEntity<?> logout(@CookieValue(value = "refresh-token") Cookie cookie, HttpServletResponse res) {
@@ -66,16 +69,16 @@ public class MemberController {
 		return ResponseEntity.ok().body("-- logout --");
 	}
 
+	@Logger
 	@Operation(summary = "사용자 한 명 조회", description = "사용자 한명을 조회")
-	@Parameter(name = "UUID", description = "사용자 UUID", in = ParameterIn.QUERY)
 	@GetMapping("/{uuid}")
 	public ResponseEntity<DataResponse<ResponseGetMember>> getMember(@PathVariable("uuid") UUID uuid) {
 		ResponseGetMember responseGetMember = memberService.getMember(uuid);
 		return ResponseEntity.ok().body(DataResponse.of(HttpStatus.OK, "UUID로 회원 조회 성공", responseGetMember, true));
 	}
 
+	@Logger
 	@Operation(summary = "프로젝트 구성원 조회", description = "프로젝트에 소속된 인원들 조회")
-	@Parameter(name = "projectId", description = "프로젝트 id", in = ParameterIn.PATH)
 	@GetMapping("/project/user-list")
 	public ResponseEntity<DataResponse<ResponsePageResult<MemberProjectDTO, Object[]>>> getMembersFromProject(
 			@RequestBody RequestGetUserPage requestGetUserPage) {
@@ -85,6 +88,7 @@ public class MemberController {
 				HttpStatus.OK);
 	}
 
+	@Logger
 	@Operation(summary = "개발자용 유저 리스트 확인 api", description = "생성된 유저 전부 조회")
 	@GetMapping("/list/test")
 	public ResponseEntity<DataResponse<AllMember>> getMemberForTest() {
@@ -93,8 +97,8 @@ public class MemberController {
 				HttpStatus.OK);
 	}
 
+	@Logger
 	@Operation(summary = "토큰 기반 유저 조회", description = "로그인 직후, 토큰 기반으로 유저 정보 조회")
-	@Parameter(name = "Authorization", description = "토큰", in = ParameterIn.HEADER)
 	@GetMapping("/token")
 	public ResponseEntity<DataResponse<ResponseGetUserForFront>> getMemberFromToken(HttpServletRequest request) {
 		ResponseGetUserForFront responseGetUser = memberService.getMemberFromToken(request);

@@ -34,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequiredArgsConstructor
 public class ProjectController {
+
     private final ProjectService projectService;
 
     @Operation(summary = "프로젝트 단건 조회", description = "프로젝트 단건 조회")
@@ -43,12 +44,6 @@ public class ProjectController {
         ResponseGetProject project = projectService.getProject(projectId);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트 조회 성공", project, true), HttpStatus.OK);
     }
-//    @Operation(summary = "프로젝트 다수 조회", description = "프로젝트 페이지로 조회")
-//    @GetMapping("/{userId}")
-//    public ResponseEntity<DataResponse<List<ResponseGetProjectList> getProjects(@PathVariable("userId") String userId) {
-//        ResponsePageResult<RequestCreateProject, Project> projects = projectService.getProjects(userId);
-//        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트 리스트 조회 성공", projects), HttpStatus.OK);
-//    }
 
     @Operation(summary = "유저 id 기반으로 프로젝트 리스트 조회", description = "로그인한 사용자가 참여한 프로젝트들을 조회")
     @GetMapping("/list/{memberId}")
@@ -90,12 +85,7 @@ public class ProjectController {
         projectService.updateProject(projectId, project);
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "프로젝트 업데이트 성공", true), HttpStatus.OK);
     }
-//    @Operation(summary = "프로젝트 뷰 업데이트", description = "프로젝트 뷰 업데이트")
-//    @PutMapping("/{projectId}")
-//    public ResponseEntity<MessageResponse> updateProject(@PathVariable Long projectId) {
-//        projectService.updateProjectView(projectId);
-//        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "프로젝트 뷰 업데이트 성공"), HttpStatus.OK);
-//    }
+
     @Operation(summary = "프로젝트 삭제", description = "프로젝트 삭제")
     @DeleteMapping("/{projectId}")
     @Parameter(name = "projectId", description = "프로젝트 id", in = ParameterIn.PATH)
