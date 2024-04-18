@@ -35,7 +35,6 @@ import lombok.RequiredArgsConstructor;
 public class IssueController {
 
 	private final IssueService issueService;
-	// private final DataResponse dataResponse;
 
 	@Operation(summary = "이슈 단건 조회", description = "issueId로 이슈 단건 조회")
 	@GetMapping("/detail/{issueId}")
@@ -53,7 +52,6 @@ public class IssueController {
 	@Operation(summary = "이슈 삭제", description = "issueId로 이슈 삭제")
 	@DeleteMapping("/{issueId}")
 	public ResponseEntity<?> removeIssue(@PathVariable UUID issueId){
-		// 담당자만 삭제 가능하도록 수정
 		issueService.deleteIssue(issueId);
 		return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "이슈 삭제 성공", true), HttpStatus.OK);
 	}

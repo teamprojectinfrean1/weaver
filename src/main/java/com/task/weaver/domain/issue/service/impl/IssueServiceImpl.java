@@ -46,10 +46,7 @@ public class IssueServiceImpl implements IssueService {
 	@Override
 	public IssueResponse getIssue(UUID issueId) throws NotFoundException, AuthorizationException {
 		Issue issue = issueRepository.findById(issueId).orElseThrow(() -> new IllegalArgumentException(""));
-
-		IssueResponse issueResponse = new IssueResponse(issue);
-
-		return issueResponse;
+		return new IssueResponse(issue);
 	}
 
 	/**
@@ -81,10 +78,6 @@ public class IssueServiceImpl implements IssueService {
 		int end = Math.min((start + pageable.getPageSize()), issueList.size());
 		Page<Issue> issuePage = new PageImpl<>(issueList.subList(start, end), pageRequest, issueList.size());
 
-//		Function<Issue, GetIssueListResponse> fn = Issue -> (new GetIssueListResponse(Issue.getIssueId(), Issue.getIssueTitle(),
-//				Issue.getTask().getTaskId(), Issue.getTask().getTaskTitle(), Issue.getAssignee().getId(),
-//				Issue.getAssignee().getNickname(), Issue.getAssignee().getProfileImage()));
-
 		return null;
 	}
 
@@ -102,7 +95,6 @@ public class IssueServiceImpl implements IssueService {
 
 		Pageable pageable = getIssuePageRequest.getPageable(Sort.by("issueId").descending());
 
-		// Page<Issue> issuePage = issueRepository.findBySearch(getIssuePageRequest.projectId(), status, filter, word, pageable);
 
 		switch (filter){
 			case "ASSIGNEE":
@@ -229,7 +221,6 @@ public class IssueServiceImpl implements IssueService {
 	public void updateIssueStatus(UUID issueId, String status) throws NotFoundException, AuthorizationException {
 		Issue issue = issueRepository.findById(issueId)
 				.orElseThrow(() -> new IllegalArgumentException(""));
-
 		issue.updateStatus(Status.valueOf(status));
 	}
 
