@@ -11,8 +11,8 @@ import com.task.weaver.domain.comment.entity.Comment;
 import com.task.weaver.domain.comment.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,19 +24,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @Tag(name = "Comment Controller", description = "코멘트 관련 컨트롤러")
 @RequiredArgsConstructor
 @RequestMapping("api/v1/comment")
 @RestController
 public class CommentController {
+
     private final CommentService commentService;
 
     @Operation(summary = "코멘트 생성", description = "코멘트 생성")
     @PostMapping
-    public ResponseEntity<?> addComment(@RequestBody RequestCreateComment comment){
-        commentService.addComment(comment);
-        return ResponseEntity.ok().body("Successfully added provided comment");
+    public ResponseEntity<DataResponse<ResponseComment>> addComment(@RequestBody RequestCreateComment comment) {
+        ResponseComment responseComment = commentService.addComment(comment);
+        return ResponseEntity.ok()
+                .body(DataResponse.of(HttpStatus.OK, "Comment created successfully.", responseComment, true));
     }
+
     @Operation(summary = "코멘트 삭제" , description = "commentId로 코멘트 삭제")
     @DeleteMapping("/{commentId}")
     public ResponseEntity<?> deleteComment(@PathVariable Long commentId){
@@ -48,15 +52,19 @@ public class CommentController {
     @PutMapping("/{commentId}")
     public ResponseEntity<DataResponse<ResponseComment>> putComment(@PathVariable Long commentId,
                                                                     @RequestBody RequestUpdateComment comment) {
+        log.info("comment id = {}, member id = {}, issue id = {}", commentId, comment.getUpdaterUUID(),
+                comment.getIssueId());
         ResponseComment responseComment = commentService.updateComment(commentId, comment);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "코멘트 수정 성공", responseComment, true), HttpStatus.OK);
     }
 
     @Operation(summary = "코멘트 조회", description = "코멘트 조회")
-    @GetMapping("/{issueId}")
-    public ResponseEntity<DataResponse<ResponsePageComment<ResponseCommentList, Comment>>> getComments(@PathVariable("issueId") UUID issueId,
-                                                                                                       @RequestBody CommentPageRequest commentPageRequest) {
-        ResponsePageComment<ResponseCommentList, Comment> responsePageComment = commentService.getComments(commentPageRequest);
-        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK,"이슈에 연결된 코멘트 조회 성공",responsePageComment, true),HttpStatus.OK);
+    @GetMapping()
+    public ResponseEntity<DataResponse<ResponsePageComment<ResponseCommentList, Comment>>> getComments(
+            @RequestBody CommentPageRequest commentPageRequest) {
+        ResponsePageComment<ResponseCommentList, Comment> responsePageComment = commentService.getComments(
+                commentPageRequest);
+        return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "이슈에 연결된 코멘트 조회 성공", responsePageComment, true),
+                HttpStatus.OK);
     }
 }
