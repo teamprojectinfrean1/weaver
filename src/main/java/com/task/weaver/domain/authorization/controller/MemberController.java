@@ -59,7 +59,7 @@ public class MemberController {
 
 	@Operation(summary = "로그아웃", description = "로그아웃")
 	@GetMapping("/logout")
-	public ResponseEntity<?> logout(@CookieValue(value = "refresh-token", required = false) Cookie cookie, HttpServletResponse res) {
+	public ResponseEntity<?> logout(@CookieValue(value = "refresh-token") Cookie cookie, HttpServletResponse res) {
 		memberService.logout(cookie.getValue());
 		cookie.setMaxAge(0);
 		res.setHeader("Set-Cookie", cookie.toString());

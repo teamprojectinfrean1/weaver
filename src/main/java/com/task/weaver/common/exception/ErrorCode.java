@@ -29,6 +29,7 @@ public enum ErrorCode {
     STORE_FILE_OUTSIDE_CURRENT_DIRECTORY_MESSAGE(HttpStatus.BAD_REQUEST, "U006", "유효하지 않은 저장 경로입니다."),
     MEMBER_CANNOT_CONVERTED(HttpStatus.BAD_REQUEST, "U007", "해당 객체를 변환할 수 없습니다."),
     MISMATCHED_MEMBER(HttpStatus.NOT_ACCEPTABLE, "U008", "입력 유저가 일치하지 않습니다."),
+    MISMATCHED_INPUT_VALUE(HttpStatus.NOT_ACCEPTABLE, "U009", "올바르지 않은 입력값 입니다."),
 
     // Authorization
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "A001", "패스워드가 일치하지 않습니다."),
