@@ -1,5 +1,6 @@
 package com.task.weaver.domain.authorization.service;
 
+import com.task.weaver.common.aop.annotation.LoggingStopWatch;
 import com.task.weaver.domain.authorization.dto.MemberProjectDTO;
 import com.task.weaver.domain.authorization.dto.response.ResponseReIssueToken;
 import com.task.weaver.domain.authorization.dto.response.ResponseToken;
@@ -19,20 +20,37 @@ import java.util.UUID;
 import org.springframework.http.HttpHeaders;
 
 public interface MemberService {
+
 	ResponseToken reissue (String refreshToken, String loginType);
+
 	void logout(String refreshToken);
+
 	Boolean checkMail(String email);
+
 	Boolean checkId(String id);
+
 	Boolean checkNickname(String nickname);
 
+	@LoggingStopWatch
 	ResponseUuid getUuid(String email, Boolean checked);
+
+	@LoggingStopWatch
 	ResponseGetMember getMember(UUID userId);
+
+	@LoggingStopWatch
 	ResponseUserIdNickname getMember(String email, Boolean checked);
+
+	@LoggingStopWatch
 	ResponseGetUserForFront getMemberFromToken(HttpServletRequest request);
+
+	@LoggingStopWatch
 	ResponsePageResult<MemberProjectDTO, Object[]> getMembers(RequestGetUserPage requestGetUserPage);
+
+	@LoggingStopWatch
 	ResponseUserOauth.AllMember getMembersForTest();
 
 	ResponseToken getAuthentication(Member member);
+
 	static HttpHeaders setCookieAndHeader(ResponseToken responseToken) {
 		return null;
 	}

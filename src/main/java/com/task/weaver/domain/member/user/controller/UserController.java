@@ -2,6 +2,7 @@ package com.task.weaver.domain.member.user.controller;
 
 import static com.task.weaver.domain.authorization.service.impl.MemberServiceImpl.setCookieAndHeader;
 
+import com.task.weaver.common.aop.annotation.Logger;
 import com.task.weaver.common.response.DataResponse;
 import com.task.weaver.common.response.MessageResponse;
 import com.task.weaver.domain.authorization.dto.request.EmailCheckDto;
@@ -55,6 +56,7 @@ public class UserController {
     private final MemberService memberService;
     private final MailSendService mailService;
 
+    @Logger
     @Operation(summary = "회원가입", description = "사용자가 회원가입")
     @PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<DataResponse<ResponseGetMember>> addUser(@RequestPart(value = "requestCreateUser") RequestCreateUser requestCreateUser,
@@ -68,6 +70,7 @@ public class UserController {
                 .body(DataResponse.of(HttpStatus.OK, "회원 가입 성공", responseGetMember, true));
     }
 
+    @Logger
     @Operation(summary = "로그인", description = "로그인")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody RequestSignIn requestSignIn) {
@@ -79,6 +82,7 @@ public class UserController {
                 HttpStatus.CREATED);
     }
 
+    @Logger
     @Operation(summary = "사용자 정보 수정", description = "사용자의 정보 (닉네임, 비밀번호, 이메일) 업데이트")
     @PutMapping("/update")
     public ResponseEntity<DataResponse<ResponseGetMember>> updateUser(@RequestParam("uuid") UUID uuid,
@@ -89,6 +93,7 @@ public class UserController {
         return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "유저 정보 수정 성공", responseGetMember, true));
     }
 
+    @Logger
     @Operation(summary = "사용자 정보 수정", description = "사용자의 프로필 이미지 업데이트")
     @PutMapping(value = "/update/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<DataResponse<ResponseSimpleURL>> updateProfileImage(@RequestParam("uuid") UUID uuid,
@@ -98,6 +103,7 @@ public class UserController {
         return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "멤버 프로필 이미지 업데이트 성공", responseGetMember, true));
     }
 
+    @Logger
     @Operation(summary = "사용자 삭제", description = "사용자 정보 삭제, 사용자는 사용 불가")
     @DeleteMapping()
     public ResponseEntity<String> deleteUser(@RequestParam("userId") UUID userId) {
@@ -105,6 +111,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body("user deleted");
     }
 
+    @Logger
     @Operation(summary = "이메일 중복 체크", description = "이메일 중복을 체크")
     @GetMapping("/checkMail")
     public ResponseEntity<DataResponse<Boolean>> checkMail(@RequestParam("email") String email) {
@@ -112,6 +119,7 @@ public class UserController {
                 DataResponse.of(HttpStatus.OK, "중복 체크 동작", memberService.checkMail(email), true), HttpStatus.OK);
     }
 
+    @Logger
     @Operation(summary = "아이디 중복 체크", description = "아이디 중복을 체크")
     @GetMapping("/checkId")
     public ResponseEntity<DataResponse<Boolean>> checkId(@RequestParam("id") String id) {
@@ -127,6 +135,7 @@ public class UserController {
                 HttpStatus.OK);
     }
 
+    @Logger
     @Operation(summary = "이메일 전송", description = "랜덤 번호를 담은 이메일 전송")
     @PostMapping("/findId/verification/request")
     public ResponseEntity<DataResponse<EmailCode>> mailSendForId(@RequestBody @Valid EmailRequest emailDto) {
@@ -135,6 +144,7 @@ public class UserController {
                 DataResponse.of(HttpStatus.OK, "인증 코드 전송 성공", mailService.joinEmail(emailDto.email()), true));
     }
 
+    @Logger
     @Operation(summary = "인증 번호 확인", description = "서버에 저장된 랜덤 번호와 사용자 입력 번호 검증")
     @PostMapping("/findId/verification/check")
     public ResponseEntity<DataResponse<ResponseUserIdNickname>> AuthCheckForId(
@@ -144,6 +154,7 @@ public class UserController {
         return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "해당 유저를 반환합니다.", targetUser, true));
     }
 
+    @Logger
     @Operation(summary = "이메일 전송", description = "랜덤 번호를 담은 이메일 전송")
     @PostMapping("/findPassword/verification/request")
     public ResponseEntity<DataResponse<EmailCode>> mailSendForPassword(@RequestBody @Valid EmailRequest emailDto) {
@@ -152,6 +163,7 @@ public class UserController {
                 DataResponse.of(HttpStatus.OK, "인증 코드 전송 성공", mailService.joinEmail(emailDto.email()), true));
     }
 
+    @Logger
     @Operation(summary = "인증 번호 확인", description = "서버에 저장된 랜덤 번호와 사용자 입력 번호 검증")
     @PostMapping("/findPassword/verification/check")
     public ResponseEntity<DataResponse<ResponseUuid>> AuthCheckForPassword(
@@ -161,6 +173,7 @@ public class UserController {
         return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "verificationCode 인증 성공", targetUser, true));
     }
 
+    @Logger
     @Operation(summary = "비밀번호 재설정", description = "인증 확인된 사용자 비밀번호 재설정")
     @PutMapping("/findPassword/verification/update")
     public ResponseEntity<MessageResponse> AuthPasswordUpdate(

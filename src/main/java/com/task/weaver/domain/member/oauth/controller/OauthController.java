@@ -2,6 +2,7 @@ package com.task.weaver.domain.member.oauth.controller;
 
 import static com.task.weaver.domain.authorization.service.impl.MemberServiceImpl.setCookieAndHeader;
 
+import com.task.weaver.common.aop.annotation.Logger;
 import com.task.weaver.common.model.OauthServerType;
 import com.task.weaver.common.response.DataResponse;
 import com.task.weaver.domain.authorization.dto.response.ResponseToken;
@@ -38,6 +39,7 @@ public class OauthController {
      * @param response        Service 로직을 통해 생성된 URL로 사용자 Redirect
      * @return Void
      */
+    @Logger
     @SneakyThrows
     @GetMapping("/{oauthServerType}")
     ResponseEntity<Void> redirectAuthCodeRequestUrl(@PathVariable OauthServerType oauthServerType,
@@ -48,6 +50,7 @@ public class OauthController {
         return ResponseEntity.ok().build();
     }
 
+    @Logger
     @GetMapping("/login/{oauthServerType}")
     ResponseEntity<?> login(@PathVariable OauthServerType oauthServerType,
                                                       @RequestParam("code") String code) {

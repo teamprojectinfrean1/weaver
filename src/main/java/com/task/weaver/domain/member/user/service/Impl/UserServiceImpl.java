@@ -167,8 +167,7 @@ public class UserServiceImpl implements UserService {
             JSONObject jsonObject = new JSONObject((LinkedHashMap) requestUpdateUser);
             String currentPassword = (String) jsonObject.get("currentPassword");
             String updatePassword = (String) jsonObject.get("updatePassword");
-
-            if (!Objects.equals(user.getPassword(), currentPassword)) {
+            if (user.getPassword().equals(passwordEncoder.encode(currentPassword))) {
                 throw new MismatchedPassword(MISMATCHED_PASSWORD, "입력 값 확인이 필요합니다.");
             }
             user.updatePassword(passwordEncoder.encode(updatePassword));
