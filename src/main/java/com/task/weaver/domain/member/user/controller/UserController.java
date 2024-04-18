@@ -15,6 +15,7 @@ import com.task.weaver.domain.member.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.member.user.dto.request.RequestUpdatePassword;
 import com.task.weaver.domain.member.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.member.user.dto.response.ResponseGetMember;
+import com.task.weaver.domain.member.user.dto.response.ResponseSimpleURL;
 import com.task.weaver.domain.member.user.dto.response.ResponseUserIdNickname;
 import com.task.weaver.domain.member.user.dto.response.ResponseUuid;
 import com.task.weaver.domain.member.user.service.UserService;
@@ -78,8 +79,7 @@ public class UserController {
                 HttpStatus.CREATED);
     }
 
-    @Operation(summary = "사용자 정보 수정", description = "사용자의 정보 (프로필 이미지, 닉네임, 비밀번호) 업데이트")
-    @Parameter(name = "Member UUID", description = "Member UUID", in = ParameterIn.QUERY)
+    @Operation(summary = "사용자 정보 수정", description = "사용자의 정보 (닉네임, 비밀번호, 이메일) 업데이트")
     @PutMapping("/update")
     public ResponseEntity<DataResponse<ResponseGetMember>> updateUser(@RequestParam("uuid") UUID uuid,
                                                                       @RequestBody RequestUpdateUser requestUpdateUser)
@@ -89,8 +89,16 @@ public class UserController {
         return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "유저 정보 수정 성공", responseGetMember, true));
     }
 
+    @Operation(summary = "사용자 정보 수정", description = "사용자의 프로필 이미지 업데이트")
+    @PutMapping(value = "/update/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<DataResponse<ResponseSimpleURL>> updateProfileImage(@RequestParam("uuid") UUID uuid,
+                                                                              @RequestPart(value = "multipartFile") MultipartFile multipartFile) throws IOException {
+
+        ResponseSimpleURL responseGetMember = userService.updateProfile(multipartFile, uuid);
+        return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "멤버 프로필 이미지 업데이트 성공", responseGetMember, true));
+    }
+
     @Operation(summary = "사용자 삭제", description = "사용자 정보 삭제, 사용자는 사용 불가")
-    @Parameter(name = "userId", description = "사용자 id", in = ParameterIn.QUERY)
     @DeleteMapping()
     public ResponseEntity<String> deleteUser(@RequestParam("userId") UUID userId) {
         userService.deleteUser(userId);
@@ -99,7 +107,6 @@ public class UserController {
 
     @Operation(summary = "이메일 중복 체크", description = "이메일 중복을 체크")
     @GetMapping("/checkMail")
-    @Parameter(name = "email", description = "이메일 입력", in = ParameterIn.QUERY)
     public ResponseEntity<DataResponse<Boolean>> checkMail(@RequestParam("email") String email) {
         return new ResponseEntity<>(
                 DataResponse.of(HttpStatus.OK, "중복 체크 동작", memberService.checkMail(email), true), HttpStatus.OK);
@@ -107,7 +114,6 @@ public class UserController {
 
     @Operation(summary = "아이디 중복 체크", description = "아이디 중복을 체크")
     @GetMapping("/checkId")
-    @Parameter(name = "id", description = "아이디 입력", in = ParameterIn.QUERY)
     public ResponseEntity<DataResponse<Boolean>> checkId(@RequestParam("id") String id) {
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "중복 체크 동작", memberService.checkId(id), true),
                 HttpStatus.OK);
@@ -115,7 +121,6 @@ public class UserController {
 
     @Operation(summary = "닉네임 중복 체크", description = "닉네임 중복을 체크")
     @GetMapping("/checkNickname")
-    @Parameter(name = "nickname", description = "닉네임 입력", in = ParameterIn.QUERY)
     public ResponseEntity<DataResponse<Boolean>> checkNickname(@RequestParam("nickname") String nickname) {
         return new ResponseEntity<>(
                 DataResponse.of(HttpStatus.OK, "중복 체크 동작", memberService.checkNickname(nickname), true),
@@ -123,7 +128,6 @@ public class UserController {
     }
 
     @Operation(summary = "이메일 전송", description = "랜덤 번호를 담은 이메일 전송")
-    @Parameter(name = "EmailRequest", description = "사용자 이메일", in = ParameterIn.QUERY)
     @PostMapping("/findId/verification/request")
     public ResponseEntity<DataResponse<EmailCode>> mailSendForId(@RequestBody @Valid EmailRequest emailDto) {
         log.info("Find ID, verify email: {}", emailDto.email());
@@ -132,7 +136,6 @@ public class UserController {
     }
 
     @Operation(summary = "인증 번호 확인", description = "서버에 저장된 랜덤 번호와 사용자 입력 번호 검증")
-    @Parameter(name = "EmailCheckDto", description = "사용자 이메일, 인증 번호", in = ParameterIn.QUERY)
     @PostMapping("/findId/verification/check")
     public ResponseEntity<DataResponse<ResponseUserIdNickname>> AuthCheckForId(
             @RequestBody @Valid EmailCheckDto emailCheckDto) {
@@ -142,7 +145,6 @@ public class UserController {
     }
 
     @Operation(summary = "이메일 전송", description = "랜덤 번호를 담은 이메일 전송")
-    @Parameter(name = "EmailRequest", description = "사용자 이메일", in = ParameterIn.QUERY)
     @PostMapping("/findPassword/verification/request")
     public ResponseEntity<DataResponse<EmailCode>> mailSendForPassword(@RequestBody @Valid EmailRequest emailDto) {
         log.info("비밀번호 찾기 이메일 인증 :" + emailDto.email());
@@ -151,7 +153,6 @@ public class UserController {
     }
 
     @Operation(summary = "인증 번호 확인", description = "서버에 저장된 랜덤 번호와 사용자 입력 번호 검증")
-    @Parameter(name = "EmailCheckDto", description = "사용자 이메일, 인증 번호", in = ParameterIn.QUERY)
     @PostMapping("/findPassword/verification/check")
     public ResponseEntity<DataResponse<ResponseUuid>> AuthCheckForPassword(
             @RequestBody @Valid EmailCheckDto emailCheckDto) {
@@ -161,7 +162,6 @@ public class UserController {
     }
 
     @Operation(summary = "비밀번호 재설정", description = "인증 확인된 사용자 비밀번호 재설정")
-    @Parameter(name = "RequestUpdatePassword", description = "UUID, 재설정 비밀번호", in = ParameterIn.QUERY)
     @PutMapping("/findPassword/verification/update")
     public ResponseEntity<MessageResponse> AuthPasswordUpdate(
             @RequestBody @Valid RequestUpdatePassword requestUpdatePassword) {

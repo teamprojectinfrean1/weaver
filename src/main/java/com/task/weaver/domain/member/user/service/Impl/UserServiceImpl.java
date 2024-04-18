@@ -22,6 +22,7 @@ import com.task.weaver.domain.member.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.member.user.dto.request.RequestUpdatePassword;
 import com.task.weaver.domain.member.user.dto.request.RequestUpdateUser;
 import com.task.weaver.domain.member.user.dto.response.ResponseGetMember;
+import com.task.weaver.domain.member.user.dto.response.ResponseSimpleURL;
 import com.task.weaver.domain.member.user.entity.User;
 import com.task.weaver.domain.member.user.repository.UserRepository;
 import com.task.weaver.domain.member.user.service.UserService;
@@ -48,7 +49,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final S3Uploader s3Uploader;
     private final MemberFactory memberFactory;
-    private final MemberRepository userOauthMemberRepository;
+    private final MemberRepository memberRepository;
     private final OauthMemberRepository oauthMemberRepository;
     private final MemberService memberService;
 
@@ -60,7 +61,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUserId(requestSignIn.id())
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, " 해당 ID가 존재하지 않습니다."));
         hasMatched(requestSignIn);
-        Member byUser = userOauthMemberRepository.findByUser(user)
+        Member byUser = memberRepository.findByUser(user)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, " 해당 유저가 존재하지 않습니다."));
         return memberService.getAuthentication(byUser);
     }
@@ -114,7 +115,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseGetMember updateUser(UUID memberId, RequestUpdateUser requestUpdateUser) throws IOException {
-        Member findMember = userOauthMemberRepository.findById(memberId)
+        Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
         if (findMember.getLoginType().equals(LoginType.WEAVER)) {
             return getResponseGetMemberWithUser(requestUpdateUser, findMember.getUser());
@@ -123,30 +124,31 @@ public class UserServiceImpl implements UserService {
     }
 
     private ResponseGetMember getResponseGetMemberWithOauth(final RequestUpdateUser requestUpdateUser,
-                                                            final OauthUser oauthMember) throws IOException {
-        switch (requestUpdateUser.getType()) {
-            case "nickname" -> oauthMember.updateNickname((String) requestUpdateUser.getValue());
-            case "profileImage" -> updateProfile(requestUpdateUser.getValue(), oauthMember);
+                                                            final OauthUser oauthMember) {
+        if ("nickname".equals(requestUpdateUser.getType())) {
+            oauthMember.updateNickname((String) requestUpdateUser.getValue());
         }
         oauthMemberRepository.save(oauthMember);
         return ResponseGetMember.of(oauthMember);
     }
 
-    private ResponseGetMember getResponseGetMemberWithUser(final RequestUpdateUser requestUpdateUser, final User user)
-            throws IOException {
+    private ResponseGetMember getResponseGetMemberWithUser(final RequestUpdateUser requestUpdateUser, final User user) {
         switch (requestUpdateUser.getType()) {
             case "email" -> user.updateEmail((String) requestUpdateUser.getValue());
             case "nickname" -> user.updateNickname((String) requestUpdateUser.getValue());
             case "password" -> updatePassword(requestUpdateUser.getValue(), user);
-            case "profileImage" -> updateProfile(requestUpdateUser.getValue(), user);
         }
         userRepository.save(user);
         return ResponseGetMember.of(user);
     }
 
-    private void updateProfile(final Object value, final UserOauthMember userOauthMember) throws IOException {
+    public ResponseSimpleURL updateProfile(final MultipartFile multipartFile, final UUID memberUUID) throws IOException {
+        Member member = memberRepository.findById(memberUUID)
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
+        UserOauthMember userOauthMember = member.resolveMemberByLoginType();
         String oldFileUrl = userOauthMember.getProfileImage().getPath().substring(1);
-        updateProfileImage(s3Uploader.updateFile((MultipartFile) value, oldFileUrl, "images"), userOauthMember);
+        updateProfileImage(s3Uploader.updateFile(multipartFile, oldFileUrl, "images"), userOauthMember);
+        return new ResponseSimpleURL(userOauthMember.getProfileImage());
     }
 
 
