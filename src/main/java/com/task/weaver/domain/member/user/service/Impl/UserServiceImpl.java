@@ -5,7 +5,6 @@ import static com.task.weaver.common.exception.ErrorCode.MISMATCHED_PASSWORD;
 import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.task.weaver.common.exception.BusinessException;
-import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.authorization.InvalidPasswordException;
 import com.task.weaver.common.exception.member.MismatchedInputException;
 import com.task.weaver.common.exception.member.MismatchedPassword;
@@ -17,7 +16,6 @@ import com.task.weaver.domain.authorization.entity.Member;
 import com.task.weaver.domain.authorization.factory.MemberFactory;
 import com.task.weaver.domain.authorization.repository.MemberRepository;
 import com.task.weaver.domain.authorization.service.MemberService;
-import com.task.weaver.domain.member.LoginType;
 import com.task.weaver.domain.member.UserOauthMember;
 import com.task.weaver.domain.member.oauth.entity.OauthUser;
 import com.task.weaver.domain.member.oauth.repository.OauthMemberRepository;
@@ -29,10 +27,10 @@ import com.task.weaver.domain.member.user.dto.response.ResponseSimpleURL;
 import com.task.weaver.domain.member.user.entity.User;
 import com.task.weaver.domain.member.user.repository.UserRepository;
 import com.task.weaver.domain.member.user.service.UserService;
+import com.task.weaver.domain.member.util.MemberStorageHandler;
 import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedHashMap;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -55,6 +53,7 @@ public class UserServiceImpl implements UserService {
     private final MemberFactory memberFactory;
     private final MemberRepository memberRepository;
     private final OauthMemberRepository oauthMemberRepository;
+    private final MemberStorageHandler memberStorageHandler;
 
     @Override
     @Transactional(readOnly = true)
@@ -159,6 +158,7 @@ public class UserServiceImpl implements UserService {
     private void updateProfileImage(final String s3Uploader, final UserOauthMember userOauthMember) throws IOException {
         URL updatedImageUrlObject = new URL(s3Uploader);
         userOauthMember.updateProfileImage(updatedImageUrlObject);
+        memberStorageHandler.handle(userOauthMember);
     }
 
     private void updatePassword(final Object requestUpdateUser, final User user) {

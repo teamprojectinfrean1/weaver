@@ -39,7 +39,6 @@ public class JwtTokenProvider {
 	// refresh token -> 7days
 	public static final Long REFRESH_TOKEN_VALID_TIME = 7 * 24 * 60 * 60 * 1000L;
 
-	private PrincipalDetails principalDetails;
 	private final PrincipalDetailService principalDetailService;
 	private static final String AUTHORIZATION_HEADER = "Authorization";
 	/**
@@ -110,7 +109,6 @@ public class JwtTokenProvider {
 	 */
 	private Claims parseClaims(String accessToken) {
 		try {
-			// log.info();
 			return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
 		} catch (ExpiredJwtException e) {
 			return e.getClaims();
@@ -124,7 +122,7 @@ public class JwtTokenProvider {
 	 */
 	public Authentication getAuthentication(String acceessToken) {
 		Claims claims = parseClaims(acceessToken);
-		log.info("claims.getId : " + claims.getId() + ", claims.getSubject : " + claims.getSubject());
+		log.info( "claims.getSubject : " + claims.getSubject());
 		UserDetails userDetails = principalDetailService.loadUserByUsername(claims.getSubject());
 		return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
 	}

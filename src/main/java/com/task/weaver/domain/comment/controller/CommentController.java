@@ -52,8 +52,6 @@ public class CommentController {
     @PutMapping("/{commentId}")
     public ResponseEntity<DataResponse<ResponseComment>> putComment(@PathVariable Long commentId,
                                                                     @RequestBody RequestUpdateComment comment) {
-        log.info("comment id = {}, member id = {}, issue id = {}", commentId, comment.getUpdaterUUID(),
-                comment.getIssueId());
         ResponseComment responseComment = commentService.updateComment(commentId, comment);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "코멘트 수정 성공", responseComment, true), HttpStatus.OK);
     }
