@@ -1,7 +1,9 @@
 package com.task.weaver.domain.issue.controller;
 
+import com.task.weaver.common.model.Status;
 import java.util.UUID;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
@@ -28,6 +30,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+@Slf4j
 @Tag(name = "Issue Controller", description = "이슈 관련 컨트롤러")
 @RestController
 @RequestMapping("/api/v1/issue")
@@ -35,7 +38,6 @@ import lombok.RequiredArgsConstructor;
 public class IssueController {
 
 	private final IssueService issueService;
-	// private final DataResponse dataResponse;
 
 	@Operation(summary = "이슈 단건 조회", description = "issueId로 이슈 단건 조회")
 	@GetMapping("/detail/{issueId}")
@@ -53,7 +55,6 @@ public class IssueController {
 	@Operation(summary = "이슈 삭제", description = "issueId로 이슈 삭제")
 	@DeleteMapping("/{issueId}")
 	public ResponseEntity<?> removeIssue(@PathVariable UUID issueId){
-		// 담당자만 삭제 가능하도록 수정
 		issueService.deleteIssue(issueId);
 		return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "이슈 삭제 성공", true), HttpStatus.OK);
 	}
@@ -64,27 +65,29 @@ public class IssueController {
 	 */
 	@Operation(summary = "이슈 조회", description = "status로 이슈 조회 (TODO / INPROGRESS / DONE)")
 	@GetMapping("/allTickets/{status}")
-	public ResponseEntity<?> getIssues(@PathVariable String status, GetIssuePageRequest getIssuePageRequest){
+	public ResponseEntity<?> getIssues(@PathVariable String status, @RequestBody GetIssuePageRequest getIssuePageRequest){
+		log.info("status ={}, project id ={}", status, getIssuePageRequest.projectId());
 		// issueService.getIssues(projectId, status, getIssuePageRequest);
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "status로 이슈 조회 성공", issueService.getIssues(status, getIssuePageRequest), true), HttpStatus.OK);
 	}
 
 	@Operation(summary = "이슈 수정", description = "issueId로 기존 이슈 상세 정보 수정")
 	@PutMapping("/detail/{issueId}")
-	public ResponseEntity<?> updateTask(@PathVariable UUID issueId, UpdateIssueRequest updateIssueRequest){
+	public ResponseEntity<?> updateTask(@PathVariable UUID issueId, @RequestBody UpdateIssueRequest updateIssueRequest){
+		log.info("modifierId = {}", updateIssueRequest.modifierId());
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "이슈 상세 정보 수정 성공", issueService.updateIssue(issueId, updateIssueRequest), true), HttpStatus.OK);
 	}
 
 	@Operation(summary = "이슈 상태 수정", description = "issueId로 이슈 상세 상태 수정")
 	@PutMapping("/status/{issueId}")
-	public ResponseEntity<?> updateTask(@PathVariable UUID issueId, String status){
+	public ResponseEntity<?> updateTask(@PathVariable UUID issueId, @RequestParam String status){
 		issueService.updateIssueStatus(issueId, status);
 		return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "이슈 상태 수정 성공", true), HttpStatus.OK);
 	}
 
 	@Operation(summary = "이슈 검색 조회", description = "filter로 이슈 검색 조회 (MANAGER / TASK / ISSUE)")
 	@GetMapping("/search/{status}")
-	public ResponseEntity<?> getSearchIssues(@PathVariable String status, @RequestParam("filter") String filter, @RequestParam("word") String word, GetIssuePageRequest getIssuePageRequest){
+	public ResponseEntity<?> getSearchIssues(@PathVariable String status, @RequestParam("filter") String filter, @RequestParam("word") String word, @RequestBody GetIssuePageRequest getIssuePageRequest){
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "이슈 검색 조회 성공", issueService.getSearchIssues(status, filter, word, getIssuePageRequest), true), HttpStatus.OK);
 	}
 }

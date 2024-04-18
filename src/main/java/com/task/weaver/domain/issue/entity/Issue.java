@@ -69,7 +69,6 @@ public class Issue extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-
     public void updateIssue(UpdateIssueRequest updateIssueRequest, Task task, Member modifier, Member assignee) {
         this.task = task;
         this.modifier = modifier;

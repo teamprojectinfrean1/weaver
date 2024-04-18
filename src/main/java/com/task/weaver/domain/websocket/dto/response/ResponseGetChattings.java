@@ -20,7 +20,7 @@ public class ResponseGetChattings {
 
     public ResponseGetChattings(Chatting chatting){
         this.chatting_id = chatting.getId();
-        this.writer_name = chatting.getUser().getNickname();
+        this.writer_name = chatting.getMember().resolveMemberByLoginType().getNickname();
         this.chat_text = chatting.getContent();
         this.write_time = chatting.getRegDate();
     }

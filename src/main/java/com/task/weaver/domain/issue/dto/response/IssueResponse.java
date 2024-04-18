@@ -2,36 +2,14 @@ package com.task.weaver.domain.issue.dto.response;
 
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.task.dto.response.ResponseUpdateDetail;
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.net.URL;
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-// @Builder
-// public record IssueResponse(
-// 		UUID projectId,
-// 		UUID taskId,
-// 		String taskTitle,
-// 		UUID issueId,
-// 		String issueTitle,
-// 		String issueContent,
-// 		String status,
-// 		UUID assigneeId,
-// 		String assigneeNickname,
-// 		String assigneeProfileImage,
-// 		LocalDateTime startDate,
-// 		LocalDateTime endDate,
-// 		ResponseUpdateDetail lastUpdateDetail
-// 		) {
-//
-// 	public IssueResponse(Issue issue, User assignee, User modifier) {
-// 		this(issue.getIssueId(), issue.getTitle(), issue.getContent(), issue.getModDate(), issue.getStatus().toString());
-// 	}
-// }
 
 @Data
 @Builder
@@ -61,14 +39,14 @@ public class IssueResponse {
 		this.issueContent = issue.getIssueContent();
 		this.status = issue.getStatus().toString();
 		this.assigneeId = issue.getAssignee().getId();
-		this.assigneeNickname = issue.getAssignee().getUser() != null ? issue.getAssignee().getUser().getNickname() : issue.getAssignee().getOauthMember().nickname();
-		this.assigneeProfileImage = issue.getAssignee().getUser() != null ? issue.getAssignee().getUser().getProfileImage() : issue.getAssignee().getOauthMember().getProfileImage();
+		this.assigneeNickname = issue.getAssignee().resolveMemberByLoginType().getNickname();
+		this.assigneeProfileImage = issue.getAssignee().resolveMemberByLoginType().getProfileImage();
 		this.startDate = issue.getStartDate();
 		this.endDate = issue.getEndDate();
 		this.lastUpdateDetail = ResponseUpdateDetail.builder()
-			.memberUuid(issue.getModifier().getId())
-			.userNickname(issue.getModifier().getUser() != null ? issue.getModifier().getUser().getNickname() : issue.getModifier().getOauthMember().nickname())
-			.updatedDate(issue.getModDate())
-			.build();
+				.memberUuid(issue.getModifier().getId())
+				.userNickname(issue.getModifier().resolveMemberByLoginType().getNickname())
+				.updatedDate(issue.getModDate())
+				.build();
 	}
 }

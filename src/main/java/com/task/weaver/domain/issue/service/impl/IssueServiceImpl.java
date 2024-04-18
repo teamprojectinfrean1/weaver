@@ -30,6 +30,7 @@ import com.task.weaver.domain.task.dto.response.ResponseUpdateDetail;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.repository.TaskRepository;
 
+import lombok.extern.slf4j.Slf4j;
 import org.hamcrest.core.Is;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -41,6 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = false)
@@ -53,15 +55,14 @@ public class IssueServiceImpl implements IssueService {
 	@Override
 	public IssueResponse getIssue(UUID issueId) throws NotFoundException, AuthorizationException {
 		Issue issue = issueRepository.findById(issueId).orElseThrow(() -> new IllegalArgumentException(""));
-
-		IssueResponse issueResponse = new IssueResponse(issue);
-
-		return issueResponse;
+		return new IssueResponse(issue);
 	}
 
 	@Override
 	public ResponsePageResult<GetIssueListResponse, Issue> getIssues(String status,
 		GetIssuePageRequest getIssuePageRequest) throws NotFoundException, AuthorizationException {
+
+		log.info("status ={}, project id ={}", status, getIssuePageRequest.projectId());
 
 		Project project = projectRepository.findById(getIssuePageRequest.projectId())
 			.orElseThrow(() -> new IllegalArgumentException(""));
@@ -100,8 +101,6 @@ public class IssueServiceImpl implements IssueService {
 		List<Issue> issueList = new ArrayList<>();
 
 		Pageable pageable = getIssuePageRequest.getPageable(Sort.by("issueId").descending());
-
-		// Page<Issue> issuePage = issueRepository.findBySearch(getIssuePageRequest.projectId(), status, filter, word, pageable);
 
 		switch (filter){
 			case "ASSIGNEE":
@@ -168,8 +167,10 @@ public class IssueServiceImpl implements IssueService {
 			.endDate(createIssueRequest.endDate())
 			.status(Status.valueOf(createIssueRequest.status()))
 			.build();
-		issueRepository.save(issue).getIssueId();
+		issueRepository.save(issue);
 
+		task.addIssue(issue);
+		taskRepository.save(task);
 		return new IssueResponse(issue);
 	}
 
@@ -220,9 +221,9 @@ public class IssueServiceImpl implements IssueService {
 	@Override
 	public void updateIssueStatus(UUID issueId, String status) throws NotFoundException, AuthorizationException {
 		Issue issue = issueRepository.findById(issueId)
-			.orElseThrow(() -> new IllegalArgumentException(""));
+				.orElseThrow(() -> new IllegalArgumentException(""));
 
-		issue.updateStatus(Status.valueOf(status));
+		issue.updateStatus(Status.fromName(status));
 	}
 
 	@Override

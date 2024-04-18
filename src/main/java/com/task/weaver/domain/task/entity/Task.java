@@ -83,4 +83,8 @@ public class Task extends BaseEntity {
         this.modifier = updater;
         this.editDeletePermission = requestUpdateTask.getEditDeletePermission();
     }
+
+    public void addIssue(final Issue issue) {
+        this.issueList.add(issue);
+    }
 }
