@@ -1,10 +1,13 @@
 package com.task.weaver.domain.member.user.service.Impl;
 
+import static com.task.weaver.common.exception.ErrorCode.*;
 import static com.task.weaver.common.exception.ErrorCode.MISMATCHED_PASSWORD;
 import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.task.weaver.common.exception.BusinessException;
+import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.authorization.InvalidPasswordException;
+import com.task.weaver.common.exception.member.MismatchedInputException;
 import com.task.weaver.common.exception.member.MismatchedPassword;
 import com.task.weaver.common.exception.member.UserNotFoundException;
 import com.task.weaver.common.s3.S3Uploader;
@@ -48,11 +51,10 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final S3Uploader s3Uploader;
+    private final MemberService memberService;
     private final MemberFactory memberFactory;
     private final MemberRepository memberRepository;
     private final OauthMemberRepository oauthMemberRepository;
-    private final MemberService memberService;
-
 
     @Override
     @Transactional(readOnly = true)
@@ -117,7 +119,8 @@ public class UserServiceImpl implements UserService {
     public ResponseGetMember updateUser(UUID memberId, RequestUpdateUser requestUpdateUser) throws IOException {
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
-        if (findMember.getLoginType().equals(LoginType.WEAVER)) {
+        UserOauthMember userOauthMember = findMember.resolveMemberByLoginType();
+        if (userOauthMember.isWeaver()) {
             return getResponseGetMemberWithUser(requestUpdateUser, findMember.getUser());
         }
         return getResponseGetMemberWithOauth(requestUpdateUser, findMember.getOauthMember());
@@ -125,9 +128,11 @@ public class UserServiceImpl implements UserService {
 
     private ResponseGetMember getResponseGetMemberWithOauth(final RequestUpdateUser requestUpdateUser,
                                                             final OauthUser oauthMember) {
-        if ("nickname".equals(requestUpdateUser.getType())) {
-            oauthMember.updateNickname((String) requestUpdateUser.getValue());
+        if (!requestUpdateUser.getType().equals("nickname")) {
+            throw new MismatchedInputException(
+                    MISMATCHED_INPUT_VALUE, MISMATCHED_INPUT_VALUE.getMessage());
         }
+        oauthMember.updateNickname((String) requestUpdateUser.getValue());
         oauthMemberRepository.save(oauthMember);
         return ResponseGetMember.of(oauthMember);
     }
@@ -150,7 +155,6 @@ public class UserServiceImpl implements UserService {
         updateProfileImage(s3Uploader.updateFile(multipartFile, oldFileUrl, "images"), userOauthMember);
         return new ResponseSimpleURL(userOauthMember.getProfileImage());
     }
-
 
     private void updateProfileImage(final String s3Uploader, final UserOauthMember userOauthMember) throws IOException {
         URL updatedImageUrlObject = new URL(s3Uploader);
