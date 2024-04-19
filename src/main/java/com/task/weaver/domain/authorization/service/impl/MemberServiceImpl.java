@@ -36,7 +36,6 @@ import com.task.weaver.domain.member.user.dto.response.ResponseUserIdNickname;
 import com.task.weaver.domain.member.user.dto.response.ResponseUuid;
 import com.task.weaver.domain.member.user.entity.User;
 import com.task.weaver.domain.member.user.repository.UserRepository;
-import com.task.weaver.domain.member.util.MemberConverter;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
@@ -67,25 +66,23 @@ public class MemberServiceImpl implements MemberService {
 	private final RedisService redisService;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RefreshTokenRepository refreshTokenRepository;
-	private final MemberConverter memberConverter;
 
 	public ResponseToken reissue(String refreshToken, String loginType) {
 
+		log.info("Current Refresh Token = {}", refreshToken);
 		jwtTokenProvider.validateToken(refreshToken);
-
 		Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
-		log.info("authentication.getName() : " + authentication.getName());
 
 		RefreshToken currentRefreshToken = refreshTokenRepository.findByRefreshToken(refreshToken)
 			.orElseThrow(() -> new RuntimeException(""));
 
-		log.info("resolvedToken : " + refreshToken);
 		if(!refreshToken.equals(currentRefreshToken.getRefreshToken()))
 			throw new IllegalArgumentException("");
 
 		String newRefreshToken = jwtTokenProvider.createRefreshToken(authentication);
 		String newAccessToken = jwtTokenProvider.createAccessToken(authentication, LoginType.fromName(loginType));
 
+		log.info("new Refresh Token = {}", newRefreshToken);
 		redisService.deleteRefreshToken(currentRefreshToken);
 		refreshTokenRepository.save(new RefreshToken(currentRefreshToken.getId(), newRefreshToken));
 
@@ -198,7 +195,6 @@ public class MemberServiceImpl implements MemberService {
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		log.info("Authentication Object = {}", SecurityContextHolder.getContext());
 		String accessToken = jwtTokenProvider.createAccessToken(authentication, member.getLoginType());
 		String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
 		saveRefreshToken(member.getId(), refreshToken);

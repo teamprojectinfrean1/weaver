@@ -56,7 +56,8 @@ public class MemberController {
 
 		ResponseToken responseToken = memberService.reissue(refreshToken, loginType);
 		HttpHeaders headers = setCookieAndHeader(responseToken);
-		return new ResponseEntity<>(MessageResponse.of(HttpStatus.CREATED, "Token 재발급 성공", true), headers, HttpStatus.CREATED);
+		return new ResponseEntity<>(DataResponse.of(HttpStatus.CREATED, "Token 재발급 성공", headers, true),
+				HttpStatus.CREATED);
 	}
 
 	@Logger
@@ -99,6 +100,7 @@ public class MemberController {
 
 	@Logger
 	@Operation(summary = "토큰 기반 유저 조회", description = "로그인 직후, 토큰 기반으로 유저 정보 조회")
+	@Parameter(name = "Authorization", description = "토큰", in = ParameterIn.HEADER)
 	@GetMapping("/token")
 	public ResponseEntity<DataResponse<ResponseGetUserForFront>> getMemberFromToken(HttpServletRequest request) {
 		ResponseGetUserForFront responseGetUser = memberService.getMemberFromToken(request);

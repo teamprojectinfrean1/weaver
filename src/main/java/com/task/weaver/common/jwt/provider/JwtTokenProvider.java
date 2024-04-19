@@ -104,12 +104,12 @@ public class JwtTokenProvider {
 
 	/**
 	 * AccessToken 으로 Claim 리턴
-	 * @param accessToken
+	 * @param token
 	 * @return Claim
 	 */
-	private Claims parseClaims(String accessToken) {
+	private Claims parseClaims(String token) {
 		try {
-			return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
+			return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
 		} catch (ExpiredJwtException e) {
 			return e.getClaims();
 		}
@@ -117,14 +117,17 @@ public class JwtTokenProvider {
 
 	/**
 	 * Access Token 검사 후 얻은 정보로 Authentication 객체 생성
-	 * @param acceessToken JWT 토큰
+	 * @param token JWT 토큰
 	 * @return 인증 정보
 	 */
-	public Authentication getAuthentication(String acceessToken) {
-		Claims claims = parseClaims(acceessToken);
+	public Authentication getAuthentication(String token) {
+		Claims claims = parseClaims(token);
 		log.info( "claims.getSubject : " + claims.getSubject());
-		UserDetails userDetails = principalDetailService.loadUserByUsername(claims.getSubject());
-		return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+		PrincipalDetails userDetails = principalDetailService.loadUserByUsername(claims.getSubject());
+		log.info("userDetails.getUsername = {}", userDetails.getUsername());
+		log.info("userDetails.getPassword = {}", userDetails.getPassword());
+
+		return new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword());
 	}
 
 	public String getMemberIdByAssessToken(HttpServletRequest request){

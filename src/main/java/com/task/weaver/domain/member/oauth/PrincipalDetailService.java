@@ -18,7 +18,7 @@ public class PrincipalDetailService implements UserDetailsService {
     private final MemberRepository userOauthMemberRepository;
 
     @Override
-    public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
+    public PrincipalDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
         Member member = userOauthMemberRepository.findById(UUID.fromString(username))
                 .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND,
                         ErrorCode.USER_NOT_FOUND.getMessage()));
