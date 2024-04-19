@@ -8,7 +8,6 @@ import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.task.weaver.common.aop.annotation.Logger;
 import com.task.weaver.common.exception.BusinessException;
-import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.jwt.CannotResolveToken;
 import com.task.weaver.common.exception.member.UnableSendMailException;
 import com.task.weaver.common.exception.member.UserNotFoundException;
@@ -20,6 +19,7 @@ import com.task.weaver.common.redis.service.RedisService;
 import com.task.weaver.common.util.CookieUtil;
 import com.task.weaver.common.util.HttpHeaderUtil;
 import com.task.weaver.domain.authorization.dto.MemberProjectDTO;
+import com.task.weaver.domain.authorization.dto.request.MemberDto;
 import com.task.weaver.domain.authorization.dto.response.ResponseReIssueToken;
 import com.task.weaver.domain.authorization.dto.response.ResponseToken;
 import com.task.weaver.domain.authorization.dto.response.ResponseUserOauth.AllMember;
@@ -146,7 +146,7 @@ public class MemberServiceImpl implements MemberService {
 		Member member = memberRepository.findById(uuid)
 				.orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND.getMessage()));
 		UserOauthMember userOauthMemberData = member.resolveMemberByLoginType();
-		return memberConverter.convert(userOauthMemberData, ResponseGetMember.class);
+		return ResponseGetMember.of(MemberDto.memberDomainToDto(userOauthMemberData, member));
 	}
 
 	@Override
@@ -154,14 +154,9 @@ public class MemberServiceImpl implements MemberService {
 		if (!checked) {
 			throw new UnableSendMailException(NO_MATCHED_VERIFICATION_CODE, ": Redis to SMTP DATA");
 		}
-
 		User findUser = userRepository.findByEmail(email)
 				.orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
-
-		return ResponseUserIdNickname.builder()
-				.id(findUser.getId())
-				.nickname(findUser.getNickname())
-				.build();
+		return ResponseUserIdNickname.userToDto(findUser);
 	}
 
 	@Override
@@ -169,7 +164,7 @@ public class MemberServiceImpl implements MemberService {
 		String memberUuid = jwtTokenProvider.getMemberIdByAssessToken(request);
 		Member member = memberRepository.findById(UUID.fromString(memberUuid))
 				.orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
-		return memberConverter.convert(member.resolveMemberByLoginType(), ResponseGetUserForFront.class);
+		return ResponseGetUserForFront.of(MemberDto.memberDomainToDto(member.resolveMemberByLoginType(), member));
 	}
 
 	@Override

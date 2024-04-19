@@ -50,12 +50,12 @@ public class Member extends BaseEntity {
     @Column(columnDefinition = "BINARY(16)", name = "user_oauth_member_id")
     private UUID id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JsonBackReference
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "oauth_id")
     private OauthUser oauthMember;
 

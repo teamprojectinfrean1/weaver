@@ -1,6 +1,6 @@
 package com.task.weaver.domain.member.user.dto.response;
 
-import com.task.weaver.domain.member.oauth.entity.OauthId;
+import com.task.weaver.domain.authorization.dto.request.MemberDto;
 import com.task.weaver.domain.member.oauth.entity.OauthUser;
 import com.task.weaver.domain.member.user.entity.User;
 import java.util.UUID;
@@ -15,17 +15,15 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ResponseGetMember {
 
-    private UUID userId;
-    private UUID oauthId;
+    private UUID userOauthUuid;
     private String nickname;
     private String id;
     private String email;
     private String password;
     private String profileImageUrl;
-    private OauthId oauthServerId;
 
     private ResponseGetMember(User user){
-        this.userId = user.getUserId();
+        this.userOauthUuid = user.getUserId();
         this.id = user.getId();
         this.nickname = user.getNickname();
         this.email = user.getEmail();
@@ -34,10 +32,17 @@ public class ResponseGetMember {
     }
 
     private ResponseGetMember(OauthUser oauthMember) {
-        this.oauthId = oauthMember.getUuid();
-        this.oauthServerId = oauthMember.oauthId();
         this.nickname = oauthMember.getNickname();
         this.profileImageUrl = String.valueOf(oauthMember.getProfileImage());
+    }
+
+    private ResponseGetMember(MemberDto memberDto){
+        this.userOauthUuid = memberDto.getUserId();
+        this.id = memberDto.getId();
+        this.nickname = memberDto.getNickname();
+        this.email = memberDto.getEmail();
+        this.password = memberDto.getPassword();
+        this.profileImageUrl = String.valueOf(memberDto.getProfileImageUrl());
     }
 
     public static ResponseGetMember of(User user) {
@@ -46,5 +51,9 @@ public class ResponseGetMember {
 
     public static ResponseGetMember of(OauthUser oauthMember) {
         return new ResponseGetMember(oauthMember);
+    }
+
+    public static ResponseGetMember of(MemberDto memberDto) {
+        return new ResponseGetMember(memberDto);
     }
 }

@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "Authorization Controller", description = "인증 관련 컨트롤러")
+@Tag(name = "Member Controller", description = "멤버 공통 기능 관련 컨트롤러")
 @RestController
 @RequestMapping("/api/v1/member")
 @RequiredArgsConstructor

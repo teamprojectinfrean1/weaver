@@ -1,5 +1,6 @@
 package com.task.weaver.domain.member.user.dto.request;
 
+import com.task.weaver.domain.member.UserOauthMember;
 import com.task.weaver.domain.member.user.entity.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -33,7 +34,7 @@ public class RequestCreateUser {
             message = "비밀번호는 영문 대,소문자와 숫자, 특수기호가 적어도 1개 이상씩 포함된 8 - 20자의 비밀번호여야 합니다.")
     private String password;
 
-    public User toDomain(PasswordEncoder passwordEncoder) {
+    public User dtoToUserDomain(PasswordEncoder passwordEncoder) {
         return User.builder()
                 .id(this.id)
                 .nickname(this.nickname)

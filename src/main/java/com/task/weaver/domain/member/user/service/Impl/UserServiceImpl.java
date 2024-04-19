@@ -31,7 +31,6 @@ import com.task.weaver.domain.member.util.MemberStorageHandler;
 import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedHashMap;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -88,7 +87,7 @@ public class UserServiceImpl implements UserService {
             throws BusinessException, IOException {
 
         isExistEmail(requestCreateUser.getEmail());
-        User user = hasImage(profileImage, requestCreateUser.toDomain(passwordEncoder));
+        User user = hasImage(profileImage, requestCreateUser.dtoToUserDomain(passwordEncoder));
         Member member = memberFactory.createUserOauthMember(user);
         addMemberUuid(user, member);
         log.info("user uuid : " + user.getUserId());
@@ -115,7 +114,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseGetMember updateUser(UUID memberId, RequestUpdateUser requestUpdateUser) throws IOException {
+    public ResponseGetMember updateUser(UUID memberId, RequestUpdateUser requestUpdateUser) {
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
         UserOauthMember userOauthMember = findMember.resolveMemberByLoginType();
@@ -132,6 +131,7 @@ public class UserServiceImpl implements UserService {
                     MISMATCHED_INPUT_VALUE, MISMATCHED_INPUT_VALUE.getMessage());
         }
         oauthMember.updateNickname((String) requestUpdateUser.getValue());
+        log.info("update nickname = {}", requestUpdateUser.getValue());
         oauthMemberRepository.save(oauthMember);
         return ResponseGetMember.of(oauthMember);
     }
@@ -151,6 +151,8 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
         UserOauthMember userOauthMember = member.resolveMemberByLoginType();
         String oldFileUrl = userOauthMember.getProfileImage().getPath().substring(1);
+        log.info("user profile origin = {}", userOauthMember.getProfileImage().getPath());
+        log.info("oldFileUrl = {}", oldFileUrl);
         updateProfileImage(s3Uploader.updateFile(multipartFile, oldFileUrl, "images"), userOauthMember);
         return new ResponseSimpleURL(userOauthMember.getProfileImage());
     }
@@ -162,7 +164,6 @@ public class UserServiceImpl implements UserService {
     }
 
     private void updatePassword(final Object requestUpdateUser, final User user) {
-
         if (requestUpdateUser instanceof LinkedHashMap) {
             JSONObject jsonObject = new JSONObject((LinkedHashMap) requestUpdateUser);
             String currentPassword = (String) jsonObject.get("currentPassword");
@@ -178,9 +179,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUser(final RequestUpdatePassword requestUpdatePassword) {
         UUID uuid = UUID.fromString(requestUpdatePassword.getUuid());
-        Optional<User> byUserId = userRepository.findById(uuid);
-        User user = byUserId.orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, ": 해당 유저를 찾을 수 없습니다."));
-        user.updatePassword(passwordEncoder.encode(requestUpdatePassword.getPassword()));
+        User byUserId = userRepository.findById(uuid).orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, ": 해당 유저를 찾을 수 없습니다."));
+        byUserId.updatePassword(passwordEncoder.encode(requestUpdatePassword.getPassword()));
     }
 
     @Override

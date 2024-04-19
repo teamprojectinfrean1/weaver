@@ -16,7 +16,5 @@ public interface UserOauthMember {
 
     void updateProfileImage(URL updatedImageUrlObject);
 
-    UUID getMemberUuid();
-
     void updateMemberUuid(UUID memberUuid);
 }
