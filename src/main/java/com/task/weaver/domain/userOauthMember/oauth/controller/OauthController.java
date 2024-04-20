@@ -1,16 +1,16 @@
-package com.task.weaver.domain.member.oauth.controller;
+package com.task.weaver.domain.userOauthMember.oauth.controller;
 
-import static com.task.weaver.domain.authorization.service.impl.MemberServiceImpl.setCookieAndHeader;
+import static com.task.weaver.domain.member.service.impl.MemberServiceImpl.setCookieAndHeader;
 
 import com.task.weaver.common.aop.annotation.Logger;
 import com.task.weaver.common.model.OauthServerType;
 import com.task.weaver.common.response.DataResponse;
-import com.task.weaver.domain.authorization.dto.response.ResponseToken;
-import com.task.weaver.domain.authorization.service.impl.MemberServiceImpl;
-import com.task.weaver.domain.member.oauth.entity.OauthUser;
-import com.task.weaver.domain.member.oauth.service.OauthService;
-import com.task.weaver.domain.authorization.entity.Member;
-import com.task.weaver.domain.authorization.factory.MemberFactory;
+import com.task.weaver.domain.member.dto.response.ResponseToken;
+import com.task.weaver.domain.member.service.impl.MemberServiceImpl;
+import com.task.weaver.domain.userOauthMember.oauth.entity.OauthUser;
+import com.task.weaver.domain.userOauthMember.oauth.service.OauthService;
+import com.task.weaver.domain.member.entity.Member;
+import com.task.weaver.domain.member.factory.MemberFactory;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

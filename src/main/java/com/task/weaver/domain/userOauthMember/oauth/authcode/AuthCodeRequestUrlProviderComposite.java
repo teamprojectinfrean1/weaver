@@ -1,4 +1,4 @@
-package com.task.weaver.domain.member.oauth.authcode;
+package com.task.weaver.domain.userOauthMember.oauth.authcode;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;

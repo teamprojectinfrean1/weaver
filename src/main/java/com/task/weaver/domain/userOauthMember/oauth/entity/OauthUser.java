@@ -1,7 +1,7 @@
-package com.task.weaver.domain.member.oauth.entity;
+package com.task.weaver.domain.userOauthMember.oauth.entity;
 
 import com.task.weaver.domain.BaseEntity;
-import com.task.weaver.domain.member.UserOauthMember;
+import com.task.weaver.domain.userOauthMember.UserOauthMember;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;

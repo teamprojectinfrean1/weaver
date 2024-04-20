@@ -2,15 +2,12 @@ package com.task.weaver.domain.comment.service.impl;
 
 import static com.task.weaver.common.exception.ErrorCode.*;
 
-import com.task.weaver.common.exception.AuthorizationException;
-import com.task.weaver.common.exception.ErrorCode;
-import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.common.exception.comment.CommentNotFoundException;
 import com.task.weaver.common.exception.issue.IssueNotFoundException;
 import com.task.weaver.common.exception.member.MismatchedMember;
 import com.task.weaver.common.exception.member.UserNotFoundException;
-import com.task.weaver.domain.authorization.entity.Member;
-import com.task.weaver.domain.authorization.repository.MemberRepository;
+import com.task.weaver.domain.member.entity.Member;
+import com.task.weaver.domain.member.repository.MemberRepository;
 import com.task.weaver.domain.comment.dto.request.CommentPageRequest;
 import com.task.weaver.domain.comment.dto.request.RequestCreateComment;
 import com.task.weaver.domain.comment.dto.request.RequestUpdateComment;
@@ -30,7 +27,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;

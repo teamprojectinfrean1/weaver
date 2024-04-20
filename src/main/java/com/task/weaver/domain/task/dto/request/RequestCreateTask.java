@@ -1,9 +1,8 @@
 package com.task.weaver.domain.task.dto.request;
 
-import com.task.weaver.domain.authorization.entity.Member;
+import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.task.entity.Task;
-import com.task.weaver.domain.member.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

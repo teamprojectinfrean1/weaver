@@ -1,6 +1,6 @@
-package com.task.weaver.domain.member.user.repository.dsl;
+package com.task.weaver.domain.userOauthMember.user.repository.dsl;
 
-import com.task.weaver.domain.member.user.entity.User;
+import com.task.weaver.domain.userOauthMember.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

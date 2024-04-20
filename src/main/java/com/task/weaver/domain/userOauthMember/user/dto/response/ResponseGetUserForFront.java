@@ -1,8 +1,8 @@
-package com.task.weaver.domain.member.user.dto.response;
+package com.task.weaver.domain.userOauthMember.user.dto.response;
 
-import com.task.weaver.domain.authorization.dto.request.MemberDto;
-import com.task.weaver.domain.member.oauth.entity.OauthUser;
-import com.task.weaver.domain.member.user.entity.User;
+import com.task.weaver.domain.member.dto.request.MemberDto;
+import com.task.weaver.domain.userOauthMember.oauth.entity.OauthUser;
+import com.task.weaver.domain.userOauthMember.user.entity.User;
 import java.net.URL;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

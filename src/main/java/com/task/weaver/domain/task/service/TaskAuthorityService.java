@@ -1,6 +1,6 @@
 package com.task.weaver.domain.task.service;
 
-import com.task.weaver.domain.member.user.entity.User;
+import com.task.weaver.domain.userOauthMember.user.entity.User;
 import com.task.weaver.domain.task.dto.request.RequestCreateTaskAuthority;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTaskAuthority;
 import com.task.weaver.domain.task.dto.response.ResponseTaskAuthority;

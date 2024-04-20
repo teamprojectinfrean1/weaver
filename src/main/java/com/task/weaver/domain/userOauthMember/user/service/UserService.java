@@ -1,16 +1,14 @@
-package com.task.weaver.domain.member.user.service;
+package com.task.weaver.domain.userOauthMember.user.service;
 
 import com.task.weaver.common.aop.annotation.LoggingStopWatch;
-import com.task.weaver.domain.authorization.dto.request.RequestSignIn;
-import com.task.weaver.domain.authorization.dto.response.ResponseToken;
-import com.task.weaver.domain.member.UserOauthMember;
-import com.task.weaver.domain.member.user.dto.response.ResponseGetMember;
-import com.task.weaver.domain.member.user.dto.request.RequestCreateUser;
-import com.task.weaver.domain.member.user.dto.request.RequestUpdatePassword;
-import com.task.weaver.domain.member.user.dto.request.RequestUpdateUser;
-import com.task.weaver.domain.member.user.dto.response.ResponseSimpleURL;
+import com.task.weaver.domain.member.dto.request.RequestSignIn;
+import com.task.weaver.domain.member.dto.response.ResponseToken;
+import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseGetMember;
+import com.task.weaver.domain.userOauthMember.user.dto.request.RequestCreateUser;
+import com.task.weaver.domain.userOauthMember.user.dto.request.RequestUpdatePassword;
+import com.task.weaver.domain.userOauthMember.user.dto.request.RequestUpdateUser;
+import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseSimpleURL;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import org.json.simple.parser.ParseException;
 
 import java.util.UUID;

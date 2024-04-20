@@ -1,4 +1,4 @@
-package com.task.weaver.domain.member.user.dto.response;
+package com.task.weaver.domain.userOauthMember.user.dto.response;
 
 public class EmailVerificationResult {
     private final boolean verificationStatus;

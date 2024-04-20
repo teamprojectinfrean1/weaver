@@ -1,8 +1,8 @@
-package com.task.weaver.domain.member.user.entity;
+package com.task.weaver.domain.userOauthMember.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.task.weaver.domain.BaseEntity;
-import com.task.weaver.domain.member.UserOauthMember;
+import com.task.weaver.domain.userOauthMember.UserOauthMember;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

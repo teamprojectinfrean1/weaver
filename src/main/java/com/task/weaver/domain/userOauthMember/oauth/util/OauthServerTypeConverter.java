@@ -1,4 +1,4 @@
-package com.task.weaver.domain.member.oauth.util;
+package com.task.weaver.domain.userOauthMember.oauth.util;
 
 import com.task.weaver.common.model.OauthServerType;
 import org.springframework.core.convert.converter.Converter;

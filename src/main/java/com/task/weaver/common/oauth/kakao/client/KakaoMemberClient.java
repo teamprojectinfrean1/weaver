@@ -1,11 +1,11 @@
 package com.task.weaver.common.oauth.kakao.client;
 
 import com.task.weaver.common.oauth.config.KakaoOauthConfig;
-import com.task.weaver.domain.member.oauth.client.OauthMemberClient;
+import com.task.weaver.domain.userOauthMember.oauth.client.OauthMemberClient;
 import com.task.weaver.common.model.OauthServerType;
 import com.task.weaver.common.oauth.kakao.dto.KakaoMemberResponse;
 import com.task.weaver.common.oauth.kakao.dto.KakaoToken;
-import com.task.weaver.domain.member.oauth.entity.OauthUser;
+import com.task.weaver.domain.userOauthMember.oauth.entity.OauthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;

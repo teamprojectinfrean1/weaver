@@ -1,4 +1,4 @@
-package com.task.weaver.domain.member.user.dto.request;
+package com.task.weaver.domain.userOauthMember.user.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

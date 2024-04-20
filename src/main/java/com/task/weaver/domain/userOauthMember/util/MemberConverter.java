@@ -1,12 +1,12 @@
-package com.task.weaver.domain.member.util;
+package com.task.weaver.domain.userOauthMember.util;
 
 import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.member.MemberCannotConvertedException;
-import com.task.weaver.domain.member.UserOauthMember;
-import com.task.weaver.domain.member.oauth.entity.OauthUser;
-import com.task.weaver.domain.member.user.dto.response.ResponseGetMember;
-import com.task.weaver.domain.member.user.dto.response.ResponseGetUserForFront;
-import com.task.weaver.domain.member.user.entity.User;
+import com.task.weaver.domain.userOauthMember.UserOauthMember;
+import com.task.weaver.domain.userOauthMember.oauth.entity.OauthUser;
+import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseGetMember;
+import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseGetUserForFront;
+import com.task.weaver.domain.userOauthMember.user.entity.User;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

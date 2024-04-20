@@ -1,7 +1,7 @@
-package com.task.weaver.domain.member.oauth.client;
+package com.task.weaver.domain.userOauthMember.oauth.client;
 
 import com.task.weaver.common.model.OauthServerType;
-import com.task.weaver.domain.member.oauth.entity.OauthUser;
+import com.task.weaver.domain.userOauthMember.oauth.entity.OauthUser;
 
 /**
  * Oauth UserOauthMember 생성 로직

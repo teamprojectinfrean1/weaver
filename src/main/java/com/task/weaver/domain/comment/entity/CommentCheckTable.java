@@ -1,7 +1,7 @@
 package com.task.weaver.domain.comment.entity;
 
 import com.task.weaver.domain.BaseEntity;
-import com.task.weaver.domain.member.user.entity.User;
+import com.task.weaver.domain.userOauthMember.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

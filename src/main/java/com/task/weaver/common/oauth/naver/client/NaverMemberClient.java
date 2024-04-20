@@ -1,9 +1,9 @@
 package com.task.weaver.common.oauth.naver.client;
 
 import com.task.weaver.common.oauth.config.NaverOauthConfig;
-import com.task.weaver.domain.member.oauth.client.OauthMemberClient;
+import com.task.weaver.domain.userOauthMember.oauth.client.OauthMemberClient;
 import com.task.weaver.common.model.OauthServerType;
-import com.task.weaver.domain.member.oauth.entity.OauthUser;
+import com.task.weaver.domain.userOauthMember.oauth.entity.OauthUser;
 import com.task.weaver.common.oauth.naver.dto.NaverMemberResponse;
 import com.task.weaver.common.oauth.naver.dto.NaverToken;
 import lombok.RequiredArgsConstructor;

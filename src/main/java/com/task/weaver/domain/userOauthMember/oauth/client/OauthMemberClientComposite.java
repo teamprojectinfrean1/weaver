@@ -1,4 +1,4 @@
-package com.task.weaver.domain.member.oauth.client;
+package com.task.weaver.domain.userOauthMember.oauth.client;
 
 import static java.util.stream.Collectors.toMap;
 import static java.util.function.Function.identity;
@@ -6,7 +6,7 @@ import static java.util.function.Function.identity;
 import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.member.UnsupportedPlatformsException;
 import com.task.weaver.common.model.OauthServerType;
-import com.task.weaver.domain.member.oauth.entity.OauthUser;
+import com.task.weaver.domain.userOauthMember.oauth.entity.OauthUser;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;

@@ -1,4 +1,4 @@
-package com.task.weaver.domain.member.oauth.entity;
+package com.task.weaver.domain.userOauthMember.oauth.entity;
 
 import static jakarta.persistence.EnumType.STRING;
 

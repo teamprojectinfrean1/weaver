@@ -1,7 +1,6 @@
-package com.task.weaver.domain.member.user.dto.request;
+package com.task.weaver.domain.userOauthMember.user.dto.request;
 
-import com.task.weaver.domain.member.UserOauthMember;
-import com.task.weaver.domain.member.user.entity.User;
+import com.task.weaver.domain.userOauthMember.user.entity.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

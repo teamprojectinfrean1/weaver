@@ -1,6 +1,6 @@
 package com.task.weaver.common.config;
 
-import com.task.weaver.domain.member.oauth.util.OauthServerTypeConverter;
+import com.task.weaver.domain.userOauthMember.oauth.util.OauthServerTypeConverter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

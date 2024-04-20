@@ -1,8 +1,8 @@
 package com.task.weaver.domain.issue.service.impl;
 
 import com.task.weaver.common.model.Status;
-import com.task.weaver.domain.authorization.entity.Member;
-import com.task.weaver.domain.authorization.repository.MemberRepository;
+import com.task.weaver.domain.member.entity.Member;
+import com.task.weaver.domain.member.repository.MemberRepository;
 import com.task.weaver.domain.issue.dto.request.CreateIssueRequest;
 import com.task.weaver.domain.issue.dto.request.GetIssuePageRequest;
 import com.task.weaver.domain.issue.dto.request.UpdateIssueRequest;

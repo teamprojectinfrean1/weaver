@@ -1,4 +1,4 @@
-package com.task.weaver.domain.member;
+package com.task.weaver.domain.userOauthMember;
 
 import java.util.Locale;
 

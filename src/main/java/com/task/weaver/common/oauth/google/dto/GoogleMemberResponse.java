@@ -4,8 +4,8 @@ import static com.task.weaver.common.model.OauthServerType.GOOGLE;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.task.weaver.domain.member.oauth.entity.OauthId;
-import com.task.weaver.domain.member.oauth.entity.OauthUser;
+import com.task.weaver.domain.userOauthMember.oauth.entity.OauthId;
+import com.task.weaver.domain.userOauthMember.oauth.entity.OauthUser;
 import java.net.URL;
 
 @JsonNaming(value = SnakeCaseStrategy.class)

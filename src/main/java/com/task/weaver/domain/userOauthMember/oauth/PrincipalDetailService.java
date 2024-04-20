@@ -1,12 +1,11 @@
-package com.task.weaver.domain.member.oauth;
+package com.task.weaver.domain.userOauthMember.oauth;
 
 import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.member.UserNotFoundException;
-import com.task.weaver.domain.authorization.entity.Member;
-import com.task.weaver.domain.authorization.repository.MemberRepository;
+import com.task.weaver.domain.member.entity.Member;
+import com.task.weaver.domain.member.repository.MemberRepository;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;

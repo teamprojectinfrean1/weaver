@@ -1,6 +1,6 @@
-package com.task.weaver.domain.member.oauth;
+package com.task.weaver.domain.userOauthMember.oauth;
 
-import com.task.weaver.domain.authorization.entity.Member;
+import com.task.weaver.domain.member.entity.Member;
 import jakarta.servlet.http.HttpSession;
 import java.util.Collection;
 import lombok.AllArgsConstructor;

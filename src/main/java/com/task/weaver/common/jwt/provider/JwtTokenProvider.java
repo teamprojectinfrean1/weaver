@@ -1,8 +1,8 @@
 package com.task.weaver.common.jwt.provider;
 
-import com.task.weaver.domain.member.LoginType;
-import com.task.weaver.domain.member.oauth.PrincipalDetailService;
-import com.task.weaver.domain.member.oauth.PrincipalDetails;
+import com.task.weaver.domain.userOauthMember.LoginType;
+import com.task.weaver.domain.userOauthMember.oauth.PrincipalDetailService;
+import com.task.weaver.domain.userOauthMember.oauth.PrincipalDetails;
 import io.jsonwebtoken.Jws;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -13,7 +13,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
