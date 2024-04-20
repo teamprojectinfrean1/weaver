@@ -100,11 +100,9 @@ public class SecurityConfig {
 				.exceptionHandling(handler -> handler
 				.authenticationEntryPoint(jwtAuthenticationEntryPoint))
 				// JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣는다
-				.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
-						UsernamePasswordAuthenticationFilter.class)
-				// session 미사용
+				.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),	UsernamePasswordAuthenticationFilter.class)
 				.sessionManagement(sessionManagement -> sessionManagement
-						.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 		return httpSecurity.build();
 	}
 

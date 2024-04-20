@@ -1,7 +1,6 @@
 package com.task.weaver.domain.task.service.impl;
 
-import com.task.weaver.common.exception.AuthorizationException;
-import com.task.weaver.common.exception.NotFoundException;
+import com.task.weaver.domain.member.user.entity.User;
 import com.task.weaver.domain.task.dto.request.RequestCreateTaskAuthority;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTaskAuthority;
 import com.task.weaver.domain.task.dto.response.ResponseTaskAuthority;
@@ -9,12 +8,10 @@ import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.entity.TaskAuthority;
 import com.task.weaver.domain.task.repository.TaskAuthorityRepository;
 import com.task.weaver.domain.task.service.TaskAuthorityService;
-import com.task.weaver.domain.member.user.entity.User;
+import java.awt.print.Pageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-
-import java.awt.print.Pageable;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +20,7 @@ public class TaskAuthorityServiceImpl implements TaskAuthorityService {
     private final TaskAuthorityRepository taskAuthorityRepository;
 
     @Override
-    public ResponseTaskAuthority getTaskAuthority(Long taskAuthorityId) throws NotFoundException, AuthorizationException {
+    public ResponseTaskAuthority getTaskAuthority(Long taskAuthorityId) {
 
         TaskAuthority taskAuthority = taskAuthorityRepository.findById(taskAuthorityId).get();
         ResponseTaskAuthority responseTaskAuthority = new ResponseTaskAuthority(taskAuthority);
@@ -32,21 +29,21 @@ public class TaskAuthorityServiceImpl implements TaskAuthorityService {
     }
 
     @Override
-    public Page<TaskAuthority> getTaskAuthorities(Task task, Pageable pageable) throws NotFoundException, AuthorizationException {
+    public Page<TaskAuthority> getTaskAuthorities(Task task, Pageable pageable) {
         // return (Page<TaskAuthority>) taskAuthorityRepository.findById(task.getTaskId()).orElseThrow(
         //         () -> new NotFoundException());
         return null;
     }
 
     @Override
-    public Page<TaskAuthority> getTaskAuthorities(User user, Pageable pageable) throws NotFoundException, AuthorizationException {
+    public Page<TaskAuthority> getTaskAuthorities(User user, Pageable pageable) {
         // return (Page<TaskAuthority>) taskAuthorityRepository.findById(user.getUserId()).orElseThrow(
         //         () -> new NotFoundException());
         return null;
     }
 
     @Override
-    public TaskAuthority addTaskAuthority(TaskAuthority taskAuthority) throws AuthorizationException {
+    public TaskAuthority addTaskAuthority(TaskAuthority taskAuthority) {
         taskAuthorityRepository.save(taskAuthority);
         return taskAuthority;
     }
@@ -61,24 +58,25 @@ public class TaskAuthorityServiceImpl implements TaskAuthorityService {
     }
 
     @Override
-    public void deleteTaskAuthority(TaskAuthority taskAuthority) throws NotFoundException, AuthorizationException {
+    public void deleteTaskAuthority(TaskAuthority taskAuthority) {
         taskAuthorityRepository.delete(taskAuthority);
     }
 
     @Override
-    public void deleteTaskAuthority(Long taskAuthorityId) throws NotFoundException, AuthorizationException {
+    public void deleteTaskAuthority(Long taskAuthorityId) {
         taskAuthorityRepository.deleteById(taskAuthorityId);
     }
 
     @Override
-    public TaskAuthority updateTaskAuthority(TaskAuthority originalTaskAuthority, TaskAuthority newTaskAuthority) throws NotFoundException, AuthorizationException {
-        TaskAuthority taskAuthority = taskAuthorityRepository.findById(originalTaskAuthority.getTaskAuthorityId()).get();
+    public TaskAuthority updateTaskAuthority(TaskAuthority originalTaskAuthority, TaskAuthority newTaskAuthority) {
+        TaskAuthority taskAuthority = taskAuthorityRepository.findById(originalTaskAuthority.getTaskAuthorityId())
+                .get();
         taskAuthority.updateTaskAuthority(taskAuthority);
         return taskAuthority;
     }
 
     @Override
-    public TaskAuthority updateTaskAuthority(Long originalTaskAuthorityId, TaskAuthority newTaskAuthority) throws NotFoundException, AuthorizationException {
+    public TaskAuthority updateTaskAuthority(Long originalTaskAuthorityId, TaskAuthority newTaskAuthority) {
         TaskAuthority taskAuthority = taskAuthorityRepository.findById(originalTaskAuthorityId).get();
         taskAuthority.updateTaskAuthority(taskAuthority);
         return taskAuthority;
@@ -92,6 +90,4 @@ public class TaskAuthorityServiceImpl implements TaskAuthorityService {
         ResponseTaskAuthority responseTaskAuthority = new ResponseTaskAuthority(taskAuthority);
         return responseTaskAuthority;
     }
-
-
 }

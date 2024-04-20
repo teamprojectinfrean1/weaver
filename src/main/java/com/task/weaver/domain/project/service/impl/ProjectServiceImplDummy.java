@@ -173,10 +173,7 @@ public class ProjectServiceImplDummy implements ProjectService {
             Member updater = memberRepository.findById(dto.updaterUuid())
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(dto.updaterUuid()))));
             Project entity = result.get();
-//            entity.changeDetail(dto.projectContent());
-//            entity.changeName(dto.projectName());
             entity.updateProject(dto, updater);
-//            projectRepository.save(entity);
             return;
         }
         throw new ProjectNotFoundException(new Throwable(String.valueOf(projectId)));
@@ -214,7 +211,6 @@ public class ProjectServiceImplDummy implements ProjectService {
         Optional<Project> result = projectRepository.findById(projectId);
         if (result.isPresent()) {
             Project project = result.get();
-//            project.changePublic();
             projectRepository.save(project);
             return;
         }

@@ -3,6 +3,7 @@ package com.task.weaver.domain.comment.service.impl;
 import static com.task.weaver.common.exception.ErrorCode.*;
 
 import com.task.weaver.common.exception.AuthorizationException;
+import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.common.exception.comment.CommentNotFoundException;
 import com.task.weaver.common.exception.issue.IssueNotFoundException;
@@ -46,14 +47,15 @@ public class CommentServiceImpl implements CommentService {
     private final IssueRepository issueRepository;
 
     @Override
-    public ResponseComment getComment(Long id) throws NotFoundException {
-        Comment comment = commentRepository.findById(id).orElseThrow(() -> new CommentNotFoundException(new Throwable(id.toString()))); //예외추가
+    public ResponseComment getComment(Long id) {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new CommentNotFoundException(COMMENT_NOT_FOUND, COMMENT_NOT_FOUND.getMessage()));
         return new ResponseComment(comment);
 
     }
 
     @Override
-    public ResponsePageComment<ResponseCommentList, Comment> getComments(CommentPageRequest commentPageRequest) throws NotFoundException, AuthorizationException {
+    public ResponsePageComment<ResponseCommentList, Comment> getComments(CommentPageRequest commentPageRequest) {
         log.info("Issue ID={}", commentPageRequest.getIssueId());
         Issue issue = issueRepository.findById(commentPageRequest.getIssueId())
                 .orElseThrow(() -> new IssueNotFoundException(ISSUE_NOT_FOUND, ISSUE_NOT_FOUND.getMessage()));
@@ -67,7 +69,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public ResponseComment addComment(RequestCreateComment requestComment) throws NotFoundException {
+    public ResponseComment addComment(RequestCreateComment requestComment) {
         Member writer = memberRepository.findById(requestComment.writerId())
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(requestComment.writerId().toString())));
         Issue issue = issueRepository.findById(requestComment.issueId())
@@ -82,18 +84,18 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void deleteComment(Comment comment) throws NotFoundException {
+    public void deleteComment(Comment comment) {
         commentRepository.delete(comment);
     }
 
     @Override
-    public void deleteComment(Long commentId) throws NotFoundException {
+    public void deleteComment(Long commentId) {
         commentRepository.deleteById(commentId);
     }
 
     @Override
     @Transactional
-    public ResponseComment updateComment(Long originalCommentId, RequestUpdateComment requestUpdateComment) throws NotFoundException {
+    public ResponseComment updateComment(Long originalCommentId, RequestUpdateComment requestUpdateComment) {
         Comment comment = commentRepository.findById(originalCommentId)
                 .orElseThrow(() -> new CommentNotFoundException(COMMENT_NOT_FOUND, COMMENT_NOT_FOUND.getMessage()));
         Member updater = memberRepository.findById(requestUpdateComment.getUpdaterUUID())
