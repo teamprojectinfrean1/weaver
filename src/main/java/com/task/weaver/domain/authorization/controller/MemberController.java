@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,7 +50,8 @@ public class MemberController {
 
 	@Logger
 	@Operation(summary = "reissue", description = "refresh token 재발급")
-	@GetMapping("/reissue")
+	@Parameter(name = "refreshToken", description = "리프래쉬 토큰", in = ParameterIn.COOKIE)
+	@GetMapping(value = "/reissue")
 	public ResponseEntity<?> reissue(@CookieValue(value = "refreshToken") String refreshToken,
 									 @RequestParam String loginType) {
 		log.info("reissue controller - refreshToken : " + refreshToken);

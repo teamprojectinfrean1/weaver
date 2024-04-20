@@ -98,7 +98,7 @@ public class SecurityConfig {
 				.httpBasic(HttpBasicConfigurer::disable) // header에 id, pw가 아닌 jwt 달고감. 따라서 basic 아닌 bearer 사용
 				.cors(Customizer.withDefaults())
 				.exceptionHandling(handler -> handler
-						.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+				.authenticationEntryPoint(jwtAuthenticationEntryPoint))
 				// JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣는다
 				.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
 						UsernamePasswordAuthenticationFilter.class)
