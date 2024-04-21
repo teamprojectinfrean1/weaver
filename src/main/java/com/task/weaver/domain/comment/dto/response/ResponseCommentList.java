@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -19,6 +20,7 @@ public class ResponseCommentList {
     private String body;
     private String userNickname;
     private URL userProfileImage;
+    private LocalDateTime createdAt;
 
     public ResponseCommentList(Comment comment){
         this.commentId = comment.getComment_id();
@@ -26,5 +28,6 @@ public class ResponseCommentList {
         this.userId = comment.getIssue().getIssueId();
         this.userNickname = comment.getUser().getNickname();
         this.userProfileImage = comment.getUser().getProfileImage();
+        this.createdAt = comment.getModDate();
     }
 }
