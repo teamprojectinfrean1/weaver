@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class ResponseCommentList {
-    private Long commentId;
+    private UUID commentId;
     private UUID userId;
     private String body;
 

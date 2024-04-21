@@ -3,9 +3,11 @@ package com.task.weaver.domain.comment.dto.response;
 import com.task.weaver.domain.comment.entity.Comment;
 import lombok.Builder;
 
+import java.util.UUID;
+
 @Builder
 public record ResponseComment(
-        Long commentId,
+        UUID commentId,
         String body
 ) {
     public ResponseComment(Comment comment) {
