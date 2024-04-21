@@ -20,7 +20,7 @@ public class ResponseCommentList {
     private String body;
     private String userNickname;
     private URL userProfileImage;
-    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public ResponseCommentList(Comment comment){
         this.commentId = comment.getComment_id();
@@ -28,6 +28,6 @@ public class ResponseCommentList {
         this.userId = comment.getIssue().getIssueId();
         this.userNickname = comment.getUser().getNickname();
         this.userProfileImage = comment.getUser().getProfileImage();
-        this.createdAt = comment.getModDate();
+        this.updatedAt = comment.getModDate();
     }
 }
