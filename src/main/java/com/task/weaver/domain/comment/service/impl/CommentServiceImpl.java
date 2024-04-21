@@ -19,6 +19,7 @@ import com.task.weaver.domain.issue.repository.IssueRepository;
 import com.task.weaver.domain.user.entity.User;
 import com.task.weaver.domain.user.repository.UserRepository;
 
+import java.util.UUID;
 import java.util.function.Function;
 
 import lombok.RequiredArgsConstructor;
@@ -58,7 +59,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public Long addComment(RequestCreateComment requestComment) throws NotFoundException {
+    public UUID addComment(RequestCreateComment requestComment) throws NotFoundException {
         User writer = userRepository.findById(requestComment.writerId())
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(requestComment.writerId().toString())));
         Issue issue = issueRepository.findById(requestComment.issueId())

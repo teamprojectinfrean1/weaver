@@ -18,7 +18,7 @@ import java.util.UUID;
 public interface CommentService {
     ResponseComment getComment(Long id) throws NotFoundException;
 
-    Long addComment(RequestCreateComment requestComment) throws NotFoundException;
+    UUID addComment(RequestCreateComment requestComment) throws NotFoundException;
 
     void deleteComment(Comment comment) throws NotFoundException;
     public ResponsePageComment<ResponseCommentList, Comment> getComments(CommentPageRequest commentPageRequest) throws NotFoundException, AuthorizationException;
