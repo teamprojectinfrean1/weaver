@@ -18,5 +18,5 @@ services:
     networks:
       - taskgram-net
 networks:
-  calendar-net:
+  taskgram-net:
     external: true
