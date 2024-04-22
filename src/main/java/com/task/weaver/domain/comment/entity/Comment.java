@@ -1,49 +1,45 @@
 package com.task.weaver.domain.comment.entity;
 
 import com.task.weaver.domain.BaseEntity;
+import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.comment.dto.request.RequestUpdateComment;
-import com.task.weaver.domain.story.entity.Story;
+import com.task.weaver.domain.issue.entity.Issue;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.GenericGenerator;
 
-import java.time.LocalDate;
-import java.util.List;
+import java.util.UUID;
 
-@Entity(name = "COMMENT")
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
+@Entity
+@Table(name = "COMMENT")
 @Builder
 public class Comment extends BaseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "comment_id")
-    private Long comment_id;
+    @Id
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(columnDefinition = "BINARY(16)", name = "comment_id")
+    private UUID comment_id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "story")
-    @Column(name = "story")
-    private Story story;
+    @JoinColumn(name = "issue_id")
+    private Issue issue;
 
-    /**
-     * Todo: User와 매핑
-     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
-    @OneToMany(mappedBy = "comment")
-    @Column(name = "comment_check_table")
-    private List<CommentCheckTable> commentCheckTable;
-
+    @Column(name = "content")
     private String body;
 
-    @Column(name = "create_date")
-    @CreatedDate
-    private LocalDate create_date;
-
-    public void updateComment(RequestUpdateComment requestUpdateComment){
+    public void updateComment(RequestUpdateComment requestUpdateComment, Issue issue) {
+        this.issue = issue;
         this.body = requestUpdateComment.getCommentBody();
     }
 }

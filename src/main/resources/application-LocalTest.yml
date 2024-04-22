@@ -1,0 +1,85 @@
+spring:
+  sql:
+    init:
+      mode: always
+  datasource:
+    url: jdbc:mariadb://localhost:3307/localdb
+    username: root
+    password: 1234
+    driver-class-name: org.mariadb.jdbc.Driver
+
+  mail:
+    host: ${SMTP_HOST}
+    port: ${SMTP_PORT}
+    username: ${SMTP_USERNAME}
+    password: ${SMTP_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+    auth-code-expiration-millis: 300000 # 5분
+
+  jpa:
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+springdoc:
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui
+    tags-sorter: alpha
+    docExpansion: "none"
+    persistAuthorization: true
+    defaultModelsExpandDepth: -1
+  use-fqn: true
+
+oauth:
+  kakao:
+    client_id: ${KAKAO_CLIENT_ID}
+    redirect_uri: ${KAKAO_REDIRECT_URI}
+    client_secret: ${KAKAO_CLIENT_SECRET}
+    scope: ${KAKAO_SCOPE}
+  naver:
+    client_id: ${NAVER_CLIENT_ID}
+    redirect_uri: ${NAVER_REDIRECT_URI}
+    client_secret: ${NAVER_CLIENT_SECRET}
+    scope: ${NAVER_SCOPE}
+  google:
+    client_id: Not yet
+    redirect_uri: Not yet
+    client_secret: Not yet
+    scope: Not yet
+
+jwt:
+  secret:
+    key: '!dev2024@-backend-jwt-secretkey2024!@-38523084793tdjf9328e83gcweg893213ce2r43t24'
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY}
+      secretKey: ${AWS_SECRET_KEY}
+    region:
+      static: ${AWS_REGION}
+    stack:
+      auto: false
+    s3:
+      bucket: ${S3_BUCKET_NAME}

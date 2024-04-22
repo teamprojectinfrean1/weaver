@@ -1,7 +1,7 @@
 package com.task.weaver.domain.comment.entity;
 
 import com.task.weaver.domain.BaseEntity;
-import com.task.weaver.domain.comment.entity.Comment;
+import com.task.weaver.domain.userOauthMember.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,20 +10,21 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-@Entity(name = "COMMENT_CHECK_TABLE")
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
+@Entity
 @Builder
+@Table(name = "COMMENT_CHECK_TABLE")
 public class CommentCheckTable extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_check_id")
     private Long comment_check_id;
 
-    /**
-     * Todo: User와 매핑
-     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment")

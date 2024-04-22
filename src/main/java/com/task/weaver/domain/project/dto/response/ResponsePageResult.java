@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 @Data
 public class ResponsePageResult<DTO, EN> {
 
-    private List<DTO> dtoList;
+    private List<DTO> dataList;
     private int totalPage;
     private int page;
     private int size;
@@ -20,7 +20,7 @@ public class ResponsePageResult<DTO, EN> {
     private List<Integer> pageList;
 
     public ResponsePageResult(Page<EN> result, Function<EN, DTO> fn) {
-        dtoList = result.stream().map(fn).collect(Collectors.toList());
+        dataList = result.stream().map(fn).collect(Collectors.toList());
         totalPage = result.getTotalPages();
         makePageList(result.getPageable());
     }

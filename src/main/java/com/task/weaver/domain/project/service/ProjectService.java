@@ -3,44 +3,55 @@ package com.task.weaver.domain.project.service;
 import com.task.weaver.common.exception.BusinessException;
 import com.task.weaver.domain.project.dto.request.RequestCreateProject;
 import com.task.weaver.domain.project.dto.request.RequestPageProject;
+import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
+import com.task.weaver.domain.project.dto.response.ResponseGetProject;
+import com.task.weaver.domain.project.dto.response.ResponseGetProjectList;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
 
 public interface ProjectService {
 
     default Project dtoToEntity(RequestCreateProject dto) {
         return Project.builder()
-                .customUrl(dto.getCustomUrl())
-                .bannerUrl(dto.getBannerUrl())
-                .name(dto.getName())
-                .detail(dto.getDetail())
-                .dueDate(dto.getDueDate())
-                .created(dto.getCreated())
-                .isPublic(dto.hasPublic())
+                .name(dto.projectName())
+                .detail(dto.projectContent())
+                .startDate(dto.startDate())
+                .endDate(dto.endDate())
                 .build();
     }
 
     default RequestCreateProject entityToDto(Project entity) {
         return RequestCreateProject.builder()
-                .projectId(entity.getProjectId())
-                .customUrl(entity.getCustomUrl())
-                .bannerUrl(entity.getBannerUrl())
-                .name(entity.getName())
-                .detail(entity.getDetail())
-                .dueDate(entity.getDueDate())
-                .created(entity.getCreated())
-                .hasPublic(entity.getIsPublic())
+                .projectName(entity.getName())
+                .projectContent(entity.getDetail())
+                .startDate(entity.getStartDate())
+                .endDate(entity.getEndDate())
                 .build();
     }
 
-    ResponsePageResult<RequestCreateProject, Project> getProjects(RequestPageProject requestPageProject, Long userId)
+    ResponsePageResult<RequestCreateProject, Project> getProjects(RequestPageProject requestPageProject)
             throws BusinessException;
 
-    RequestCreateProject getProject(Long projectId) throws BusinessException;
+    List<ResponseGetProject> getProjectsForTest();
 
-    Long addProject(RequestCreateProject dto) throws BusinessException;
+    List<ResponseGetProjectList> getProejctsForMain(UUID userId) throws BusinessException;
 
-    void updateProject(RequestCreateProject dto) throws BusinessException;
+    ResponseGetProject getProject(UUID projectId) throws BusinessException;
 
-    void deleteProject(Long projectId) throws BusinessException;
+    UUID addProject(RequestCreateProject dto, MultipartFile multipartFile) throws BusinessException, IOException;
+
+    void updateProjectView(Long projectId) throws BusinessException;
+
+    void updateProject(UUID projectId, RequestUpdateProject dto) throws BusinessException;
+
+    void updateMainProject(UUID projectId) throws BusinessException;
+
+    void deleteProject(UUID projectId) throws BusinessException;
+
+    void updateProjectView(UUID projectId);
 }

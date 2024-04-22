@@ -1,0 +1,92 @@
+name: CD
+
+env:
+  RESOURCE_PATH: ./weaver/src/main/resources/application-prod.yml
+on:
+  push:
+    branches:
+      - main
+
+permissions: write-all
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Gradle Caching
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      ### CD
+
+      # Redis 설정
+      - name: Start Redis
+        uses: redis/setup-redis@v2
+        with:
+          redis-version: '6'
+
+      #테스트를 위한 yml 설정
+      - name: Set YML FILE
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: ${{ env.RESOURCE_PATH }}
+        env:
+          spring.datasource.url: ${{ secrets.RDS_ENDPOINT }}
+          spring.datasource.username: ${{ secrets.RDS_USERNAME }}
+          spring.datasource.password: ${{ secrets.RDS_PASSWD }}
+          spring.mail.host: ${{secrets.SMTP_HOST}}
+          spring.mail.port: ${{secrets.SMTP_PORT}}
+          spring.mail.username: ${{secrets.SMTP_USERNAME}}
+          spring.mail.password: ${{secrets.SMTP_PASSWORD}}
+          oauth.kakao.client_id: ${{secrets.KAKAO_CLIENT_ID}}
+          oauth.kakao.redirect_uri: ${{secrets.KAKAO_REDIRECT_URI}}
+          oauth.kakao.client_secret: ${{secrets.KAKAO_CLIENT_SECRET}}
+          oauth.kakao.scope: ${{secrets.KAKAO_SCOPE}}
+          oauth.naver.client_id: ${{secrets.NAVER_CLIENT_ID}}
+          oauth.naver.redirect_uri: ${{secrets.NAVER_REDIRECT_URI}}
+          oauth.naver.client_secret: ${{secrets.NAVER_CLIENT_SECRET}}
+          oauth.naber.scope: ${{secrets.NAVER_SCOPE}}
+          jwt.secret.key: ${{ secrets.JWT_SECRET }}
+          cloud.aws.credentials.accessKey: ${{secrets.AWS_ACCESS_KEY}}
+          cloud.aws.credentials.secretKey: ${{secrets.AWS_SECRET_KEY}}
+          cloud.aws.region.static: ${{secrets.AWS_REGION}}
+          cloud.aws.s3.bucket: ${{secrets.S3_BUCKET_NAME}}
+
+      #test를 제외한 프로젝트 빌드
+      - name: Build With Gradle
+        run: ./gradlew build -x test
+
+      #도커 빌드 & 이미지 push
+      - name: Docker build & Push
+        run: |
+          docker login -u ${{ secrets.DOCKER_ID }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker build -f Dockerfile -t ${{ secrets.DOCKER_REPO }}/taskgram .
+          docker push ${{ secrets.DOCKER_REPO }}/taskgram
+      #docker-compose 파일을 ec2 서버에 배포
+      - name: Deploy to Prod
+        uses: appleboy/ssh-action@master
+        id: deploy-prod
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          envs: GITHUB_SHA
+          script: |
+            docker stop taskgram
+            docker rm taskgram
+            sudo docker pull ${{ secrets.DOCKER_REPO }}/taskgram
+            docker run -d --name taskgram -p 8080:8080 ${{ secrets.DOCKER_REPO }}/taskgram
+            docker rmi -f $(docker images -f "dangling=true" -q)

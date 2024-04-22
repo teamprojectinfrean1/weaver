@@ -21,12 +21,14 @@ public class ErrorResponse {
     private int status;
     private List<FieldError> errors;
     private String code;
+    private boolean isSuccess;
 
     private ErrorResponse(ErrorCode errorCode, List<FieldError> errors) {
         this.message = errorCode.getMessage();
         this.status = errorCode.getStatus();
         this.errors = errors;
         this.code = errorCode.getCode();
+        this.isSuccess = false;
     }
 
     private ErrorResponse(ErrorCode errorCode) {
@@ -34,6 +36,7 @@ public class ErrorResponse {
         this.status = errorCode.getStatus();
         this.code = errorCode.getCode();
         this.errors = new ArrayList<>();
+        this.isSuccess = false;
     }
 
     public static ErrorResponse of(ErrorCode errorCode, BindingResult bindingResult) {

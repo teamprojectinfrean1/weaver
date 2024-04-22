@@ -1,38 +1,31 @@
 package com.task.weaver.domain.issue.service;
 
-import com.task.weaver.common.exception.AuthorizationException;
-import com.task.weaver.common.exception.NotFoundException;
+import com.task.weaver.domain.issue.dto.request.CreateIssueRequest;
+import com.task.weaver.domain.issue.dto.request.GetIssuePageRequest;
+import com.task.weaver.domain.issue.dto.request.UpdateIssueRequest;
+import com.task.weaver.domain.issue.dto.response.GetIssueListResponse;
+import com.task.weaver.domain.issue.dto.response.IssueResponse;
 import com.task.weaver.domain.issue.entity.Issue;
-import com.task.weaver.domain.issue.entity.IssueMention;
-import com.task.weaver.domain.status.StatusTag;
-import com.task.weaver.domain.task.Task;
-import com.task.weaver.domain.user.entity.User;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
+import com.task.weaver.domain.project.dto.response.ResponsePageResult;
+import java.util.UUID;
 
 public interface IssueService {
 
-    Issue getIssue (Long issueId) throws NotFoundException, AuthorizationException;
+    IssueResponse getIssue(UUID issueId);
 
-    Page<Issue> getIssues (Long taskId, Pageable pageable) throws NotFoundException, AuthorizationException;
-    Page<Issue> getIssues (Task task, Pageable pageable) throws NotFoundException, AuthorizationException;
-    Page<Issue> getIssues (Task task, Long userId, Pageable pageable) throws NotFoundException, AuthorizationException;
-    Page<Issue> getIssues (Task task, User user, Pageable pageable) throws NotFoundException, AuthorizationException;
-    Page<Issue> getIssues (Long taskId, Long userId, Pageable pageable) throws NotFoundException, AuthorizationException;
-    Page<Issue> getIssues (Long taskId, User user, Pageable pageable) throws NotFoundException, AuthorizationException;
-    Page<Issue> getIssues (StatusTag statusTag, Pageable pageable) throws NotFoundException, AuthorizationException;
-    Page<Issue> getIssues (IssueMention issueMention, Pageable pageable) throws NotFoundException, AuthorizationException;
+    ResponsePageResult<GetIssueListResponse, Issue> getIssues(String status, GetIssuePageRequest getIssuePageRequest);
+
+    IssueResponse addIssue(CreateIssueRequest issueRequest);
 
 
-    Issue addIssue (Issue issue, Task task, User user) throws AuthorizationException;
-    Issue addIssue (Issue issue, Long taskId, Long userId) throws AuthorizationException;
+    IssueResponse updateIssue(UUID issueId, UpdateIssueRequest updateIssueRequest);
 
-    Issue updateIssue (Issue originalIssue, Issue newIssue) throws NotFoundException, AuthorizationException;
-    Issue updateIssue (Long originalIssueId, Issue newIssue) throws NotFoundException, AuthorizationException;
+    void updateIssueStatus(UUID issueId, String status);
 
-    void deleteIssue (Issue issue) throws NotFoundException, AuthorizationException;
-    void deleteIssue (Long issueId) throws NotFoundException, AuthorizationException;
+    void deleteIssue(Issue issue);
 
+    void deleteIssue(UUID issueId);
+
+    ResponsePageResult<GetIssueListResponse, Issue> getSearchIssues(String status, String filter, String word,
+                                                                    GetIssuePageRequest getIssuePageRequest);
 }

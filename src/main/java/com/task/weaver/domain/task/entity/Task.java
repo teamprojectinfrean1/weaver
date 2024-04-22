@@ -1,49 +1,90 @@
 package com.task.weaver.domain.task.entity;
 
+import com.task.weaver.domain.BaseEntity;
+import com.task.weaver.domain.member.entity.Member;
+import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.entity.Project;
-import com.task.weaver.domain.status.StatusTag;
-import com.task.weaver.domain.user.entity.User;
+import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Entity
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
+@Setter
 @Builder
-public class Task {
+public class Task extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "task_id")
-    private Long taskId;
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(columnDefinition = "BINARY(16)", name = "task_id")
+    private UUID taskId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "status_tag_id")
-    private StatusTag statusTag;
+    @JoinColumn(name = "creator_member_id")
+    private Member member;
 
-    @ManyToOne
-    @JoinColumn(name = "creator_user_id")
-    private User user;
+    @OneToMany(mappedBy = "task")
+    @Builder.Default
+    private List<Issue> issueList = new ArrayList<>();
 
-    @Column(name = "taskname", length = 100)
-    private String taskName;
+    @OneToOne
+    @JoinColumn(name = "last_update_member_id")
+    private Member modifier;
 
-    @Column(name = "detail")
-    private String detail;
+    @Column(name = "task_title", length = 100)
+    private String taskTitle;
 
-    @Column(name = "due_date")
-    private LocalDateTime dueDate;
+    @Column(name = "task_content")
+    private String taskContent;
+
+    @Column(name = "start_date")
+    private LocalDateTime startDate;
+
+    @Column(name = "end_date")
+    private LocalDateTime endDate;
+
+    @Column(name = "status")
+    private String status;
+
+    @Column(name = "edit_delete_permission")
+    private String editDeletePermission;
+
+    public String getTitle() {
+        return this.taskTitle;
+    }
+
+    public void updateTask(Task newTask) {
+        this.project = newTask.getProject();
+        this.member = newTask.getMember();
+        this.taskTitle = newTask.getTitle();
+        this.taskContent = newTask.getTaskContent();
+        this.startDate = newTask.getStartDate();
+        this.endDate = newTask.getEndDate();
+    }
+
+    public void updateTask(RequestUpdateTask requestUpdateTask, Member updater) {
+        this.taskTitle = requestUpdateTask.getTaskTitle();
+        this.taskContent = requestUpdateTask.getTaskContent();
+        this.startDate = requestUpdateTask.getStartDate().atStartOfDay();
+        this.endDate = requestUpdateTask.getEndDate().atStartOfDay();
+        this.modifier = updater;
+        this.editDeletePermission = requestUpdateTask.getEditDeletePermission();
+    }
+
+    public void addIssue(final Issue issue) {
+        this.issueList.add(issue);
+    }
 }
-
-
-
