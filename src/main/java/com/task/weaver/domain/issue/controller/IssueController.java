@@ -65,10 +65,16 @@ public class IssueController {
 	 */
 	@Operation(summary = "이슈 조회", description = "status로 이슈 조회 (TODO / INPROGRESS / DONE)")
 	@GetMapping("/allTickets/{status}")
-	public ResponseEntity<?> getIssues(@PathVariable String status, @RequestBody GetIssuePageRequest getIssuePageRequest){
-		log.info("status ={}, project id ={}", status, getIssuePageRequest.projectId());
+	public ResponseEntity<?> getIssues(@PathVariable String status, @RequestParam UUID projectId, @RequestParam int page, @RequestParam int size){
+		log.info("status ={}, project id ={}", status, projectId, page, size);
 		// issueService.getIssues(projectId, status, getIssuePageRequest);
-		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "status로 이슈 조회 성공", issueService.getIssues(status, getIssuePageRequest), true), HttpStatus.OK);
+		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "status로 이슈 조회 성공", issueService.getIssues(status, new GetIssuePageRequest(page, size, projectId)), true), HttpStatus.OK);
+	}
+
+	@Operation(summary = "이슈 검색 조회", description = "filter로 이슈 검색 조회 (MANAGER / TASK / ISSUE)")
+	@GetMapping("/search/{status}")
+	public ResponseEntity<?> getSearchIssues(@PathVariable String status, @RequestParam("filter") String filter, @RequestParam("word") String word, @RequestParam UUID projectId, @RequestParam int page, @RequestParam int size){
+		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "이슈 검색 조회 성공", issueService.getSearchIssues(status, filter, word, new GetIssuePageRequest(page, size, projectId)), true), HttpStatus.OK);
 	}
 
 	@Operation(summary = "이슈 수정", description = "issueId로 기존 이슈 상세 정보 수정")
@@ -83,11 +89,5 @@ public class IssueController {
 	public ResponseEntity<?> updateTask(@PathVariable UUID issueId, @RequestParam String status){
 		issueService.updateIssueStatus(issueId, status);
 		return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "이슈 상태 수정 성공", true), HttpStatus.OK);
-	}
-
-	@Operation(summary = "이슈 검색 조회", description = "filter로 이슈 검색 조회 (MANAGER / TASK / ISSUE)")
-	@GetMapping("/search/{status}")
-	public ResponseEntity<?> getSearchIssues(@PathVariable String status, @RequestParam("filter") String filter, @RequestParam("word") String word, @RequestBody GetIssuePageRequest getIssuePageRequest){
-		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "이슈 검색 조회 성공", issueService.getSearchIssues(status, filter, word, getIssuePageRequest), true), HttpStatus.OK);
 	}
 }
