@@ -142,15 +142,15 @@ public class IssueServiceImpl implements IssueService {
 				.orElseThrow(() -> new IllegalArgumentException(""));
 		Member creator = memberRepository.findById(createIssueRequest.creatorId())
 				.orElseThrow(() -> new IllegalArgumentException(""));
-		Member assignee = memberRepository.findById(createIssueRequest.managerId())
+		Member assignee = memberRepository.findById(createIssueRequest.assigneeId())
 				.orElseThrow(() -> new IllegalArgumentException(""));
 
 		Issue issue = Issue.builder()
 			.task(task)
 			.modifier(creator)
 			.assignee(assignee)
-			.issueTitle(createIssueRequest.title())
-			.issueContent(createIssueRequest.content())
+			.issueTitle(createIssueRequest.issueTitle())
+			.issueContent(createIssueRequest.issueContent())
 			.startDate(createIssueRequest.startDate())
 			.endDate(createIssueRequest.endDate())
 			.status(Status.fromName(createIssueRequest.status()))
@@ -193,6 +193,9 @@ public class IssueServiceImpl implements IssueService {
 		}
 		if(updateIssueRequest.endDate() != null){
 			issue.updateEndDate(updateIssueRequest.endDate());
+		}
+		if(updateIssueRequest.status() != null){
+			issue.updateStatus(Status.valueOf(updateIssueRequest.status()));
 		}
 
 		// modifier 변경

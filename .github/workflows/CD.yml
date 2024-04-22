@@ -1,11 +1,8 @@
-name: CD
+name: Java CD with Docker
 
-env:
-  RESOURCE_PATH: ./weaver/src/main/resources/application-prod.yml
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+    branches: [ "main" ]
 
 permissions: write-all
 
@@ -36,38 +33,15 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
       ### CD
+      # 배포를 위한 yml 설정
+      - name: Check if main resources directory exists
+        run: test -d ./src/main/resources || mkdir -p ./src/main/resources
+        shell: bash
 
-      # Redis 설정
-      - name: Start Redis
-        uses: weaver_redis
-
-      #테스트를 위한 yml 설정
-      - name: Set YML FILE
-        uses: microsoft/variable-substitution@v1
-        with:
-          files: ${{ env.RESOURCE_PATH }}
-        env:
-          spring.datasource.url: ${{ secrets.RDS_ENDPOINT }}
-          spring.datasource.username: ${{ secrets.RDS_USERNAME }}
-          spring.datasource.password: ${{ secrets.RDS_PASSWD }}
-          spring.mail.host: ${{secrets.SMTP_HOST}}
-          spring.mail.port: ${{secrets.SMTP_PORT}}
-          spring.mail.username: ${{secrets.SMTP_USERNAME}}
-          spring.mail.password: ${{secrets.SMTP_PASSWORD}}
-          oauth.kakao.client_id: ${{secrets.KAKAO_CLIENT_ID}}
-          oauth.kakao.redirect_uri: ${{secrets.KAKAO_REDIRECT_URI}}
-          oauth.kakao.client_secret: ${{secrets.KAKAO_CLIENT_SECRET}}
-          oauth.kakao.scope: ${{secrets.KAKAO_SCOPE}}
-          oauth.naver.client_id: ${{secrets.NAVER_CLIENT_ID}}
-          oauth.naver.redirect_uri: ${{secrets.NAVER_REDIRECT_URI}}
-          oauth.naver.client_secret: ${{secrets.NAVER_CLIENT_SECRET}}
-          oauth.naber.scope: ${{secrets.NAVER_SCOPE}}
-          jwt.secret.key: ${{ secrets.JWT_SECRET }}
-          cloud.aws.credentials.accessKey: ${{secrets.AWS_ACCESS_KEY}}
-          cloud.aws.credentials.secretKey: ${{secrets.AWS_SECRET_KEY}}
-          cloud.aws.region.static: ${{secrets.AWS_REGION}}
-          cloud.aws.s3.bucket: ${{secrets.S3_BUCKET_NAME}}
+      - name: Make application-prod.yml
+        run: echo "${{ secrets.YML_PROD }}" > ./src/main/resources/application.yml
 
       #test를 제외한 프로젝트 빌드
       - name: Build With Gradle
