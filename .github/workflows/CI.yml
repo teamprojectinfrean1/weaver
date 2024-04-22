@@ -4,19 +4,13 @@ env:
   RESOURCE_PATH: ./weaver/src/main/resources/application-prod.yml
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: [ "dev" ]
 
 permissions: write-all
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    services:
-      redis:
-        image: redis:latest
-        ports:
-          - 6379:6379
 
     steps:
       - uses: actions/checkout@v3
@@ -46,19 +40,22 @@ jobs:
         run: ./gradlew build -x test
 
       #test를 위한 mariadb설정
-      - name: Start Maria
-        uses: ankane/setup-mariadb@v1
+      - name: Start MariaDB
+        uses: getong/mariadb-action@v1.1
         with:
-          mariadb-version: "10.11.6"
-          host port: 3305
-          container port: 3305
-          mysql database: '{database name}'
-          mysql user: '{database user}'
-          mysql password: '{database pwd}'
+          host port: 3800
+          container port: 3307
+          character set server: 'utf8'
+          collation server: 'utf8_general_ci'
+          mariadb version: '10.11.6'
+          mysql database: 'test'
+          mysql root password: ${{ secrets.RootPassword }}
+          mysql user: 'developer'
+          mysql password: ${{ secrets.DatabasePassword }}
 
-      # Redis 설정
-      - name: Start Redis
-        uses: weaver_redis
+      #test를 위한 Redis 설정
+      - name: Redis Server in GitHub Actions
+        uses: supercharge/redis-github-action@1.8.0
 
       #테스트를 위한 yml 설정
       - name: Set YML FILE
