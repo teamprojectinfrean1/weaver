@@ -194,6 +194,9 @@ public class IssueServiceImpl implements IssueService {
 		if(updateIssueRequest.endDate() != null){
 			issue.updateEndDate(updateIssueRequest.endDate());
 		}
+		if(updateIssueRequest.status() != null){
+			issue.updateStatus(Status.valueOf(updateIssueRequest.status()));
+		}
 
 		// modifier 변경
 		Member modifier = memberRepository.findById(updateIssueRequest.modifierId())
