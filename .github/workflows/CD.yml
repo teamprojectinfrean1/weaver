@@ -47,15 +47,19 @@ jobs:
       - name: Build With Gradle
         run: ./gradlew build -x test
 
-      #도커 빌드 & 이미지 push
-      - name: Docker build & Push
+      # 도커 로그인
+      - name: Docker Login
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_ID }}
           password: ${{ secrets.DOCKER_TOKEN }}
+
+      # 도커 빌드 & 이미지 push
+      - name: Docker Build
         run: |
           docker build -f Dockerfile -t ${{ secrets.DOCKER_REPO }}/taskgram .
           docker push ${{ secrets.DOCKER_REPO }}/taskgram
+
       #docker-compose 파일을 ec2 서버에 배포
       - name: Deploy to Prod
         uses: appleboy/ssh-action@master
