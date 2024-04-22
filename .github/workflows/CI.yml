@@ -1,7 +1,5 @@
 name: Java CI with Gradle
 
-env:
-  RESOURCE_PATH: ./weaver/src/main/resources/application-prod.yml
 on:
   pull_request:
     branches: [ "dev" ]
@@ -39,12 +37,12 @@ jobs:
       - name: Build With Gradle
         run: ./gradlew build -x test
 
-      #test를 위한 mariadb설정
+      #test를 위한 mariadb 설정
       - name: Start MariaDB
         uses: getong/mariadb-action@v1.1
         with:
-          host port: 3800
-          container port: 3307
+          host port: 3305
+          container port: 3305
           character set server: 'utf8'
           collation server: 'utf8_general_ci'
           mariadb version: '10.11.6'
@@ -58,31 +56,12 @@ jobs:
         uses: supercharge/redis-github-action@1.8.0
 
       #테스트를 위한 yml 설정
-      - name: Set YML FILE
-        uses: microsoft/variable-substitution@v1
-        with:
-          files: ${{ env.RESOURCE_PATH }}
-        env:
-          spring.datasource.url: ${{ secrets.RDS_ENDPOINT }}
-          spring.datasource.username: ${{ secrets.RDS_USERNAME }}
-          spring.datasource.password: ${{ secrets.RDS_PASSWD }}
-          spring.mail.host: ${{secrets.SMTP_HOST}}
-          spring.mail.port: ${{secrets.SMTP_PORT}}
-          spring.mail.username: ${{secrets.SMTP_USERNAME}}
-          spring.mail.password: ${{secrets.SMTP_PASSWORD}}
-          oauth.kakao.client_id: ${{secrets.KAKAO_CLIENT_ID}}
-          oauth.kakao.redirect_uri: ${{secrets.KAKAO_REDIRECT_URI}}
-          oauth.kakao.client_secret: ${{secrets.KAKAO_CLIENT_SECRET}}
-          oauth.kakao.scope: ${{secrets.KAKAO_SCOPE}}
-          oauth.naver.client_id: ${{secrets.NAVER_CLIENT_ID}}
-          oauth.naver.redirect_uri: ${{secrets.NAVER_REDIRECT_URI}}
-          oauth.naver.client_secret: ${{secrets.NAVER_CLIENT_SECRET}}
-          oauth.naber.scope: ${{secrets.NAVER_SCOPE}}
-          jwt.secret.key: ${{ secrets.JWT_SECRET }}
-          cloud.aws.credentials.accessKey: ${{secrets.AWS_ACCESS_KEY}}
-          cloud.aws.credentials.secretKey: ${{secrets.AWS_SECRET_KEY}}
-          cloud.aws.region.static: ${{secrets.AWS_REGION}}
-          cloud.aws.s3.bucket: ${{secrets.S3_BUCKET_NAME}}
+      - name: Make application-test.yml
+        run: |
+          cd ./src/test/resources
+          touch ./application.yml
+          echo "${{ secrets.YML_TEST }}" > ./application.yml
+        shell: bash
 
       #test코드 빌드
       - name: Build With Test
