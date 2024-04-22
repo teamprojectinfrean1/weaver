@@ -50,7 +50,7 @@ jobs:
       #도커 빌드 & 이미지 push
       - name: Docker build & Push
         run: |
-          docker login -u ${{ secrets.DOCKER_ID }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker login -u ${{ secrets.DOCKER_ID }} -p ${{ secrets.DOCKER_TOKEN }}
           docker build -f Dockerfile -t ${{ secrets.DOCKER_REPO }}/taskgram .
           docker push ${{ secrets.DOCKER_REPO }}/taskgram
       #docker-compose 파일을 ec2 서버에 배포
