@@ -34,9 +34,7 @@ jobs:
 
       # Redis 설정
       - name: Start Redis
-        uses: redis/setup-redis@v2
-        with:
-          redis-version: '6'
+        uses: weaver_redis
 
       #테스트를 위한 yml 설정
       - name: Set YML FILE
