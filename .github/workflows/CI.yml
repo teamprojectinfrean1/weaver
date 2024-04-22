@@ -56,12 +56,12 @@ jobs:
         uses: supercharge/redis-github-action@1.8.0
 
       #테스트를 위한 yml 설정
-      - name: Make application-test.yml
-        run: |
-          cd ./src/test/resources
-          touch ./application.yml
-          echo "${{ secrets.YML_TEST }}" > ./application.yml
+      - name: Check if test resources directory exists
+        run: test -d ./src/test/resources || mkdir -p ./src/test/resources
         shell: bash
+
+      - name: Make application-test.yml
+        run: echo "${{ secrets.YML_TEST }}" > ./src/test/resources/application.yml
 
       #test코드 빌드
       - name: Build With Test
