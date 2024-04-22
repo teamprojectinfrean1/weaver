@@ -1,10 +1,11 @@
 package com.task.weaver.domain.project.service.impl;
 
 import com.task.weaver.common.exception.BusinessException;
+import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.member.UserNotFoundException;
 import com.task.weaver.common.s3.S3Uploader;
-import com.task.weaver.domain.authorization.entity.Member;
+import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.project.dto.request.RequestCreateProject;
 import com.task.weaver.domain.project.dto.request.RequestPageProject;
 import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
@@ -15,7 +16,7 @@ import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
 import com.task.weaver.domain.project.service.ProjectService;
 
-import com.task.weaver.domain.authorization.repository.MemberRepository;
+import com.task.weaver.domain.member.repository.MemberRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +26,7 @@ import java.util.function.Function;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import com.task.weaver.domain.projectmember.repository.ProjectMemberRepository;
 import com.task.weaver.domain.task.dto.response.ResponseUpdateDetail;
-import com.task.weaver.domain.member.user.repository.UserRepository;
+import com.task.weaver.domain.userOauthMember.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +47,6 @@ import java.net.URL;
 public class ProjectServiceImplDummy implements ProjectService {
 
     private final ProjectRepository projectRepository;
-    private final UserRepository userRepository;
     private final MemberRepository memberRepository;
     private final ProjectMemberRepository projectMemberRepository;
     private final S3Uploader s3Uploader;
@@ -119,7 +119,7 @@ public class ProjectServiceImplDummy implements ProjectService {
     public UUID addProject(final RequestCreateProject dto, MultipartFile multipartFile) throws BusinessException, IOException {
         Project project = dtoToEntity(dto);
         Member writer = memberRepository.findById(dto.writerUuid())
-                .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(dto.writerUuid()))));
+                .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND, ErrorCode.USER_NOT_FOUND.getMessage()));
 
         if(writer.getMainProject() == null)   //작성자가 처음 만든 프로젝트면, 메인 프로젝트로 선정
             writer.updateMainProject(project);
@@ -173,10 +173,7 @@ public class ProjectServiceImplDummy implements ProjectService {
             Member updater = memberRepository.findById(dto.updaterUuid())
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(dto.updaterUuid()))));
             Project entity = result.get();
-//            entity.changeDetail(dto.projectContent());
-//            entity.changeName(dto.projectName());
             entity.updateProject(dto, updater);
-//            projectRepository.save(entity);
             return;
         }
         throw new ProjectNotFoundException(new Throwable(String.valueOf(projectId)));
@@ -214,7 +211,6 @@ public class ProjectServiceImplDummy implements ProjectService {
         Optional<Project> result = projectRepository.findById(projectId);
         if (result.isPresent()) {
             Project project = result.get();
-//            project.changePublic();
             projectRepository.save(project);
             return;
         }

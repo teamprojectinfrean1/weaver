@@ -16,7 +16,6 @@ import java.util.UUID;
 public class RequestGetTaskPage {
     private int page;
     private int size;
-//    private String type;
     private UUID projectId;
 
     public RequestGetTaskPage() {

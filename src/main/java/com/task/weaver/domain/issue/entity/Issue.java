@@ -2,7 +2,7 @@ package com.task.weaver.domain.issue.entity;
 
 import com.task.weaver.common.model.Status;
 import com.task.weaver.domain.BaseEntity;
-import com.task.weaver.domain.authorization.entity.Member;
+import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.comment.entity.Comment;
 import com.task.weaver.domain.issue.dto.request.UpdateIssueRequest;
 import com.task.weaver.domain.task.entity.Task;

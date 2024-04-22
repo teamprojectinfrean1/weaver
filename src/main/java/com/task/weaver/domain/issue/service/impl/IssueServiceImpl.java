@@ -1,18 +1,8 @@
 package com.task.weaver.domain.issue.service.impl;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Function;
-
-import com.task.weaver.common.exception.AuthorizationException;
-import com.task.weaver.common.exception.NotFoundException;
 import com.task.weaver.common.model.Status;
-import com.task.weaver.domain.authorization.entity.Member;
-import com.task.weaver.domain.authorization.repository.MemberRepository;
+import com.task.weaver.domain.member.entity.Member;
+import com.task.weaver.domain.member.repository.MemberRepository;
 import com.task.weaver.domain.issue.dto.request.CreateIssueRequest;
 import com.task.weaver.domain.issue.dto.request.GetIssuePageRequest;
 import com.task.weaver.domain.issue.dto.request.UpdateIssueRequest;
@@ -21,17 +11,17 @@ import com.task.weaver.domain.issue.dto.response.IssueResponse;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.issue.repository.IssueRepository;
 import com.task.weaver.domain.issue.service.IssueService;
-import com.task.weaver.domain.member.user.entity.User;
-import com.task.weaver.domain.member.user.repository.UserRepository;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
-import com.task.weaver.domain.task.dto.response.ResponseUpdateDetail;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.repository.TaskRepository;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.function.Function;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hamcrest.core.Is;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -39,8 +29,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import lombok.RequiredArgsConstructor;
 
 @Slf4j
 @Service
@@ -53,19 +41,19 @@ public class IssueServiceImpl implements IssueService {
 	private final ProjectRepository projectRepository;
 
 	@Override
-	public IssueResponse getIssue(UUID issueId) throws NotFoundException, AuthorizationException {
+	public IssueResponse getIssue(UUID issueId) {
 		Issue issue = issueRepository.findById(issueId).orElseThrow(() -> new IllegalArgumentException(""));
 		return new IssueResponse(issue);
 	}
 
 	@Override
 	public ResponsePageResult<GetIssueListResponse, Issue> getIssues(String status,
-		GetIssuePageRequest getIssuePageRequest) throws NotFoundException, AuthorizationException {
+																	 GetIssuePageRequest getIssuePageRequest) {
 
 		log.info("status ={}, project id ={}", status, getIssuePageRequest.projectId());
 
 		Project project = projectRepository.findById(getIssuePageRequest.projectId())
-			.orElseThrow(() -> new IllegalArgumentException(""));
+				.orElseThrow(() -> new IllegalArgumentException(""));
 
 		List<Issue> issueList = new ArrayList<>();
 
@@ -93,16 +81,16 @@ public class IssueServiceImpl implements IssueService {
 
 	@Override
 	public ResponsePageResult<GetIssueListResponse, Issue> getSearchIssues(String status, String filter, String word,
-		GetIssuePageRequest getIssuePageRequest) throws NotFoundException, AuthorizationException {
+																		   GetIssuePageRequest getIssuePageRequest) {
 
 		Project project = projectRepository.findById(getIssuePageRequest.projectId())
-			.orElseThrow(() -> new IllegalArgumentException(""));
+				.orElseThrow(() -> new IllegalArgumentException(""));
 
 		List<Issue> issueList = new ArrayList<>();
 
 		Pageable pageable = getIssuePageRequest.getPageable(Sort.by("issueId").descending());
 
-		switch (filter){
+		switch (filter) {
 			case "ASSIGNEE":
 				for (Task task : project.getTaskList()) {
 					for(Issue issue : task.getIssueList()){
@@ -149,13 +137,13 @@ public class IssueServiceImpl implements IssueService {
 	}
 
 	@Override
-	public IssueResponse addIssue(CreateIssueRequest createIssueRequest) throws AuthorizationException {
+	public IssueResponse addIssue(CreateIssueRequest createIssueRequest) {
 		Task task = taskRepository.findById(createIssueRequest.taskId())
-			.orElseThrow(() -> new IllegalArgumentException(""));
+				.orElseThrow(() -> new IllegalArgumentException(""));
 		Member creator = memberRepository.findById(createIssueRequest.creatorId())
-			.orElseThrow(() -> new IllegalArgumentException(""));
+				.orElseThrow(() -> new IllegalArgumentException(""));
 		Member assignee = memberRepository.findById(createIssueRequest.managerId())
-			.orElseThrow(() -> new IllegalArgumentException(""));
+				.orElseThrow(() -> new IllegalArgumentException(""));
 
 		Issue issue = Issue.builder()
 			.task(task)
@@ -165,7 +153,7 @@ public class IssueServiceImpl implements IssueService {
 			.issueContent(createIssueRequest.content())
 			.startDate(createIssueRequest.startDate())
 			.endDate(createIssueRequest.endDate())
-			.status(Status.valueOf(createIssueRequest.status()))
+			.status(Status.fromName(createIssueRequest.status()))
 			.build();
 		issueRepository.save(issue);
 
@@ -176,19 +164,17 @@ public class IssueServiceImpl implements IssueService {
 
 	@Override
 	@Transactional
-	public IssueResponse updateIssue(UUID issueId, UpdateIssueRequest updateIssueRequest) throws
-		NotFoundException,
-		AuthorizationException {
+	public IssueResponse updateIssue(UUID issueId, UpdateIssueRequest updateIssueRequest) {
 
 		// assignee만 수정 가능하게 ?
 		// 수정할 때 DynamicUpdate를 사용 X (성능 오버헤드 발생) -> 더티체킹으로 ㄱㄱ
 
 		Issue issue = issueRepository.findById(issueId)
-			.orElseThrow(() -> new IllegalArgumentException(""));
-
-		if(updateIssueRequest.taskId() != null){
-			Task task = taskRepository.findById(updateIssueRequest.taskId())
 				.orElseThrow(() -> new IllegalArgumentException(""));
+
+		if (updateIssueRequest.taskId() != null) {
+			Task task = taskRepository.findById(updateIssueRequest.taskId())
+					.orElseThrow(() -> new IllegalArgumentException(""));
 			issue.updateTask(task);
 		}
 		if(updateIssueRequest.assigneeId() != null){
@@ -219,7 +205,7 @@ public class IssueServiceImpl implements IssueService {
 	}
 
 	@Override
-	public void updateIssueStatus(UUID issueId, String status) throws NotFoundException, AuthorizationException {
+	public void updateIssueStatus(UUID issueId, String status) {
 		Issue issue = issueRepository.findById(issueId)
 				.orElseThrow(() -> new IllegalArgumentException(""));
 
@@ -227,12 +213,12 @@ public class IssueServiceImpl implements IssueService {
 	}
 
 	@Override
-	public void deleteIssue(Issue issue) throws NotFoundException, AuthorizationException {
+	public void deleteIssue(Issue issue) {
 		issueRepository.delete(issue);
 	}
 
 	@Override
-	public void deleteIssue(UUID issueId) throws NotFoundException, AuthorizationException {
+	public void deleteIssue(UUID issueId) {
 		issueRepository.deleteById(issueId);
 	}
 }

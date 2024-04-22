@@ -16,6 +16,7 @@ public enum ErrorCode {
     UNSUPPORTED_OAUTH(HttpStatus.NOT_ACCEPTABLE, "C006", "지원하지않는 플랫폼입니다."),
     REFRESH_JWT_EXPIRED(HttpStatus.UNAUTHORIZED, "J003", "만료된 리프레시 토큰입니다."),
     REFRESH_TOKEN_RESOLVE(HttpStatus.BAD_REQUEST, "J004", "잘못된 리프레시 토큰 형식입니다."),
+    MISSING_REQUEST_PARAMETER(HttpStatus.BAD_REQUEST, "C007", "요청 파라미터를 찾을 수 없습니다."),
 
     // Project
     PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "P001", "해당 프로젝트를 찾을 수 없습니다."),

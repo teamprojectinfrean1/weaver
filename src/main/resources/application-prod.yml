@@ -1,13 +1,31 @@
 spring:
+  sql:
+    init:
+      mode: never
   datasource:
-    url: jdbc:mysql://114.202.33.83:13306/unknown?serverTimezone=UTC&characterEncoding=UTF-8
-    username: develop
-    password: '!dev2024@'
+    url : ${{secrets.RDS_ENDPOINT}}
+    username: ${{secrets.RDS_USERNAME}}
+    password: ${{secrets.RDS_PASSWD}}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  mail:
+    host: ${{secrets.SMTP_HOST}}
+    port: ${{secrets.SMTP_PORT}}
+    username: ${{secrets.SMTP_USERNAME}}
+    password: ${{secrets.SMTP_PASSWORD}}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+    auth-code-expiration-millis: 300000
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
-
     hibernate:
       ddl-auto: none
     properties:
@@ -15,6 +33,10 @@ spring:
         show_sql: true
         format_sql: true
         use_sql_comments: #
+  data:
+    redis:
+      host: weaver_redis
+      port: 6379
 
 springdoc:
   default-consumes-media-type: application/json;charset=UTF-8
@@ -28,3 +50,36 @@ springdoc:
     persistAuthorization: true
     defaultModelsExpandDepth: -1
   use-fqn: true
+
+oauth:
+  kakao:
+    client_id: ${{secrets.KAKAO_CLIENT_ID}}
+    redirect_uri: ${{secrets.KAKAO_REDIRECT_URI}}
+    client_secret: ${{secrets.KAKAO_CLIENT_SECRET}}
+    scope: ${{secrets.KAKAO_SCOPE}}
+  naver:
+    client_id: ${{secrets.NAVER_CLIENT_ID}}
+    redirect_uri: ${{secrets.NAVER_REDIRECT_URI}}
+    client_secret: ${{secrets.NAVER_CLIENT_SECRET}}
+    scope: ${{secrets.NAVER_SCOPE}}
+  google:
+    client_id: Not yet
+    redirect_uri: Not yet
+    client_secret: Not yet
+    scope: Not yet
+
+jwt:
+  secret:
+    key: ${{secrets.JWT_SECRET}}
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${{secrets.AWS_ACCESS_KEY}}
+      secretKey: ${{secrets.AWS_SECRET_KEY}}
+    region:
+      static: ${{secrets.AWS_REGION}}
+    stack:
+      auto: false
+    s3:
+      bucket: ${{secrets.S3_BUCKET_NAME}}

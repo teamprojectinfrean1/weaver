@@ -2,7 +2,7 @@ package com.task.weaver.common.oauth.google.provider;
 
 import com.task.weaver.common.oauth.config.GoogleOauthConfig;
 import com.task.weaver.common.model.OauthServerType;
-import com.task.weaver.domain.member.oauth.authcode.AuthCodeRequestUrlProvider;
+import com.task.weaver.domain.userOauthMember.oauth.authcode.AuthCodeRequestUrlProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;

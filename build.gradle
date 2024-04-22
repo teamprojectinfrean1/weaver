@@ -52,6 +52,9 @@ dependencies {
 	// AWS
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
+	// For mac os
+	implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
+
 	//DB
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 
