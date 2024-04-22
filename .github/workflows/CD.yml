@@ -70,8 +70,25 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           envs: GITHUB_SHA
           script: |
+            sudo rm taskgram.log
             docker stop taskgram
             docker rm taskgram
             sudo docker pull ${{ secrets.DOCKER_REPO }}/taskgram
-            docker run -d --name taskgram -p 8080:8080 ${{ secrets.DOCKER_REPO }}/taskgram
+            docker-compose up -d
+            sudo docker logs -f taskgram &> taskgram.log &
             docker rmi -f $(docker images -f "dangling=true" -q)
+  # time
+  current-time:
+    needs: CI-CD
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Current Time
+        uses: 1466587594/get-current-time@v2
+        id: current-time
+        with:
+          format: YYYY-MM-DDTHH:mm:ss
+          utcOffset: "+09:00"
+
+      - name: Print Current Time
+        run: echo "Current Time=${{steps.current-time.outputs.formattedTime}}"
+        shell: bash
