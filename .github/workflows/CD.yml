@@ -74,6 +74,6 @@ jobs:
             docker stop taskgram
             docker rm taskgram
             sudo docker pull ${{ secrets.DOCKER_REPO }}/taskgram
-            docker-compose up -d
+            sudo docker-compose up -d
             sudo docker logs -f taskgram &> taskgram.log &
             docker rmi -f $(docker images -f "dangling=true" -q)
