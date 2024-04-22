@@ -58,7 +58,6 @@ jobs:
       #테스트를 위한 yml 설정
       - name: Make application-test.yml
         run: |
-          mkdir ./src/main/resources
           cd ./src/test/resources
           touch ./application.yml
           echo "${{ secrets.YML_TEST }}" > ./application.yml
