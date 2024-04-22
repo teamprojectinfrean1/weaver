@@ -1,4 +1,4 @@
-name: CD
+name: Java CD with Docker
 
 env:
   RESOURCE_PATH: ./weaver/src/main/resources/application-prod.yml
