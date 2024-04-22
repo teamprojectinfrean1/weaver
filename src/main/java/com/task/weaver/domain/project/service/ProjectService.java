@@ -20,7 +20,6 @@ public interface ProjectService {
         return Project.builder()
                 .name(dto.projectName())
                 .detail(dto.projectContent())
-                .created(dto.createDate())
                 .startDate(dto.startDate())
                 .endDate(dto.endDate())
                 .build();

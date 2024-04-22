@@ -1,4 +1,4 @@
-package com.task.weaver.domain.userOauthMember.oauth;
+package com.task.weaver.domain.member;
 
 import com.task.weaver.domain.member.entity.Member;
 import jakarta.servlet.http.HttpSession;

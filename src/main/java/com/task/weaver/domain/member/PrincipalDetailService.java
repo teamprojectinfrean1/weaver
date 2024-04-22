@@ -1,4 +1,4 @@
-package com.task.weaver.domain.userOauthMember.oauth;
+package com.task.weaver.domain.member;
 
 import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.member.UserNotFoundException;

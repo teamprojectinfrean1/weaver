@@ -64,4 +64,6 @@ public interface MemberService {
 				.userProfileImage(String.valueOf(userOauthMember.getProfileImage()))
 				.build();
 	}
+
+	Member getMemberOrThrow(String key);
 }

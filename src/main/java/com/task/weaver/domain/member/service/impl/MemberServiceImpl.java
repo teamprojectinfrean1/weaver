@@ -173,7 +173,7 @@ public class MemberServiceImpl implements MemberService {
 
 		Pageable pageable = requestGetUserPage.getPageable(Sort.by("userId").descending());
 
-		Function<Object[], MemberProjectDTO> fn = (en -> entityToDTO((Member) en[0], (UserOauthMember) en[1]));
+		Function<Object[], MemberProjectDTO> fn = (en -> entityToDTO(project.getWriter(), project.getWriter().resolveMemberByLoginType()));
 		Page<Object[]> members = memberRepository.findMembersByProject(projectId, pageable);
 
 		return new ResponsePageResult<>(members, fn);
@@ -221,5 +221,10 @@ public class MemberServiceImpl implements MemberService {
 		HttpHeaderUtil.setAccessToken(headers, reIssueToken.accessToken());
 		CookieUtil.setRefreshCookie(headers, reIssueToken.refreshToken());
 		return headers;
+	}
+
+	@Override
+	public Member getMemberOrThrow(final String key) {
+		return memberRepository.findById(UUID.fromString(key)).orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
 	}
 }

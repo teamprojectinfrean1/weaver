@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class MemberFactoryImpl implements MemberFactory {
 
-    private final MemberRepository userOauthMemberRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     public Member createUserOauthMember(final UserOauthMember userOauthMember) {
@@ -30,8 +30,8 @@ public class MemberFactoryImpl implements MemberFactory {
                 .user(user)
                 .isOnline(true)
                 .build();
-        return userOauthMemberRepository.findByUser(user)
-                .orElseGet(() -> userOauthMemberRepository.save(member));
+        return memberRepository.findByUser(user)
+                .orElseGet(() -> memberRepository.save(member));
     }
 
     private Member createOauthUser(final OauthUser oauthMember) {
@@ -40,7 +40,7 @@ public class MemberFactoryImpl implements MemberFactory {
                 .oauthMember(oauthMember)
                 .isOnline(true)
                 .build();
-        return userOauthMemberRepository.findByOauthMember(oauthMember)
-                .orElseGet(() -> userOauthMemberRepository.save(member));
+        return memberRepository.findByOauthMember(oauthMember)
+                .orElseGet(() -> memberRepository.save(member));
     }
 }

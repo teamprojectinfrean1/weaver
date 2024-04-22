@@ -113,7 +113,6 @@ public class SecurityConfig {
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 
-		// 추후 설정
 		configuration.addAllowedOriginPattern("*");
 		configuration.addAllowedHeader("*");
 		configuration.addAllowedMethod("*");

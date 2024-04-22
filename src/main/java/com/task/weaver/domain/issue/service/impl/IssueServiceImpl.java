@@ -146,14 +146,14 @@ public class IssueServiceImpl implements IssueService {
 				.orElseThrow(() -> new IllegalArgumentException(""));
 
 		Issue issue = Issue.builder()
-				.task(task)
-				.modifier(creator)
+			.task(task)
+			.modifier(creator)
 			.assignee(assignee)
 			.issueTitle(createIssueRequest.title())
 			.issueContent(createIssueRequest.content())
 			.startDate(createIssueRequest.startDate())
 			.endDate(createIssueRequest.endDate())
-			.status(Status.valueOf(createIssueRequest.status()))
+			.status(Status.fromName(createIssueRequest.status()))
 			.build();
 		issueRepository.save(issue);
 

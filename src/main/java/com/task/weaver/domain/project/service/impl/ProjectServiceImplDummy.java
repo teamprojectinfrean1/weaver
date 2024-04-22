@@ -1,6 +1,7 @@
 package com.task.weaver.domain.project.service.impl;
 
 import com.task.weaver.common.exception.BusinessException;
+import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.member.UserNotFoundException;
 import com.task.weaver.common.s3.S3Uploader;
@@ -46,7 +47,6 @@ import java.net.URL;
 public class ProjectServiceImplDummy implements ProjectService {
 
     private final ProjectRepository projectRepository;
-    private final UserRepository userRepository;
     private final MemberRepository memberRepository;
     private final ProjectMemberRepository projectMemberRepository;
     private final S3Uploader s3Uploader;
@@ -119,7 +119,7 @@ public class ProjectServiceImplDummy implements ProjectService {
     public UUID addProject(final RequestCreateProject dto, MultipartFile multipartFile) throws BusinessException, IOException {
         Project project = dtoToEntity(dto);
         Member writer = memberRepository.findById(dto.writerUuid())
-                .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(dto.writerUuid()))));
+                .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND, ErrorCode.USER_NOT_FOUND.getMessage()));
 
         if(writer.getMainProject() == null)   //작성자가 처음 만든 프로젝트면, 메인 프로젝트로 선정
             writer.updateMainProject(project);

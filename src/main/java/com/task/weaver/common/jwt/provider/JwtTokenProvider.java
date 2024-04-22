@@ -1,8 +1,8 @@
 package com.task.weaver.common.jwt.provider;
 
 import com.task.weaver.domain.userOauthMember.LoginType;
-import com.task.weaver.domain.userOauthMember.oauth.PrincipalDetailService;
-import com.task.weaver.domain.userOauthMember.oauth.PrincipalDetails;
+import com.task.weaver.domain.member.PrincipalDetailService;
+import com.task.weaver.domain.member.PrincipalDetails;
 import io.jsonwebtoken.Jws;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;

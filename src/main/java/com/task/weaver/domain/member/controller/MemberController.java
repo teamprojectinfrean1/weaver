@@ -49,7 +49,7 @@ public class MemberController {
 	public ResponseEntity<?> reissue(@CookieValue(value = "refreshToken") String refreshToken,
 									 @RequestParam String loginType) {
 		log.info("reissue controller - refreshToken : " + refreshToken);
-
+		log.error("loginType = {}", loginType);
 		ResponseToken responseToken = memberService.reissue(refreshToken, loginType);
 		HttpHeaders headers = setCookieAndHeader(responseToken);
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.CREATED, "Token 재발급 성공", headers, true),
