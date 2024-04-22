@@ -41,7 +41,7 @@ jobs:
         shell: bash
 
       - name: Make application-prod.yml
-        run: echo "${{ secrets.YML_PROD }}" > ./src/main/resources/application.yml
+        run: echo "${{ secrets.YML_PROD }}" > ./src/main/resources/application-prod.yml
 
       #test를 제외한 프로젝트 빌드
       - name: Build With Gradle
