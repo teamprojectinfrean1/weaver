@@ -23,12 +23,15 @@ import com.task.weaver.domain.member.dto.request.MemberDto;
 import com.task.weaver.domain.member.dto.response.ResponseReIssueToken;
 import com.task.weaver.domain.member.dto.response.ResponseToken;
 import com.task.weaver.domain.member.dto.response.ResponseUserOauth.AllMember;
+import com.task.weaver.domain.member.dto.response.ResponseUserOauth.MemberDTO;
 import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.member.repository.MemberRepository;
 import com.task.weaver.domain.member.service.MemberService;
+import com.task.weaver.domain.project.dto.response.ResponsePageResult;
+import com.task.weaver.domain.project.entity.Project;
+import com.task.weaver.domain.project.repository.ProjectRepository;
 import com.task.weaver.domain.userOauthMember.LoginType;
 import com.task.weaver.domain.userOauthMember.UserOauthMember;
-import com.task.weaver.domain.userOauthMember.oauth.entity.OauthUser;
 import com.task.weaver.domain.userOauthMember.user.dto.request.RequestGetUserPage;
 import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseGetMember;
 import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseGetUserForFront;
@@ -36,9 +39,6 @@ import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseUserIdNi
 import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseUuid;
 import com.task.weaver.domain.userOauthMember.user.entity.User;
 import com.task.weaver.domain.userOauthMember.user.repository.UserRepository;
-import com.task.weaver.domain.project.dto.response.ResponsePageResult;
-import com.task.weaver.domain.project.entity.Project;
-import com.task.weaver.domain.project.repository.ProjectRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.UUID;
@@ -72,12 +72,10 @@ public class MemberServiceImpl implements MemberService {
 		log.info("Current Refresh Token = {}", refreshToken);
 		jwtTokenProvider.validateToken(refreshToken);
 		Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
-
 		RefreshToken currentRefreshToken = refreshTokenRepository.findByRefreshToken(refreshToken)
 			.orElseThrow(() -> new RuntimeException(""));
 
-		if(!refreshToken.equals(currentRefreshToken.getRefreshToken()))
-			throw new IllegalArgumentException("");
+		validateMatchedToken(refreshToken, currentRefreshToken);
 
 		String newRefreshToken = jwtTokenProvider.createRefreshToken(authentication);
 		String newAccessToken = jwtTokenProvider.createAccessToken(authentication, LoginType.fromName(loginType));
@@ -87,19 +85,27 @@ public class MemberServiceImpl implements MemberService {
 		refreshTokenRepository.save(new RefreshToken(currentRefreshToken.getId(), newRefreshToken));
 
 		return ResponseToken.builder()
-			.accessToken("Bearer "+ newAccessToken)
-			.refreshToken(newRefreshToken)
-			.build();
+				.accessToken("Bearer " + newAccessToken)
+				.refreshToken(newRefreshToken)
+				.build();
+	}
+
+	private static void validateMatchedToken(final String refreshToken, final RefreshToken currentRefreshToken) {
+		if (!refreshToken.equals(currentRefreshToken.getRefreshToken())) {
+			throw new IllegalArgumentException("");
+		}
 	}
 
 	/**
 	 * token 앞 "Bearer-" 제거
+	 *
 	 * @param accessToken
 	 * @return
 	 */
 	private String resolveToken(String accessToken) {
-		if(accessToken.startsWith("Bearer "))
+		if (accessToken.startsWith("Bearer ")) {
 			return accessToken.substring(7);
+		}
 		throw new CannotResolveToken(REFRESH_TOKEN_RESOLVE, REFRESH_TOKEN_RESOLVE.getMessage());
 	}
 
@@ -182,10 +188,11 @@ public class MemberServiceImpl implements MemberService {
 	@Logger
 	@Override
 	public AllMember getMembersForTest() {
-		List<Member> userOauthMembers = memberRepository.findAll();
-		List<User> users = userOauthMembers.stream().map(Member::getUser).toList();
-		List<OauthUser> members = userOauthMembers.stream().map(Member::getOauthMember).toList();
-		return AllMember.create(users, members);
+		List<UserOauthMember> members = memberRepository.findAll()
+				.stream().map(Member::resolveMemberByLoginType).toList();
+		List<MemberDTO> memberDTOS = members.stream()
+				.map(MemberDTO::create).toList();
+		return AllMember.create(memberDTOS);
 	}
 
 	@Override

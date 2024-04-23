@@ -53,14 +53,17 @@ public class User extends BaseEntity implements UserOauthMember {
         this.email = email;
     }
 
+    @Override
     public void updatePassword(String updatePassword) {
         this.password = updatePassword;
     }
 
+    @Override
     public void updateNickname(final String nickname) {
         this.nickname = nickname;
     }
 
+    @Override
     public void updateProfileImage(final URL storedFileName) {
         this.profileImage = storedFileName;
     }
@@ -76,6 +79,11 @@ public class User extends BaseEntity implements UserOauthMember {
     }
 
     @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    @Override
     public boolean isWeaver() {
         return true;
     }
@@ -83,6 +91,11 @@ public class User extends BaseEntity implements UserOauthMember {
     @Override
     public UUID getUuid() {
         return this.userId;
+    }
+
+    @Override
+    public UUID getMemberUuid() {
+        return memberUuid;
     }
 
     @Override

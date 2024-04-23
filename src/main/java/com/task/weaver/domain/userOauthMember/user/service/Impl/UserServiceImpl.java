@@ -116,7 +116,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseGetMember updateUser(UUID memberId, RequestUpdateUser requestUpdateUser) {
         Member findMember = memberRepository.findById(memberId)
-                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
         UserOauthMember userOauthMember = findMember.resolveMemberByLoginType();
         if (userOauthMember.isWeaver()) {
             return getResponseGetMemberWithUser(requestUpdateUser, findMember.getUser());
@@ -168,19 +168,22 @@ public class UserServiceImpl implements UserService {
             JSONObject jsonObject = new JSONObject((LinkedHashMap) requestUpdateUser);
             String currentPassword = (String) jsonObject.get("currentPassword");
             String updatePassword = (String) jsonObject.get("updatePassword");
-            if (user.getPassword().equals(passwordEncoder.encode(currentPassword))) {
-                throw new MismatchedPassword(MISMATCHED_PASSWORD, "입력 값 확인이 필요합니다.");
-            }
+            validateMatchedPassword(user, currentPassword);
             user.updatePassword(passwordEncoder.encode(updatePassword));
         }
     }
 
-    @Transactional
+    private void validateMatchedPassword(final User user, final String currentPassword) {
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new MismatchedPassword(MISMATCHED_PASSWORD, MISMATCHED_PASSWORD.getMessage());
+        }
+    }
+
     @Override
     public void updateUser(final RequestUpdatePassword requestUpdatePassword) {
         UUID uuid = UUID.fromString(requestUpdatePassword.getUuid());
-        User byUserId = userRepository.findById(uuid).orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, ": 해당 유저를 찾을 수 없습니다."));
-        byUserId.updatePassword(passwordEncoder.encode(requestUpdatePassword.getPassword()));
+        Member member = memberRepository.findById(uuid).orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
+        member.resolveMemberByLoginType().updatePassword(passwordEncoder.encode(requestUpdatePassword.getPassword()));
     }
 
     @Override

@@ -67,8 +67,18 @@ public class OauthUser extends BaseEntity implements UserOauthMember {
     }
 
     @Override
+    public UUID getMemberUuid() {
+        return memberUuid;
+    }
+
+    @Override
     public URL getProfileImage() {
         return profileImageUrl;
+    }
+
+    @Override
+    public String getPassword() {
+        return null;
     }
 
     @Override
@@ -82,10 +92,16 @@ public class OauthUser extends BaseEntity implements UserOauthMember {
     }
 
     @Override
+    public void updatePassword(final String updatePassword) {
+        throw new UnsupportedOperationException("소셜 로그인 사용자는 비밀번호를 지원하지않습니다.");
+    }
+
+    @Override
     public boolean isWeaver() {
         return false;
     }
 
+    @Override
     public void updateNickname(final String value) {
         this.nickname = value;
     }
