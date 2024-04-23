@@ -44,14 +44,14 @@ public class CommentController {
 
     @Operation(summary = "코멘트 삭제" , description = "commentId로 코멘트 삭제")
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<?> deleteComment(@PathVariable Long commentId){
+    public ResponseEntity<?> deleteComment(@PathVariable UUID commentId){
         commentService.deleteComment(commentId);
         return ResponseEntity.ok().body("Successfully deleted provided comment");
     }
 
     @Operation(summary = "코멘트 수정", description = "코멘트 수정")
     @PutMapping("/{commentId}")
-    public ResponseEntity<DataResponse<ResponseComment>> putComment(@PathVariable Long commentId,
+    public ResponseEntity<DataResponse<ResponseComment>> putComment(@PathVariable UUID commentId,
                                                                     @RequestBody RequestUpdateComment comment) {
         ResponseComment responseComment = commentService.updateComment(commentId, comment);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "코멘트 수정 성공", responseComment, true), HttpStatus.OK);

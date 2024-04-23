@@ -9,7 +9,7 @@ import com.task.weaver.domain.comment.entity.Comment;
 import java.util.UUID;
 
 public interface CommentService {
-    ResponseComment getComment(Long id);
+    ResponseComment getComment(UUID uuid);
 
     ResponseComment addComment(RequestCreateComment requestComment);
 
@@ -17,7 +17,7 @@ public interface CommentService {
 
     ResponsePageComment<ResponseCommentList, Comment> getComments(int page, int size, UUID issueId);
 
-    void deleteComment(Long commentId);
+    void deleteComment(UUID commentId);
 
-    ResponseComment updateComment(Long originalCommentId, RequestUpdateComment requestUpdateComment);
+    ResponseComment updateComment(UUID originalCommentId, RequestUpdateComment requestUpdateComment);
 }
