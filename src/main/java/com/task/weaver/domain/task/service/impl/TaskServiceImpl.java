@@ -5,15 +5,13 @@ import com.task.weaver.common.exception.member.UserNotFoundException;
 import com.task.weaver.common.exception.project.AuthorizationException;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.task.TaskNotFoundException;
+import com.task.weaver.domain.issue.dto.request.RequestIssueForTask;
 import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.member.repository.MemberRepository;
-import com.task.weaver.domain.issue.dto.request.RequestIssueForTask;
-import com.task.weaver.domain.userOauthMember.UserOauthMember;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
 import com.task.weaver.domain.task.dto.request.RequestCreateTask;
-import com.task.weaver.domain.task.dto.request.RequestGetTaskPage;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
 import com.task.weaver.domain.task.dto.response.ResponseGetTask;
 import com.task.weaver.domain.task.dto.response.ResponseGetTaskList;
@@ -21,12 +19,14 @@ import com.task.weaver.domain.task.dto.response.ResponseUpdateDetail;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.repository.TaskRepository;
 import com.task.weaver.domain.task.service.TaskService;
+import com.task.weaver.domain.userOauthMember.UserOauthMember;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -65,17 +65,20 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public ResponsePageResult<ResponseGetTaskList, Task> getTasks(RequestGetTaskPage requestGetTaskPage) {
-        log.info("Project ID ={}", requestGetTaskPage.getProjectId());
-        Project project = projectRepository.findById(requestGetTaskPage.getProjectId())
+    public ResponsePageResult<ResponseGetTaskList, Task> getTasks(int page, int size, UUID projectId) {
+
+        Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ProjectNotFoundException(ErrorCode.PROJECT_NOT_FOUND,
                         ErrorCode.PROJECT_NOT_FOUND.getMessage()));
 
-        Pageable pageable = requestGetTaskPage.getPageable(Sort.by("taskId").descending());
+        Pageable pageable = getPageable(Sort.by("taskId").descending(), page, size);
         Page<Task> taskPage = taskRepository.findByProject(project, pageable);
-
         Function<Task, ResponseGetTaskList> fn = ResponseGetTaskList::new;
         return new ResponsePageResult<>(taskPage, fn);
+    }
+
+    private Pageable getPageable(Sort sort, int page, int size) {
+        return PageRequest.of(page - 1, size, sort);
     }
 
     @Override

@@ -80,8 +80,8 @@ public class MemberController {
 			@RequestParam int size,
 			@RequestParam UUID projectId) {
 
-		ResponsePageResult<MemberProjectDTO, Object[]> responseGetUserLists = memberService.getMembers(page, size,
-				projectId);
+		ResponsePageResult<MemberProjectDTO, Object[]> responseGetUserLists =
+																		memberService.getMembers(page, size,projectId);
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트 구성원 조회 성공", responseGetUserLists, true),
 				HttpStatus.OK);
 	}
