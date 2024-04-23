@@ -66,15 +66,17 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public ResponsePageResult<ResponseGetTaskList, Task> getTasks(int page, int size, UUID projectId) {
-
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new ProjectNotFoundException(ErrorCode.PROJECT_NOT_FOUND,
-                        ErrorCode.PROJECT_NOT_FOUND.getMessage()));
-
         Pageable pageable = getPageable(Sort.by("taskId").descending(), page, size);
-        Page<Task> taskPage = taskRepository.findByProject(project, pageable);
+        Page<Task> taskPage = taskRepository.findByProject(getProjectById(projectId), pageable);
         Function<Task, ResponseGetTaskList> fn = ResponseGetTaskList::new;
         return new ResponsePageResult<>(taskPage, fn);
+    }
+
+    @Override
+    public List<ResponseGetTaskList> getTasks(final UUID projectId) {
+        return taskRepository.findByProject(getProjectById(projectId))
+                .stream()
+                .map(ResponseGetTaskList::new).toList();
     }
 
     private Pageable getPageable(Sort sort, int page, int size) {
@@ -90,14 +92,8 @@ public class TaskServiceImpl implements TaskService {
     public UUID addTask(RequestCreateTask request) throws AuthorizationException {
         Member writer = memberRepository.findById(request.getWriterUuid())
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(request.getProjectId()))));
-
-        Project project = projectRepository.findById(request.getProjectId())
-                .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(request.getProjectId()))));
-        log.info("writer id : " + request.getWriterUuid());
-        log.info("project id : " + request.getProjectId());
-        Task entity = request.toEntity(writer, project);
-        Task save = taskRepository.save(entity);
-        return save.getTaskId();
+        Task task = taskRepository.save(request.toEntity(writer, getProjectById(request.getProjectId())));
+        return task.getTaskId();
     }
 
     @Override
@@ -151,11 +147,18 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public ResponseGetTask updateTaskStatus(UUID taskId, String status) {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new TaskNotFoundException(ErrorCode.TASK_NOT_FOUND, ErrorCode.TASK_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new TaskNotFoundException(ErrorCode.TASK_NOT_FOUND,
+                        ErrorCode.TASK_NOT_FOUND.getMessage()));
         task.setStatus(status);
         taskRepository.save(task);
         List<RequestIssueForTask> requestIssueForTasks = task.getIssueList().stream()
                 .map(issue -> new RequestIssueForTask(issue.getIssueId(), issue.getIssueTitle())).toList();
         return new ResponseGetTask(task, requestIssueForTasks);
+    }
+
+    private Project getProjectById(UUID projectId) {
+        return projectRepository.findById(projectId)
+                .orElseThrow(() -> new ProjectNotFoundException(ErrorCode.PROJECT_NOT_FOUND,
+                        ErrorCode.PROJECT_NOT_FOUND.getMessage()));
     }
 }

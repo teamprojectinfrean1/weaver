@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +46,7 @@ public class TaskController {
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "태스크 상세 조회 성공", responseTask, true), HttpStatus.OK);
     }
 
-    @Operation(summary = "프로젝트 태스크 다수 조회", description = "프로젝트에 생성된 태스크들을 조회합니다.")
+    @Operation(summary = "프로젝트 태스크 페이지 조회", description = "프로젝트에 생성된 태스크들을 페이지로 조회합니다.")
     @GetMapping
     public ResponseEntity<DataResponse<ResponsePageResult<ResponseGetTaskList, Task>>> getTasks(@RequestParam int page,
                                                                                                 @RequestParam int size,
@@ -54,6 +55,13 @@ public class TaskController {
         ResponsePageResult<ResponseGetTaskList, Task> responsePageResult = taskService.getTasks(page, size, projectId);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트에 연결된 태스크들 조회 성공", responsePageResult, true),
                 HttpStatus.OK);
+    }
+
+    @Operation(summary = "프로젝트 태스크 전체 조회", description = "프로젝트에 생성된 태스크를 전체 조회합니다.")
+    @GetMapping("/all")
+    public ResponseEntity<DataResponse<List<ResponseGetTaskList>>> getAllTask(@RequestParam UUID projectId) {
+        List<ResponseGetTaskList> tasks = taskService.getTasks(projectId);
+        return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "태스크 전체 조회 성공", tasks, true));
     }
 
     /**TODO: 2024-04-17, 수, 17:5  -JEON
