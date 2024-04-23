@@ -7,7 +7,6 @@ import static com.task.weaver.common.exception.ErrorCode.USER_EMAIL_NOT_FOUND;
 import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.task.weaver.common.aop.annotation.Logger;
-import com.task.weaver.common.exception.BusinessException;
 import com.task.weaver.common.exception.jwt.CannotResolveToken;
 import com.task.weaver.common.exception.member.UnableSendMailException;
 import com.task.weaver.common.exception.member.UserNotFoundException;
@@ -32,7 +31,6 @@ import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
 import com.task.weaver.domain.userOauthMember.LoginType;
 import com.task.weaver.domain.userOauthMember.UserOauthMember;
-import com.task.weaver.domain.userOauthMember.user.dto.request.RequestGetUserPage;
 import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseGetMember;
 import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseGetUserForFront;
 import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseUserIdNickname;
@@ -46,6 +44,7 @@ import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
@@ -171,18 +170,20 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public ResponsePageResult<MemberProjectDTO, Object[]> getMembers(RequestGetUserPage requestGetUserPage) throws BusinessException {
-		UUID projectId = requestGetUserPage.getProjectId();
-
+	public ResponsePageResult<MemberProjectDTO, Object[]> getMembers(int page, int size, UUID projectId) {
 		Project project = projectRepository.findById(projectId)
 				.orElseThrow(() -> new ProjectNotFoundException(PROJECT_NOT_FOUND, PROJECT_NOT_FOUND.getMessage()));
 
-		Pageable pageable = requestGetUserPage.getPageable(Sort.by("userId").descending());
+		Pageable pageable = getPageable(Sort.by("userId").descending(), page, size);
 
-		Function<Object[], MemberProjectDTO> fn = (en -> entityToDTO(project.getWriter(), project.getWriter().resolveMemberByLoginType()));
+		Function<Object[], MemberProjectDTO> fn = (en -> entityToDTO(project.getWriter(),
+				project.getWriter().resolveMemberByLoginType()));
 		Page<Object[]> members = memberRepository.findMembersByProject(projectId, pageable);
-
 		return new ResponsePageResult<>(members, fn);
+	}
+
+	private Pageable getPageable(Sort sort, int page, int size) {
+		return PageRequest.of(page - 1, size, sort);
 	}
 
 	@Logger
