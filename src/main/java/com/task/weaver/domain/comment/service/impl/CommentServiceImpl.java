@@ -1,14 +1,14 @@
 package com.task.weaver.domain.comment.service.impl;
 
-import static com.task.weaver.common.exception.ErrorCode.*;
+import static com.task.weaver.common.exception.ErrorCode.COMMENT_NOT_FOUND;
+import static com.task.weaver.common.exception.ErrorCode.ISSUE_NOT_FOUND;
+import static com.task.weaver.common.exception.ErrorCode.MISMATCHED_MEMBER;
+import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.task.weaver.common.exception.comment.CommentNotFoundException;
 import com.task.weaver.common.exception.issue.IssueNotFoundException;
 import com.task.weaver.common.exception.member.MismatchedMember;
 import com.task.weaver.common.exception.member.UserNotFoundException;
-import com.task.weaver.domain.member.entity.Member;
-import com.task.weaver.domain.member.repository.MemberRepository;
-import com.task.weaver.domain.comment.dto.request.CommentPageRequest;
 import com.task.weaver.domain.comment.dto.request.RequestCreateComment;
 import com.task.weaver.domain.comment.dto.request.RequestUpdateComment;
 import com.task.weaver.domain.comment.dto.response.ResponseComment;
@@ -19,14 +19,16 @@ import com.task.weaver.domain.comment.repository.CommentRepository;
 import com.task.weaver.domain.comment.service.CommentService;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.issue.repository.IssueRepository;
-
+import com.task.weaver.domain.member.entity.Member;
+import com.task.weaver.domain.member.repository.MemberRepository;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -51,16 +53,20 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public ResponsePageComment<ResponseCommentList, Comment> getComments(CommentPageRequest commentPageRequest) {
-        log.info("Issue ID={}", commentPageRequest.getIssueId());
-        Issue issue = issueRepository.findById(commentPageRequest.getIssueId())
+    public ResponsePageComment<ResponseCommentList, Comment> getComments(int page, int size, UUID issueId) {
+        log.info("Issue ID={}", issueId);
+        Issue issue = issueRepository.findById(issueId)
                 .orElseThrow(() -> new IssueNotFoundException(ISSUE_NOT_FOUND, ISSUE_NOT_FOUND.getMessage()));
-        Pageable pageable = commentPageRequest.getPageable(Sort.by("issue_id").descending());
+        Pageable pageable = getPageable(Sort.by("issue_id").descending(), page, size);
         List<Comment> comments = issue.getComments();
         Page<Comment> commentPage = new PageImpl<>(comments, pageable, comments.size());
 
         Function<Comment, ResponseCommentList> fn = ResponseCommentList::new;
         return new ResponsePageComment<>(commentPage, fn);
+    }
+
+    public Pageable getPageable(Sort sort, int page, int size) {
+        return PageRequest.of(page - 1, size, sort);
     }
 
     @Override
