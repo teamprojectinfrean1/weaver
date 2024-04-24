@@ -2,7 +2,6 @@ package com.task.weaver.domain.member.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.chattingRoomMember.ChattingRoomMember;
 import com.task.weaver.domain.issue.entity.Issue;
@@ -67,19 +66,23 @@ public class Member extends BaseEntity {
     @Column(name = "is_online")
     private boolean isOnline;
 
+    @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<ChattingRoomMember> chattingRoomMemberList;
+    private List<ChattingRoomMember> chattingRoomMemberList = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<ProjectMember> projectMemberList;
+    private List<ProjectMember> projectMemberList = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "main_project_id")
     private Project mainProject;
 
+    @Builder.Default
     @OneToMany(mappedBy = "modifier", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<Issue> modifierIssueList = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "assignee", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<Issue> assigneeIssueList = new ArrayList<>();
 
@@ -89,5 +92,13 @@ public class Member extends BaseEntity {
 
     public UserOauthMember resolveMemberByLoginType(){
         return loginType.equals(LoginType.OAUTH) ? oauthMember : user;
+    }
+
+    public boolean hasAssigneeIssueInProgress(){
+        return assigneeIssueList.stream().allMatch(Issue::hasIssueProgress);
+    }
+
+    public boolean hasModifierIssueInProgress() {
+        return modifierIssueList.stream().allMatch(Issue::hasIssueProgress);
     }
 }

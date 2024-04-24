@@ -7,6 +7,7 @@ import com.task.weaver.common.response.DataResponse;
 import com.task.weaver.domain.member.dto.MemberProjectDTO;
 import com.task.weaver.domain.member.dto.response.ResponseToken;
 import com.task.weaver.domain.member.dto.response.ResponseUserOauth.AllMember;
+import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.member.service.MemberService;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseGetMember;
@@ -75,12 +76,12 @@ public class MemberController {
 	@Logger
 	@Operation(summary = "프로젝트 구성원 조회", description = "프로젝트에 소속된 인원들 조회")
 	@GetMapping("/project/user-list")
-	public ResponseEntity<DataResponse<ResponsePageResult<MemberProjectDTO, Object[]>>> getMembersFromProject(
+	public ResponseEntity<DataResponse<ResponsePageResult<MemberProjectDTO, Member>>> getMembersFromProject(
 			@RequestParam int page,
 			@RequestParam int size,
 			@RequestParam UUID projectId) {
 
-		ResponsePageResult<MemberProjectDTO, Object[]> responseGetUserLists =
+		ResponsePageResult<MemberProjectDTO, Member> responseGetUserLists =
 																		memberService.getMembers(page, size,projectId);
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트 구성원 조회 성공", responseGetUserLists, true),
 				HttpStatus.OK);

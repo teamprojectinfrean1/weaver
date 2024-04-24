@@ -41,7 +41,7 @@ public interface MemberService {
 	ResponseGetUserForFront getMemberFromToken(HttpServletRequest request);
 
 	@LoggingStopWatch
-	ResponsePageResult<MemberProjectDTO, Object[]> getMembers(int page, int size, UUID projectId);
+	ResponsePageResult<MemberProjectDTO, Member> getMembers(int page, int size, UUID projectId);
 
 	@LoggingStopWatch
 	ResponseUserOauth.AllMember getMembersForTest();
@@ -55,14 +55,13 @@ public interface MemberService {
 		return null;
 	}
 
-	default MemberProjectDTO entityToDTO(Member member, UserOauthMember userOauthMember) {
+	default MemberProjectDTO entityToDTO(UserOauthMember userOauthMember) {
 		return MemberProjectDTO.builder()
-				.memberId(member.getId())
+				.memberId(userOauthMember.getMemberUuid())
 				.userId(userOauthMember.getUuid())
 				.nickname(userOauthMember.getNickname())
 				.userProfileImage(String.valueOf(userOauthMember.getProfileImage()))
+				.hasAssigneeIssueInProgress(false)
 				.build();
 	}
-
-	Member getMemberOrThrow(String key);
 }

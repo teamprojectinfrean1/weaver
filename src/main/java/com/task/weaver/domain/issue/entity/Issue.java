@@ -79,6 +79,10 @@ public class Issue extends BaseEntity {
         this.endDate = updateIssueRequest.endDate();
     }
 
+    public boolean hasIssueProgress() {
+        return status != Status.DONE;
+    }
+
     public void updateTask(Task task) {
         this.task = task;
     }

@@ -1,5 +1,6 @@
 package com.task.weaver.domain.member.dto;
 
+import com.task.weaver.domain.userOauthMember.UserOauthMember;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,4 +16,15 @@ public class MemberProjectDTO {
     private UUID userId;
     private String nickname;
     private String userProfileImage;
+    private boolean hasAssigneeIssueInProgress;
+    private boolean hasModifierIssueInProgress;
+
+    public MemberProjectDTO(UserOauthMember userOauthMember, boolean assigneeIssue, boolean modifierIssue) {
+        this.memberId = userOauthMember.getMemberUuid();
+        this.userId = userOauthMember.getUuid();
+        this.nickname = userOauthMember.getNickname();
+        this.userProfileImage = String.valueOf(userOauthMember.getProfileImage());
+        this.hasAssigneeIssueInProgress = assigneeIssue;
+        this.hasModifierIssueInProgress = modifierIssue;
+    }
 }

@@ -1,6 +1,7 @@
 package com.task.weaver.domain.project.entity;
 
 import com.task.weaver.domain.BaseEntity;
+import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
@@ -41,9 +42,6 @@ public class Project extends BaseEntity {
     @Column(name = "end_date")
     private LocalDateTime endDate;
 
-    @Column(name = "create_date")
-    private LocalDateTime created;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member writer;
@@ -78,8 +76,4 @@ public class Project extends BaseEntity {
         this.endDate = requestUpdateProject.endDate();
         this.modifier = updater;
     }
-
-//    public void changePublic() {
-//        this.isPublic = !isPublic;
-//    }
 }

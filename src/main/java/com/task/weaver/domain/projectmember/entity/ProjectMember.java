@@ -12,7 +12,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.util.UUID;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Getter
@@ -23,9 +25,10 @@ import lombok.*;
 public class ProjectMember extends BaseEntity {
 
     @Id
-    @Column(name = "project_member_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long projectMemberId;
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(columnDefinition = "BINARY(16)", name = "project_member_id")
+    private UUID projectMemberId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")

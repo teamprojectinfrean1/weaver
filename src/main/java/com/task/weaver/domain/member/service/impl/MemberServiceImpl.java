@@ -7,16 +7,20 @@ import static com.task.weaver.common.exception.ErrorCode.USER_EMAIL_NOT_FOUND;
 import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.task.weaver.common.aop.annotation.Logger;
+import com.task.weaver.common.exception.BusinessException;
+import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.jwt.CannotResolveToken;
 import com.task.weaver.common.exception.member.UnableSendMailException;
 import com.task.weaver.common.exception.member.UserNotFoundException;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.jwt.provider.JwtTokenProvider;
+import com.task.weaver.common.model.Status;
 import com.task.weaver.common.redis.RefreshToken;
 import com.task.weaver.common.redis.RefreshTokenRepository;
 import com.task.weaver.common.redis.service.RedisService;
 import com.task.weaver.common.util.CookieUtil;
 import com.task.weaver.common.util.HttpHeaderUtil;
+import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.member.dto.MemberProjectDTO;
 import com.task.weaver.domain.member.dto.request.MemberDto;
 import com.task.weaver.domain.member.dto.response.ResponseReIssueToken;
@@ -29,6 +33,8 @@ import com.task.weaver.domain.member.service.MemberService;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
+import com.task.weaver.domain.projectmember.entity.ProjectMember;
+import com.task.weaver.domain.projectmember.repository.ProjectMemberRepository;
 import com.task.weaver.domain.userOauthMember.LoginType;
 import com.task.weaver.domain.userOauthMember.UserOauthMember;
 import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseGetMember;
@@ -39,8 +45,11 @@ import com.task.weaver.domain.userOauthMember.user.entity.User;
 import com.task.weaver.domain.userOauthMember.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -62,6 +71,7 @@ public class MemberServiceImpl implements MemberService {
 	private final MemberRepository memberRepository;
 	private final UserRepository userRepository;
 	private final ProjectRepository projectRepository;
+	private final ProjectMemberRepository projectMemberRepository;
 	private final RedisService redisService;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RefreshTokenRepository refreshTokenRepository;
@@ -170,16 +180,11 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public ResponsePageResult<MemberProjectDTO, Object[]> getMembers(int page, int size, UUID projectId) {
-		Project project = projectRepository.findById(projectId)
-				.orElseThrow(() -> new ProjectNotFoundException(PROJECT_NOT_FOUND, PROJECT_NOT_FOUND.getMessage()));
-
-		Pageable pageable = getPageable(Sort.by("userId").descending(), page, size);
-
-		Function<Object[], MemberProjectDTO> fn = (en -> entityToDTO(project.getWriter(),
-				project.getWriter().resolveMemberByLoginType()));
-		Page<Object[]> members = memberRepository.findMembersByProject(projectId, pageable);
-		return new ResponsePageResult<>(members, fn);
+	public ResponsePageResult<MemberProjectDTO, Member> getMembers(int size, int page, UUID projectId) throws BusinessException {
+		Pageable pageable = getPageable(Sort.by("userId").descending(), size, page);
+		Page<Member> memberPage = memberRepository.findMembersByProject(projectId, pageable);
+		Function<Member, MemberProjectDTO> fn = (en -> new MemberProjectDTO(en.resolveMemberByLoginType(), en.hasAssigneeIssueInProgress(), en.hasModifierIssueInProgress()));
+		return new ResponsePageResult<>(memberPage, fn);
 	}
 
 	private Pageable getPageable(Sort sort, int page, int size) {
@@ -231,8 +236,9 @@ public class MemberServiceImpl implements MemberService {
 		return headers;
 	}
 
-	@Override
-	public Member getMemberOrThrow(final String key) {
-		return memberRepository.findById(UUID.fromString(key)).orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
+	private Project getProjectById(UUID projectId) {
+		return projectRepository.findById(projectId)
+				.orElseThrow(() -> new ProjectNotFoundException(ErrorCode.PROJECT_NOT_FOUND,
+						ErrorCode.PROJECT_NOT_FOUND.getMessage()));
 	}
 }
