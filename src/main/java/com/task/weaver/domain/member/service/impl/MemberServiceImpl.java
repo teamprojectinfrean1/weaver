@@ -1,12 +1,12 @@
 package com.task.weaver.domain.member.service.impl;
 
 import static com.task.weaver.common.exception.ErrorCode.NO_MATCHED_VERIFICATION_CODE;
-import static com.task.weaver.common.exception.ErrorCode.PROJECT_NOT_FOUND;
 import static com.task.weaver.common.exception.ErrorCode.REFRESH_TOKEN_RESOLVE;
 import static com.task.weaver.common.exception.ErrorCode.USER_EMAIL_NOT_FOUND;
 import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.task.weaver.common.aop.annotation.Logger;
+import com.task.weaver.common.aop.annotation.LoggingStopWatch;
 import com.task.weaver.common.exception.BusinessException;
 import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.jwt.CannotResolveToken;
@@ -14,13 +14,11 @@ import com.task.weaver.common.exception.member.UnableSendMailException;
 import com.task.weaver.common.exception.member.UserNotFoundException;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.jwt.provider.JwtTokenProvider;
-import com.task.weaver.common.model.Status;
 import com.task.weaver.common.redis.RefreshToken;
 import com.task.weaver.common.redis.RefreshTokenRepository;
 import com.task.weaver.common.redis.service.RedisService;
 import com.task.weaver.common.util.CookieUtil;
 import com.task.weaver.common.util.HttpHeaderUtil;
-import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.member.dto.MemberProjectDTO;
 import com.task.weaver.domain.member.dto.request.MemberDto;
 import com.task.weaver.domain.member.dto.response.ResponseReIssueToken;
@@ -30,8 +28,6 @@ import com.task.weaver.domain.member.dto.response.ResponseUserOauth.MemberDTO;
 import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.member.repository.MemberRepository;
 import com.task.weaver.domain.member.service.MemberService;
-import com.task.weaver.domain.project.dto.response.ResponsePageResult;
-import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import com.task.weaver.domain.projectmember.repository.ProjectMemberRepository;
@@ -45,11 +41,8 @@ import com.task.weaver.domain.userOauthMember.user.entity.User;
 import com.task.weaver.domain.userOauthMember.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -70,7 +63,6 @@ public class MemberServiceImpl implements MemberService {
 
 	private final MemberRepository memberRepository;
 	private final UserRepository userRepository;
-	private final ProjectRepository projectRepository;
 	private final ProjectMemberRepository projectMemberRepository;
 	private final RedisService redisService;
 	private final JwtTokenProvider jwtTokenProvider;
@@ -179,12 +171,18 @@ public class MemberServiceImpl implements MemberService {
 		return ResponseGetUserForFront.of(MemberDto.memberDomainToDto(member.resolveMemberByLoginType(), member));
 	}
 
+	@LoggingStopWatch
 	@Override
-	public ResponsePageResult<MemberProjectDTO, Member> getMembers(int size, int page, UUID projectId) throws BusinessException {
-		Pageable pageable = getPageable(Sort.by("userId").descending(), size, page);
-		Page<Member> memberPage = memberRepository.findMembersByProject(projectId, pageable);
-		Function<Member, MemberProjectDTO> fn = (en -> new MemberProjectDTO(en.resolveMemberByLoginType(), en.hasAssigneeIssueInProgress(), en.hasModifierIssueInProgress()));
-		return new ResponsePageResult<>(memberPage, fn);
+	public Page<MemberProjectDTO> getMembers(int page, int size, UUID projectId) throws BusinessException {
+		Pageable pageable = getPageable(Sort.by("id").descending(), page, size);
+		Page<Member> memberPage = getMembersByProject(projectId, pageable);
+		return memberPage.map(member -> new MemberProjectDTO(member.resolveMemberByLoginType(),
+														     member.hasAssigneeIssueInProgress(),
+															 member.hasModifierIssueInProgress()));
+	}
+
+	private Page<Member> getMembersByProject(UUID projectId, Pageable pageable) {
+		return memberRepository.findMembersByProject(projectId, pageable);
 	}
 
 	private Pageable getPageable(Sort sort, int page, int size) {
@@ -234,11 +232,5 @@ public class MemberServiceImpl implements MemberService {
 		HttpHeaderUtil.setAccessToken(headers, reIssueToken.accessToken());
 		CookieUtil.setRefreshCookie(headers, reIssueToken.refreshToken());
 		return headers;
-	}
-
-	private Project getProjectById(UUID projectId) {
-		return projectRepository.findById(projectId)
-				.orElseThrow(() -> new ProjectNotFoundException(ErrorCode.PROJECT_NOT_FOUND,
-						ErrorCode.PROJECT_NOT_FOUND.getMessage()));
 	}
 }

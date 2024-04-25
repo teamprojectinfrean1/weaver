@@ -25,7 +25,9 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -80,11 +82,11 @@ public class Member extends BaseEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "modifier", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<Issue> modifierIssueList = new ArrayList<>();
+    private Set<Issue> modifierIssueList = new HashSet<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "assignee", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<Issue> assigneeIssueList = new ArrayList<>();
+    private Set<Issue> assigneeIssueList = new HashSet<>();
 
     public void updateMainProject(final Project project) {
         this.mainProject = project;
