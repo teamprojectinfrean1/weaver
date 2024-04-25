@@ -5,12 +5,12 @@ import com.task.weaver.domain.member.dto.response.ResponseReIssueToken;
 import com.task.weaver.domain.member.dto.response.ResponseToken;
 import com.task.weaver.domain.member.dto.response.ResponseUserOauth;
 import com.task.weaver.domain.member.entity.Member;
-import com.task.weaver.domain.userOauthMember.UserOauthMember;
 import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseGetMember;
 import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseGetUserForFront;
 import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseUserIdNickname;
 import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseUuid;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
@@ -37,6 +37,8 @@ public interface MemberService {
 
 	Page<MemberProjectDTO> getMembers(int page, int size, UUID projectId);
 
+	List<MemberProjectDTO> getMembers(UUID projectId);
+
 	ResponseUserOauth.AllMember getMembersForTest();
 
 	ResponseToken getAuthentication(Member member);
@@ -44,17 +46,8 @@ public interface MemberService {
 	static HttpHeaders setCookieAndHeader(ResponseToken responseToken) {
 		return null;
 	}
+
 	static HttpHeaders setCookieAndHeader(ResponseReIssueToken reIssueToken) {
 		return null;
-	}
-
-	default MemberProjectDTO entityToDTO(UserOauthMember userOauthMember) {
-		return MemberProjectDTO.builder()
-				.memberId(userOauthMember.getMemberUuid())
-				.userId(userOauthMember.getUuid())
-				.nickname(userOauthMember.getNickname())
-				.userProfileImage(String.valueOf(userOauthMember.getProfileImage()))
-				.hasAssigneeIssueInProgress(false)
-				.build();
 	}
 }

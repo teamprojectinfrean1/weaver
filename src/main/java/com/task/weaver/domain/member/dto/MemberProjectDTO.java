@@ -1,6 +1,5 @@
 package com.task.weaver.domain.member.dto;
 
-import com.querydsl.core.annotations.QueryProjection;
 import com.task.weaver.domain.userOauthMember.UserOauthMember;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -18,15 +17,12 @@ public class MemberProjectDTO {
     private String nickname;
     private String userProfileImage;
     private boolean hasAssigneeIssueInProgress;
-    private boolean hasModifierIssueInProgress;
 
-    @QueryProjection
-    public MemberProjectDTO(UserOauthMember userOauthMember, boolean assigneeIssue, boolean modifierIssue) {
+    public MemberProjectDTO(UserOauthMember userOauthMember, boolean assigneeIssue) {
         this.memberId = userOauthMember.getMemberUuid();
         this.userId = userOauthMember.getUuid();
         this.nickname = userOauthMember.getNickname();
         this.userProfileImage = String.valueOf(userOauthMember.getProfileImage());
         this.hasAssigneeIssueInProgress = assigneeIssue;
-        this.hasModifierIssueInProgress = modifierIssue;
     }
 }

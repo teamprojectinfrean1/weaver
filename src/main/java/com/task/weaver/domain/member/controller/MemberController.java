@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -73,14 +74,23 @@ public class MemberController {
 	}
 
 	@Logger
-	@Operation(summary = "프로젝트 구성원 조회", description = "프로젝트에 소속된 인원들 조회")
-	@GetMapping("/project/user-list")
+	@Operation(summary = "프로젝트 구성원 조회", description = "프로젝트에 소속된 인원 페이지 조회")
+	@GetMapping("/project/user/page")
 	public ResponseEntity<DataResponse<Page<MemberProjectDTO>>> getMembersFromProject(
 			@RequestParam int page,
 			@RequestParam int size,
 			@RequestParam UUID projectId) {
 
 		Page<MemberProjectDTO> responseGetUserLists = memberService.getMembers(page, size, projectId);
+		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트 구성원 조회 성공", responseGetUserLists, true),
+				HttpStatus.OK);
+	}
+
+	@Logger
+	@Operation(summary = "프로젝트 구성원 조회", description = "프로젝트에 소속된 인원 전체 조회")
+	@GetMapping("/project/user/list")
+	public ResponseEntity<DataResponse<List<MemberProjectDTO>>> getMembersFromProject(@RequestParam UUID projectId) {
+		List<MemberProjectDTO> responseGetUserLists = memberService.getMembers(projectId);
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트 구성원 조회 성공", responseGetUserLists, true),
 				HttpStatus.OK);
 	}

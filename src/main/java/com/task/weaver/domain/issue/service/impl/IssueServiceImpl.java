@@ -147,8 +147,8 @@ public class IssueServiceImpl implements IssueService {
 
 		Issue issue = Issue.builder()
 			.task(task)
-			.modifier(creator)
-			.assignee(assignee)
+			.modifier(creator) // 생성자 & 수정자 역할
+			.assignee(assignee) // 담당자
 			.issueTitle(createIssueRequest.issueTitle())
 			.issueContent(createIssueRequest.issueContent())
 			.startDate(createIssueRequest.startDate())

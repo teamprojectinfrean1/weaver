@@ -17,6 +17,8 @@ import org.springframework.stereotype.Repository;
 public class MemberRepositoryDslImpl extends QuerydslRepositorySupport implements MemberRepositoryDsl {
 
     private final JPAQueryFactory queryFactory;
+    private final QProjectMember qProjectMember = QProjectMember.projectMember;
+    private final QMember qMember = QMember.member;
 
     public MemberRepositoryDslImpl(JPAQueryFactory jpaQueryFactory) {
         super(Member.class);
@@ -25,29 +27,32 @@ public class MemberRepositoryDslImpl extends QuerydslRepositorySupport implement
 
     @Override
     public Page<Member> findMembersByProject(final UUID projectId, final Pageable pageable) {
+        List<Member> result = getMembers(projectId);
+        return getPage(result, pageable);
+    }
 
+    @Override
+    public List<Member> findMembersByProject(final UUID projectId) {
+        return getMembers(projectId);
+    }
+
+    private List<Member> getMembers(final UUID projectId) {
         QProjectMember qProjectMember = QProjectMember.projectMember;
         QMember qMember = QMember.member;
 
-        // Main query
-        List<Member> result = queryFactory.selectFrom(qMember)
+        return queryFactory.selectFrom(qMember)
                 .leftJoin(qMember.projectMemberList, qProjectMember).fetchJoin()
                 .leftJoin(qMember.user).fetchJoin()
                 .leftJoin(qMember.oauthMember).fetchJoin()
-                .leftJoin(qMember.modifierIssueList).fetchJoin()
                 .leftJoin(qMember.assigneeIssueList).fetchJoin()
                 .where(qProjectMember.project.projectId.eq(projectId))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
                 .distinct()
                 .fetch();
+    }
 
-        // Count query
-        long total = queryFactory.selectFrom(qMember)
-                .leftJoin(qMember.projectMemberList, qProjectMember)
-                .where(qProjectMember.project.projectId.eq(projectId))
-                .fetch().size();
-
-        return new PageImpl<>(result, pageable, total);
+    private Page<Member> getPage(List<Member> members, Pageable pageable) {
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), members.size());
+        return new PageImpl<>(members.subList(start, end), pageable, members.size());
     }
 }

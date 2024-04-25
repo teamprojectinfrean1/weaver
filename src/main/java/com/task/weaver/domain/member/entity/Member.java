@@ -99,8 +99,4 @@ public class Member extends BaseEntity {
     public boolean hasAssigneeIssueInProgress(){
         return assigneeIssueList.stream().allMatch(Issue::hasIssueProgress);
     }
-
-    public boolean hasModifierIssueInProgress() {
-        return modifierIssueList.stream().allMatch(Issue::hasIssueProgress);
-    }
 }
