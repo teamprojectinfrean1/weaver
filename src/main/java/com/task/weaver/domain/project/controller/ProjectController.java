@@ -91,6 +91,6 @@ public class ProjectController {
     @Parameter(name = "projectId", description = "프로젝트 id", in = ParameterIn.PATH)
     public ResponseEntity<MessageResponse> deleteProject(@PathVariable("projectId") UUID projectId) {
         projectService.deleteProject(projectId);
-        return new ResponseEntity<>(MessageResponse.of(HttpStatus.NO_CONTENT, "프로젝트 삭제 성공", true), HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "프로젝트 삭제 성공", true), HttpStatus.OK);
     }
 }
