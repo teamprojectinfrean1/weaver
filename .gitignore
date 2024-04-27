@@ -216,6 +216,6 @@ $RECYCLE.BIN/
 # Application-local
 /src/main/resources/application-local.yml
 
-/src/test/resources/application.yml
+/src/test/resource/application.yml
 /src/test/resource/application-local.yml
 /src/test/resource/application-localTest.yml
