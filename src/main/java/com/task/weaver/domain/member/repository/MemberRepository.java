@@ -8,6 +8,7 @@ import com.task.weaver.domain.member.entity.Member;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -19,5 +20,10 @@ public interface MemberRepository extends JpaRepository<Member, UUID>, MemberRep
     Optional<Member> findByUser(User user);
 
     Optional<Member> findByOauthMember(OauthUser oauthMember);
+
+
+    @EntityGraph(attributePaths = {"user", "oauthMember"})
+    @Override
+    List<Member> findAll();
 }
 

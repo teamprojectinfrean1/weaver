@@ -178,6 +178,7 @@ public class MemberServiceImpl implements MemberService {
                 member.hasAssigneeIssueInProgress()));
     }
 
+    @LoggingStopWatch
     @Override
     public List<MemberProjectDTO> getMembers(final UUID projectId) {
         List<Member> members = memberRepository.findMembersByProject(projectId);
@@ -196,9 +197,9 @@ public class MemberServiceImpl implements MemberService {
     @Logger
     @Override
     public AllMember getMembersForTest() {
-        List<UserOauthMember> members = memberRepository.findAll()
-                .stream().map(Member::resolveMemberByLoginType).toList();
-        List<MemberDTO> memberDTOS = members.stream()
+        List<MemberDTO> memberDTOS = memberRepository.findAll()
+                .parallelStream()
+                .map(Member::resolveMemberByLoginType)
                 .map(MemberDTO::create).toList();
         return AllMember.create(memberDTOS);
     }

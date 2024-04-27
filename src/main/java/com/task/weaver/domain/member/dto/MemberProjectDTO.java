@@ -14,14 +14,14 @@ import lombok.NoArgsConstructor;
 public class MemberProjectDTO {
     private UUID memberId;
     private UUID userId;
-    private String nickname;
+    private String userNickname;
     private String userProfileImage;
     private boolean hasAssigneeIssueInProgress;
 
     public MemberProjectDTO(UserOauthMember userOauthMember, boolean assigneeIssue) {
         this.memberId = userOauthMember.getMemberUuid();
         this.userId = userOauthMember.getUuid();
-        this.nickname = userOauthMember.getNickname();
+        this.userNickname = userOauthMember.getNickname();
         this.userProfileImage = String.valueOf(userOauthMember.getProfileImage());
         this.hasAssigneeIssueInProgress = assigneeIssue;
     }

@@ -17,8 +17,6 @@ import org.springframework.stereotype.Repository;
 public class MemberRepositoryDslImpl extends QuerydslRepositorySupport implements MemberRepositoryDsl {
 
     private final JPAQueryFactory queryFactory;
-    private final QProjectMember qProjectMember = QProjectMember.projectMember;
-    private final QMember qMember = QMember.member;
 
     public MemberRepositoryDslImpl(JPAQueryFactory jpaQueryFactory) {
         super(Member.class);
