@@ -24,6 +24,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @Slf4j
 @Tag(name = "Comment Controller", description = "코멘트 관련 컨트롤러")
@@ -42,7 +45,7 @@ public class CommentController {
                 .body(DataResponse.of(HttpStatus.OK, "Comment created successfully.", responseComment, true));
     }
 
-    @Operation(summary = "코멘트 삭제" , description = "commentId로 코멘트 삭제")
+    @Operation(summary = "코멘트 삭제", description = "commentId로 코멘트 삭제")
     @DeleteMapping("/{commentId}")
     public ResponseEntity<?> deleteComment(@PathVariable UUID commentId){
         commentService.deleteComment(commentId);
@@ -61,8 +64,7 @@ public class CommentController {
     @GetMapping()
     public ResponseEntity<DataResponse<ResponsePageComment<ResponseCommentList, Comment>>> getComments(
             @RequestParam int page, @RequestParam int size, @RequestParam UUID issueId) {
-        ResponsePageComment<ResponseCommentList, Comment> responsePageComment = commentService.getComments(page, size,
-                issueId);
+            ResponsePageComment<ResponseCommentList, Comment> responsePageComment = commentService.getComments(page, size, issueId);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "이슈에 연결된 코멘트 조회 성공", responsePageComment, true),
                 HttpStatus.OK);
     }
