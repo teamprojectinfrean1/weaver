@@ -5,6 +5,7 @@ import static com.task.weaver.common.exception.ErrorCode.MISMATCHED_PASSWORD;
 import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.task.weaver.common.exception.BusinessException;
+import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.authorization.InvalidPasswordException;
 import com.task.weaver.common.exception.member.MismatchedInputException;
 import com.task.weaver.common.exception.member.MismatchedPassword;
@@ -57,18 +58,18 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public ResponseToken weaverLogin(RequestSignIn requestSignIn) {
-
-        User user = userRepository.findByUserId(requestSignIn.id())
-                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, " 해당 ID가 존재하지 않습니다."));
-        hasMatched(requestSignIn);
-        Member byUser = memberRepository.findByUser(user)
-                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, " 해당 유저가 존재하지 않습니다."));
-        return memberService.getAuthentication(byUser);
+        return userRepository.findByUserId(requestSignIn.id())
+                .flatMap(user -> {
+                    hasMatched(requestSignIn);
+                    return memberRepository.findByUser(user)
+                           .map(memberService::getAuthentication);
+                })
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
     }
 
     private void hasMatched(final RequestSignIn requestSignIn) {
         if (!checkPassword(requestSignIn)) {
-            throw new InvalidPasswordException(new Throwable(requestSignIn.password()));
+            throw new InvalidPasswordException(INVALID_PASSWORD, INVALID_PASSWORD.getMessage());
         }
     }
 

@@ -64,7 +64,6 @@ public class MemberServiceImpl implements MemberService {
     private final RedisService redisService;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final ProjectMemberRepository projectMemberRepository;
 
     @LoggingStopWatch
     public ResponseToken reissue(String refreshToken, String loginType) {
@@ -139,7 +138,6 @@ public class MemberServiceImpl implements MemberService {
 
         User findUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
-
         return ResponseUuid.builder()
                 .uuid(findUser.getUserId())
                 .build();
