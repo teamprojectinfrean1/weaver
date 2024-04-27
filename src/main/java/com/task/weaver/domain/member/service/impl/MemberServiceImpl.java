@@ -66,6 +66,7 @@ public class MemberServiceImpl implements MemberService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final ProjectMemberRepository projectMemberRepository;
 
+    @LoggingStopWatch
     public ResponseToken reissue(String refreshToken, String loginType) {
 
         log.info("Current Refresh Token = {}", refreshToken);
@@ -129,6 +130,7 @@ public class MemberServiceImpl implements MemberService {
         return userRepository.findByNickname(nickname).isEmpty();
     }
 
+    @LoggingStopWatch
     @Override
     public ResponseUuid getUuid(final String email, final Boolean checked) {
         if (!checked) {
@@ -143,14 +145,15 @@ public class MemberServiceImpl implements MemberService {
                 .build();
     }
 
+    @LoggingStopWatch
     @Override
     public ResponseGetMember getMember(UUID uuid) {
-        Member member = memberRepository.findById(uuid)
-                .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND.getMessage()));
+        Member member = getMemberById(uuid);
         UserOauthMember userOauthMemberData = member.resolveMemberByLoginType();
         return ResponseGetMember.of(MemberDto.memberDomainToDto(userOauthMemberData, member));
     }
 
+    @LoggingStopWatch
     @Override
     public ResponseUserIdNickname getMember(String email, Boolean checked) {
         if (!checked) {
@@ -161,11 +164,11 @@ public class MemberServiceImpl implements MemberService {
         return ResponseUserIdNickname.userToDto(findUser);
     }
 
+    @LoggingStopWatch
     @Override
     public ResponseGetUserForFront getMemberFromToken(HttpServletRequest request) {
         String memberUuid = jwtTokenProvider.getMemberIdByAssessToken(request);
-        Member member = memberRepository.findById(UUID.fromString(memberUuid))
-                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
+        Member member = getMemberById(UUID.fromString(memberUuid));
         return ResponseGetUserForFront.of(MemberDto.memberDomainToDto(member.resolveMemberByLoginType(), member));
     }
 
@@ -194,7 +197,7 @@ public class MemberServiceImpl implements MemberService {
         return PageRequest.of(page - 1, size, sort);
     }
 
-    @Logger
+    @LoggingStopWatch
     @Override
     public AllMember getMembersForTest() {
         List<MemberDTO> memberDTOS = memberRepository.findAll()
@@ -204,6 +207,7 @@ public class MemberServiceImpl implements MemberService {
         return AllMember.create(memberDTOS);
     }
 
+    @LoggingStopWatch
     @Override
     public ResponseToken getAuthentication(Member member) {
         Authentication authentication = new UsernamePasswordAuthenticationToken(member.getId(),
@@ -237,5 +241,10 @@ public class MemberServiceImpl implements MemberService {
         HttpHeaderUtil.setAccessToken(headers, reIssueToken.accessToken());
         CookieUtil.setRefreshCookie(headers, reIssueToken.refreshToken());
         return headers;
+    }
+
+    private Member getMemberById(UUID uuid) {
+        return memberRepository.findById(uuid)
+                .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND.getMessage()));
     }
 }
