@@ -4,8 +4,8 @@ import com.task.weaver.common.exception.BusinessException;
 import com.task.weaver.domain.project.dto.request.RequestCreateProject;
 import com.task.weaver.domain.project.dto.request.RequestPageProject;
 import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
+import com.task.weaver.domain.project.dto.response.ResponseGetMainProjectList;
 import com.task.weaver.domain.project.dto.response.ResponseGetProject;
-import com.task.weaver.domain.project.dto.response.ResponseGetProjectList;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,7 +39,7 @@ public interface ProjectService {
 
     List<ResponseGetProject> getProjectsForTest();
 
-    List<ResponseGetProjectList> getProejctsForMain(UUID userId) throws BusinessException;
+    ResponseGetMainProjectList getProejctsForMain(UUID userId) throws BusinessException;
 
     ResponseGetProject getProject(UUID projectId) throws BusinessException;
 
