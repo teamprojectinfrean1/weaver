@@ -33,16 +33,24 @@ public class MailSendService {
 
     public EmailCode joinEmail(String email) {
         makeRandomNumber();
-        String setFrom = "jcjk0302@likelion.org";
-        String title = "Weaver 회원 가입 인증 이메일 입니다.";
-        String content =
-                "Task Gram을 방문해주셔서 감사합니다." +
-                        "<br><br>" +
-                        "인증 번호는 " + authNumber + "입니다." +
-                        "<br>" +
-                        "웹 사이트에 인증번호를 입력해주세요";
-        mailSend(setFrom, email, title, content);
+        mailSend(generateFrom(), email, generateTitle(), generateContent());
         return EmailCode.builder().isSuccess(true).build();
+    }
+
+    private String generateFrom() {
+        return "jcjk0302@likelion.org";
+    }
+
+    private String generateTitle() {
+        return "Weaver 회원 가입 인증 이메일 입니다.";
+    }
+
+    private String generateContent() {
+        return "TaskGram을 방문해주셔서 감사합니다." +
+                "<br><br>" +
+                "인증 번호는 " + authNumber + "입니다." +
+                "<br>" +
+                "웹 사이트에 인증번호를 입력해주세요";
     }
 
     public void mailSend(String setFrom, String toMail, String title, String content) {

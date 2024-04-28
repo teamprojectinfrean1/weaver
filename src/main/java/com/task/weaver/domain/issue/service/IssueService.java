@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public interface IssueService {
 
-    IssueResponse getIssue(UUID issueId);
+    IssueResponse getIssueResponse(UUID issueId);
 
     ResponsePageResult<GetIssueListResponse, Issue> getIssues(String status, GetIssuePageRequest getIssuePageRequest);
 

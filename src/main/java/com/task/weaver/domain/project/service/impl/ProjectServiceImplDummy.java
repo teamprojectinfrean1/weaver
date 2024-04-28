@@ -18,8 +18,10 @@ import com.task.weaver.domain.project.service.ProjectService;
 
 import com.task.weaver.domain.member.repository.MemberRepository;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -125,7 +127,7 @@ public class ProjectServiceImplDummy implements ProjectService {
             writer.updateMainProject(project);
 
         Project savedProject = projectRepository.save(project);
-        List<ProjectMember> projectMemberList = new ArrayList<>();
+        Set<ProjectMember> projectMemberList = new HashSet<>();
 
         for (UUID memberId : dto.memberUuidList()) {
             Member member = memberRepository.findById(memberId)

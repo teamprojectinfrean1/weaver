@@ -6,7 +6,14 @@ import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
 import jakarta.persistence.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 import lombok.*;
+import org.hamcrest.core.Is;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
@@ -86,5 +93,29 @@ public class Task extends BaseEntity {
 
     public void addIssue(final Issue issue) {
         this.issueList.add(issue);
+    }
+
+    public List<Issue> getIssueList() {
+        return issueList;
+    }
+
+    public CopyOnWriteArrayList<List<Issue>> getCopyIssueList() {
+        CopyOnWriteArrayList<List<Issue>> copyOnWriteArrayList = new CopyOnWriteArrayList<>();
+        copyOnWriteArrayList.set(issueList.size(), issueList);
+        return copyOnWriteArrayList;
+    }
+
+    public List<Issue> getIssuesAsync(Task instance, Executor executor) {
+        CompletableFuture<List<Issue>> listCompletableFuture = CompletableFuture.supplyAsync(instance::getIssueList, executor);
+        return listCompletableFuture.join();
+    }
+
+    public Executor createDaemonThreadPool() {
+        int poolSize = issueList.isEmpty() ? 1 : issueList.size();
+        return Executors.newFixedThreadPool(poolSize, (Runnable r) -> {
+            Thread t = new Thread(r);
+            t.setDaemon(true);
+            return t;
+        });
     }
 }

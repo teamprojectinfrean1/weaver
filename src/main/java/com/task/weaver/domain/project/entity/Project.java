@@ -7,6 +7,10 @@ import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import com.task.weaver.domain.task.entity.Task;
 import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -47,12 +51,12 @@ public class Project extends BaseEntity {
     private Member writer;
 
     @Builder.Default
-    @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE)
-    private List<ProjectMember> projectMemberList = new ArrayList<>();
+    @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private Set<ProjectMember> projectMemberList = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE)
-    private List<Task> taskList = new ArrayList<>();
+    @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private Set<Task> taskList = new HashSet<>();
 
     @Column(name = "project_image")
     private URL projectImage;
