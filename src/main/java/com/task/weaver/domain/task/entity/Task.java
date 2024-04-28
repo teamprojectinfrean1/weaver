@@ -99,23 +99,8 @@ public class Task extends BaseEntity {
         return issueList;
     }
 
-    public CopyOnWriteArrayList<List<Issue>> getCopyIssueList() {
-        CopyOnWriteArrayList<List<Issue>> copyOnWriteArrayList = new CopyOnWriteArrayList<>();
-        copyOnWriteArrayList.set(issueList.size(), issueList);
-        return copyOnWriteArrayList;
-    }
-
     public List<Issue> getIssuesAsync(Task instance, Executor executor) {
         CompletableFuture<List<Issue>> listCompletableFuture = CompletableFuture.supplyAsync(instance::getIssueList, executor);
         return listCompletableFuture.join();
-    }
-
-    public Executor createDaemonThreadPool() {
-        int poolSize = issueList.isEmpty() ? 1 : issueList.size();
-        return Executors.newFixedThreadPool(poolSize, (Runnable r) -> {
-            Thread t = new Thread(r);
-            t.setDaemon(true);
-            return t;
-        });
     }
 }

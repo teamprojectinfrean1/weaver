@@ -74,14 +74,14 @@ public class IssueServiceImpl implements IssueService {
 
 	private Stream<CompletableFuture<List<Issue>>> findIssueStream(final GetIssuePageRequest getIssuePageRequest, String status) {
 		return projectRepository.findById(getIssuePageRequest.projectId()).stream()
-				.map(project -> CompletableFuture.supplyAsync(project::getTaskList, createDaemonThreadPool(10)))
+				.map(project -> CompletableFuture.supplyAsync(project::getTaskList, createDaemonThreadPool(project.getTaskList().size())))
 				.map(future -> future.thenApplyAsync(tasks -> tasks.stream()
-				.flatMap(task -> task.getIssuesAsync(task, createDaemonThreadPool(10)).stream())
+				.flatMap(task -> task.getIssuesAsync(task, createDaemonThreadPool(tasks.size())).stream())
 				.filter(issue -> issue.getStatus().equals(Status.fromName(status)))
 				.collect(Collectors.toList())));
 	}
 
-	public Executor createDaemonThreadPool(int poolSize) {
+	private Executor createDaemonThreadPool(int poolSize) {
 		return Executors.newFixedThreadPool(poolSize, (Runnable r) -> {
 			Thread t = new Thread(r);
 			t.setDaemon(true);
@@ -95,17 +95,6 @@ public class IssueServiceImpl implements IssueService {
 
 		log.info("status ={}, project id ={}", status, getIssuePageRequest.projectId());
 
-//		Project project = projectRepository.findById(getIssuePageRequest.projectId())
-//				.orElseThrow(() -> new IllegalStateException(""));
-//		List<Issue> issueList = new ArrayList<>();
-//		for (Task task : project.getTaskList()) {
-//			for (Issue issue : task.getIssueList()) {
-//				// status 확인
-//				if (issue.getStatus().equals(Status.valueOf(status))) {
-//					issueList.add(issue);
-//				}
-//			}
-//		}
 		List<Issue> issuesByStatusAsync = findIssuesByStatusAsync(status, getIssuePageRequest);
 
 		Pageable pageable = getIssuePageRequest.getPageable(Sort.by("issueId").descending());
