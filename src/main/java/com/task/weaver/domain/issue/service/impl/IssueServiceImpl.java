@@ -24,15 +24,11 @@ import com.task.weaver.domain.project.repository.ProjectRepository;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.repository.TaskRepository;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -64,14 +60,17 @@ public class IssueServiceImpl implements IssueService {
 	private List<Issue> findIssuesByStatusAsync(final String status,
 										final GetIssuePageRequest getIssuePageRequest) {
 
-		List<CompletableFuture<List<Issue>>> completableFutureStream = findIssueStream(getIssuePageRequest, status).toList();
+		Stream<CompletableFuture<List<Issue>>> completableFutureStream = findIssueStream(getIssuePageRequest, status);
 
-		return completableFutureStream.parallelStream()
+		return completableFutureStream
 				.map(CompletableFuture::join)
 				.flatMap(List::stream)
 				.collect(Collectors.toList());
 	}
 
+	/**TODO: 2024-04-29, 월, 1:27  -JEON
+	*  TASK: findById -> Create findIssuesByProject using QueryDsl
+	*/
 	private Stream<CompletableFuture<List<Issue>>> findIssueStream(final GetIssuePageRequest getIssuePageRequest, String status) {
 		return projectRepository.findById(getIssuePageRequest.projectId()).stream()
 				.map(project -> CompletableFuture.supplyAsync(project::getTaskList, createDaemonThreadPool(project.getTaskList().size())))
@@ -98,16 +97,18 @@ public class IssueServiceImpl implements IssueService {
 		List<Issue> issuesByStatusAsync = findIssuesByStatusAsync(status, getIssuePageRequest);
 
 		Pageable pageable = getIssuePageRequest.getPageable(Sort.by("issueId").descending());
-
-		// paging 처리 ..
-		PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+		PageRequest pageRequest = getPageRequest(pageable);
 		int start = (int) pageable.getOffset();
 		int end = Math.min((start + pageable.getPageSize()), issuesByStatusAsync.size());
 		Page<Issue> issuePage = new PageImpl<>(issuesByStatusAsync.subList(start, end), pageRequest, issuesByStatusAsync.size());
 
-		Function<Issue, GetIssueListResponse> fn = Issue -> (new GetIssueListResponse(Issue.getIssueId(), Issue.getIssueTitle(), Issue.getTask().getTaskId(), Issue.getTask().getTaskTitle(), Issue.getAssignee().resolveMemberByLoginType().getUuid(), Issue.getAssignee().resolveMemberByLoginType().getNickname(), Issue.getAssignee().resolveMemberByLoginType().getProfileImage()));
+		Function<Issue, GetIssueListResponse> fn = GetIssueListResponse::of;
 
 		return new ResponsePageResult<>(issuePage, fn);
+	}
+
+	private static PageRequest getPageRequest(final Pageable pageable) {
+		return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
 	}
 
 	@Override
@@ -156,14 +157,12 @@ public class IssueServiceImpl implements IssueService {
 		// Page<Issue> issuePage = issueList;
 
 		// paging 처리
-		PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+		PageRequest pageRequest = getPageRequest(pageable);
 		int start = (int) pageable.getOffset();
 		int end = Math.min((start + pageable.getPageSize()), issueList.size());
 		Page<Issue> issuePage = new PageImpl<>(issueList.subList(start, end), pageRequest, issueList.size());
 
-
-		Function<Issue, GetIssueListResponse> fn = Issue -> (new GetIssueListResponse(Issue.getIssueId(), Issue.getIssueTitle(), Issue.getTask().getTaskId(), Issue.getTask().getTaskTitle(), Issue.getAssignee().getId(), Issue.getAssignee().resolveMemberByLoginType().getNickname(), Issue.getAssignee().resolveMemberByLoginType().getProfileImage()));
-
+		Function<Issue, GetIssueListResponse> fn = GetIssueListResponse::of;
 		return new ResponsePageResult<>(issuePage, fn);
 	}
 

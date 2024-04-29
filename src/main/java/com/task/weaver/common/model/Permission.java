@@ -2,11 +2,14 @@ package com.task.weaver.common.model;
 
 import java.util.Locale;
 
-public enum ProjectPermission {
-    TEAM_LEADER, TEAM_MEMBER
+/**
+ * 프로젝트 권한 정보
+ */
+public enum Permission {
+    LEADER, MEMBER
     ;
 
-    public static ProjectPermission fromName(String type) {
-        return ProjectPermission.valueOf(type.toUpperCase(Locale.ENGLISH));
+    public static Permission fromName(String type) {
+        return Permission.valueOf(type.toUpperCase(Locale.ENGLISH));
     }
 }
