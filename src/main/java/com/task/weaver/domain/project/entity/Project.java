@@ -1,24 +1,31 @@
 package com.task.weaver.domain.project.entity;
 
 import com.task.weaver.domain.BaseEntity;
-import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import com.task.weaver.domain.task.entity.Task;
-import jakarta.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Builder
@@ -39,6 +46,9 @@ public class Project extends BaseEntity {
 
     @Column(name = "detail")
     private String detail;
+
+    @Column(name = "project_tag")
+    private String tags;
 
     @Column(name = "start_date")
     private LocalDateTime startDate;
@@ -73,11 +83,15 @@ public class Project extends BaseEntity {
         this.detail = detail;
     }
 
-    public void updateProject(RequestUpdateProject requestUpdateProject, Member updater){
+    public void updateProject(RequestUpdateProject requestUpdateProject, Member updater) {
         this.name = requestUpdateProject.projectName();
         this.detail = requestUpdateProject.projectContent();
         this.startDate = requestUpdateProject.startDate();
         this.endDate = requestUpdateProject.endDate();
         this.modifier = updater;
+    }
+
+    public void updateTag(List<String> projectTags) {
+        this.tags = String.join(",", projectTags);
     }
 }

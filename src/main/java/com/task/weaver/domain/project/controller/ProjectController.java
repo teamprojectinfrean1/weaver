@@ -72,10 +72,12 @@ public class ProjectController {
     }
 
     @Operation(summary = "프로젝트 업데이트", description = "프로젝트 정보 수정")
-    @PutMapping("/{projectId}")
-    @Parameter(name = "projectId", description = "프로젝트 uuid", in = ParameterIn.PATH)
-    public ResponseEntity<MessageResponse> updateProject(@PathVariable("projectId") UUID projectId, @RequestBody RequestUpdateProject project) {
-        projectService.updateProject(projectId, project);
+    @PutMapping(value = "/{projectId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<MessageResponse> updateProject(@PathVariable("projectId") UUID projectId,
+                                                         @RequestPart(value = "project") RequestUpdateProject project,
+                                                         @RequestPart(value = "multipartFile", required = false) MultipartFile multipartFile)
+            throws IOException {
+        projectService.updateProject(projectId, project, multipartFile);
         return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "프로젝트 업데이트 성공", true), HttpStatus.OK);
     }
 
