@@ -7,13 +7,8 @@ import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
 import jakarta.persistence.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
 import lombok.*;
-import org.hamcrest.core.Is;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
@@ -69,6 +64,9 @@ public class Task extends BaseEntity {
     @Column(name = "edit_delete_permission")
     private String editDeletePermission;
 
+    @Column(name = "task_tag")
+    private String tags;
+
     public String getTitle() {
         return this.taskTitle;
     }
@@ -85,6 +83,7 @@ public class Task extends BaseEntity {
     public void updateTask(RequestUpdateTask requestUpdateTask, Member updater) {
         this.taskTitle = requestUpdateTask.getTaskTitle();
         this.taskContent = requestUpdateTask.getTaskContent();
+        this.tags = String.join(",", requestUpdateTask.getTaskTagList());
         this.startDate = requestUpdateTask.getStartDate().atStartOfDay();
         this.endDate = requestUpdateTask.getEndDate().atStartOfDay();
         this.modifier = updater;

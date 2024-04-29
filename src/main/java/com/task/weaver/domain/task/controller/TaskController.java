@@ -74,9 +74,6 @@ public class TaskController {
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "태스크 생성 성공", SimpleResponse.of(taskId), true), HttpStatus.OK);
     }
 
-    /**TODO: 2024-04-17, 수, 17:40  -JEON
-    *  TASK: Response 항목 (lastUpdateDetail, taskTagList 항목 삭제 여부 확인 필요)
-    */
     @Operation(summary = "태스크 수정", description = "태스크 하나의 정보를 수정합니다.")
     @PutMapping()
     public ResponseEntity<DataResponse<ResponseGetTask>> updateTask(@RequestParam UUID taskId,

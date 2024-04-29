@@ -92,7 +92,7 @@ public class TaskServiceImpl implements TaskService {
     public UUID addTask(RequestCreateTask request) throws AuthorizationException {
         Member writer = memberRepository.findById(request.getWriterUuid())
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(request.getProjectId()))));
-        Task task = taskRepository.save(request.toEntity(writer, getProjectById(request.getProjectId())));
+        Task task = taskRepository.save(request.toEntity(writer, getProjectById(request.getProjectId()), request.getTaskTagList()));
         return task.getTaskId();
     }
 
@@ -106,6 +106,9 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.deleteById(taskId);
     }
 
+    /**TODO: 2024-04-30, 화, 1:41  -JEON
+    *  TASK: 사용 위치, 목적 ?
+    */
     @Override
     public ResponseGetTask updateTask(Task originalTask, Task newTask) {
         Task task = taskRepository.findById(originalTask.getTaskId()).get();
@@ -116,6 +119,9 @@ public class TaskServiceImpl implements TaskService {
         return new ResponseGetTask(task, requestIssueForTasks);
     }
 
+    /**TODO: 2024-04-30, 화, 1:41  -JEON
+     *  TASK: 사용 위치, 목적 ?
+     */
     @Override
     public ResponseGetTask updateTask(UUID originalTaskId, Task newTask) {
         Task task = taskRepository.findById(originalTaskId)
