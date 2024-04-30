@@ -10,7 +10,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -24,7 +23,7 @@ public class ResponseGetProject {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private URL projectImage;
-    private List<String> projectTagList;
+    private String projectTags;
     private ResponseUpdateDetail lastUpdateDetail;
 
     public ResponseGetProject(Project project){
@@ -33,6 +32,7 @@ public class ResponseGetProject {
         this.projectContent = project.getDetail();
         this.startDate = project.getStartDate();
         this.endDate = project.getEndDate();
+        this.projectTags = project.getTags();
         this.projectImage = project.getProjectImage();
     }
 }

@@ -25,8 +25,12 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -66,21 +70,25 @@ public class Member extends BaseEntity {
     @Column(name = "is_online")
     private boolean isOnline;
 
+    @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<ChattingRoomMember> chattingRoomMemberList;
+    private List<ChattingRoomMember> chattingRoomMemberList = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<ProjectMember> projectMemberList;
+    private List<ProjectMember> projectMemberList = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "main_project_id")
     private Project mainProject;
 
+    @Builder.Default
     @OneToMany(mappedBy = "modifier", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<Issue> modifierIssueList = new ArrayList<>();
+    private Set<Issue> modifierIssueList = new HashSet<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "assignee", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<Issue> assigneeIssueList = new ArrayList<>();
+    private Set<Issue> assigneeIssueList = new HashSet<>();
 
     public void updateMainProject(final Project project) {
         this.mainProject = project;
@@ -88,5 +96,9 @@ public class Member extends BaseEntity {
 
     public UserOauthMember resolveMemberByLoginType(){
         return loginType.equals(LoginType.OAUTH) ? oauthMember : user;
+    }
+
+    public boolean hasAssigneeIssueInProgress(){
+        return assigneeIssueList.stream().allMatch(Issue::hasIssueProgress);
     }
 }

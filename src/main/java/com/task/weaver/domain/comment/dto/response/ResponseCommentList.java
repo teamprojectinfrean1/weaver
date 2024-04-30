@@ -23,7 +23,7 @@ public class ResponseCommentList {
     private LocalDateTime updatedAt;
 
     public ResponseCommentList(Comment comment){
-        this.commentId = comment.getComment_id();
+        this.commentId = comment.getCommentId();
         this.body = comment.getBody();
         this.userId = comment.getIssue().getModifier().getId();
         this.userProfileImage = comment.getIssue().getModifier().getUser().getProfileImage();

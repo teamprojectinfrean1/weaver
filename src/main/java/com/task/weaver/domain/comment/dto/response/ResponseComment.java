@@ -11,6 +11,6 @@ public record ResponseComment(
         String body
 ) {
     public ResponseComment(Comment comment) {
-        this(comment.getComment_id(),comment.getBody());
+        this(comment.getCommentId(),comment.getBody());
     }
 }

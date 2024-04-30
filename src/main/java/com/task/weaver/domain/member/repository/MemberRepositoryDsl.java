@@ -1,9 +1,14 @@
 package com.task.weaver.domain.member.repository;
 
+import com.task.weaver.domain.member.entity.Member;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface MemberRepositoryDsl {
-    Page<Object[]> findMembersByProject(UUID projectId, Pageable pageable);
+
+    Page<Member> findMembersByProject(UUID projectId, Pageable pageable);
+
+    List<Member> findMembersByProject(final UUID projectId);
 }

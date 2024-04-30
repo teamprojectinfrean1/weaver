@@ -45,9 +45,8 @@ public interface ProjectService {
 
     UUID addProject(RequestCreateProject dto, MultipartFile multipartFile) throws BusinessException, IOException;
 
-    void updateProjectView(Long projectId) throws BusinessException;
-
-    void updateProject(UUID projectId, RequestUpdateProject dto) throws BusinessException;
+    void updateProject(UUID projectId, RequestUpdateProject dto, MultipartFile multipartFile)
+            throws IOException;
 
     void updateMainProject(UUID projectId) throws BusinessException;
 

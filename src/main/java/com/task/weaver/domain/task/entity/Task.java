@@ -6,6 +6,8 @@ import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
 import jakarta.persistence.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -62,6 +64,9 @@ public class Task extends BaseEntity {
     @Column(name = "edit_delete_permission")
     private String editDeletePermission;
 
+    @Column(name = "task_tag")
+    private String tags;
+
     public String getTitle() {
         return this.taskTitle;
     }
@@ -78,6 +83,7 @@ public class Task extends BaseEntity {
     public void updateTask(RequestUpdateTask requestUpdateTask, Member updater) {
         this.taskTitle = requestUpdateTask.getTaskTitle();
         this.taskContent = requestUpdateTask.getTaskContent();
+        this.tags = String.join(",", requestUpdateTask.getTaskTagList());
         this.startDate = requestUpdateTask.getStartDate().atStartOfDay();
         this.endDate = requestUpdateTask.getEndDate().atStartOfDay();
         this.modifier = updater;
@@ -86,5 +92,14 @@ public class Task extends BaseEntity {
 
     public void addIssue(final Issue issue) {
         this.issueList.add(issue);
+    }
+
+    public List<Issue> getIssueList() {
+        return issueList;
+    }
+
+    public List<Issue> getIssuesAsync(Task instance, Executor executor) {
+        CompletableFuture<List<Issue>> listCompletableFuture = CompletableFuture.supplyAsync(instance::getIssueList, executor);
+        return listCompletableFuture.join();
     }
 }

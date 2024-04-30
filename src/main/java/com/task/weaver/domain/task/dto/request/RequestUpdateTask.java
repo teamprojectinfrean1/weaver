@@ -14,9 +14,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class RequestUpdateTask {
-//    private Project project;
-//    private StatusTag statusTag;
-//    private User user;
     private UUID updaterUuid;
     private String taskTitle;
     private String taskContent;

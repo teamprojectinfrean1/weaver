@@ -17,9 +17,19 @@ import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
 import com.task.weaver.domain.project.service.ProjectService;
+import com.task.weaver.domain.projectmember.dto.ResponseProjectMember;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import com.task.weaver.domain.projectmember.repository.ProjectMemberRepository;
 import com.task.weaver.domain.task.dto.response.ResponseUpdateDetail;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,14 +38,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Function;
 
 
 @Service
@@ -47,6 +49,7 @@ public class ProjectServiceImplDummy implements ProjectService {
     private final MemberRepository memberRepository;
     private final ProjectMemberRepository projectMemberRepository;
     private final S3Uploader s3Uploader;
+
     @Override
     public ResponsePageResult<RequestCreateProject, Project> getProjects(final RequestPageProject requestPageProject)
             throws BusinessException {
@@ -73,23 +76,20 @@ public class ProjectServiceImplDummy implements ProjectService {
     @Override
     public ResponseGetMainProjectList getProejctsForMain(UUID memberId) throws BusinessException {
 
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(memberId))));
-
-        List<Project> result = projectRepository.findProjectsByMember(member)
-                .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(memberId))));
-
+        Member member = findMember(memberId);
+        List<ProjectMember> projects = projectMemberRepository.findProjectsByMember(member)
+                .orElseThrow(() -> new RuntimeException(""));
         List<ResponseGetProjectList> noMainProjects = new ArrayList<>();
         ResponseGetMainProjectList responseGetMainProjectList = new ResponseGetMainProjectList();
 
-        for (Project project : result) {
-            ResponseGetProjectList responseGetProjectList = new ResponseGetProjectList(project);
+        for (ProjectMember projectMember : projects) {
+            ResponseGetProjectList responseGetProjectList = new ResponseGetProjectList(projectMember.getProject(),
+                    projectMember.getPermission());
 
-            if(project.getProjectId() == member.getMainProject().getProjectId()){
+            if (projectMember.getProject().getProjectId() == member.getMainProject().getProjectId()) {
                 responseGetProjectList.setIsMainProject(true);
                 responseGetMainProjectList.setMainProject(responseGetProjectList);
-            }
-            else{
+            } else {
                 noMainProjects.add(responseGetProjectList);
             }
         }
@@ -120,80 +120,59 @@ public class ProjectServiceImplDummy implements ProjectService {
     @Override
     public UUID addProject(final RequestCreateProject dto, MultipartFile multipartFile) throws BusinessException, IOException {
         Project project = dtoToEntity(dto);
-        Member writer = memberRepository.findById(dto.writerUuid())
-                .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND, ErrorCode.USER_NOT_FOUND.getMessage()));
-
-        if(writer.getMainProject() == null)   //작성자가 처음 만든 프로젝트면, 메인 프로젝트로 선정
-            writer.updateMainProject(project);
+        Member writer = findMember(dto.writerUuid());
+        isFirstProject(project, writer);
 
         Project savedProject = projectRepository.save(project);
-        List<ProjectMember> projectMemberList = new ArrayList<>();
+        Set<ProjectMember> projectMembers = saveProjectMembers(savedProject, dto);
 
-        for (UUID memberId : dto.memberUuidList()) {
-            Member member = memberRepository.findById(memberId)
-                    .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(memberId))));
-
-            if(member.getMainProject() == null){
-                member.updateMainProject(savedProject);
-            }
-
-            ProjectMember projectMember = ProjectMember.builder()
-                    .project(savedProject)
-                    .member(member)
-                    .build();
-
-            projectMemberRepository.save(projectMember);
-            projectMemberList.add(projectMember);
-        }
-
-        savedProject.setProjectMemberList(projectMemberList);
+        savedProject.updateTag(dto.projectTagList());
+        savedProject.setProjectMemberList(projectMembers);
         savedProject.setWriter(writer);
         savedProject.setModifier(writer);
-
-        if (multipartFile != null) {
-            String storedFileName = s3Uploader.upload(multipartFile, "images");
-            URL updatedImageUrlObject = new URL(storedFileName);
-            savedProject.setProjectImage(updatedImageUrlObject);
-        }
-
+        profileImageUpdate(multipartFile, savedProject);
         log.info("project uuid : " + savedProject.getProjectId());
         projectRepository.save(savedProject);
-
         return savedProject.getProjectId();
     }
 
-    @Override
-    public void updateProjectView(final Long projectId) throws BusinessException {
+    private Set<ProjectMember> saveProjectMembers(final Project project, RequestCreateProject dto) {
+        UUID writerId = dto.writerUuid();
+        Set<ProjectMember> projectMemberList = dto.memberUuidList().parallelStream()
+                .map(memberId -> {
+                    Member member = findMember(memberId);
+                    isFirstProject(project, member);
+                    return ResponseProjectMember.dtoToEntity(project, member, writerId, memberId);
+                })
+                .collect(Collectors.toSet());
+        projectMemberRepository.saveAll(projectMemberList);
+        return projectMemberList;
+    }
 
+    private void isFirstProject(final Project project, final Member member) {
+        if (member.getMainProject() == null) {
+            member.updateMainProject(project);
+        }
     }
 
     @Override
-    public void updateProject(UUID projectId, final RequestUpdateProject dto) throws BusinessException {
-        Optional<Project> result = projectRepository.findById(projectId);
-
-        if (result.isPresent()) {
-            Member updater = memberRepository.findById(dto.updaterUuid())
-                .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(dto.updaterUuid()))));
-            Project entity = result.get();
-            entity.updateProject(dto, updater);
-            return;
-        }
-        throw new ProjectNotFoundException(new Throwable(String.valueOf(projectId)));
+    public void updateProject(UUID projectId, final RequestUpdateProject dto, final MultipartFile multipartFile)
+            throws IOException {
+        Project project = findProject(projectId);
+        Member updater = findMember(dto.updaterUuid());
+        project.updateProject(dto, updater);
+        project.updateTag(dto.projectTagList());
+        profileImageUpdate(multipartFile, project);
+        projectRepository.save(project);
     }
 
     @Override
     @Transactional
     public void updateMainProject(UUID projectId) throws BusinessException {
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(projectId))));
-
+        Project project = findProject(projectId);
         UUID writerId = project.getWriter().getId();
-
-        Member writer = memberRepository.findById(writerId)
-                .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(writerId))));
-
+        Member writer = findMember(writerId);
         writer.updateMainProject(project);
-
         memberRepository.save(writer);
     }
 
@@ -201,7 +180,7 @@ public class ProjectServiceImplDummy implements ProjectService {
     @Transactional
     public void deleteProject(final UUID projectId) throws BusinessException {
         Optional<Project> project = projectRepository.findById(projectId);
-        if (project.isPresent()){
+        if (project.isPresent()) {
             projectRepository.deleteById(projectId);
             return;
         }
@@ -210,12 +189,27 @@ public class ProjectServiceImplDummy implements ProjectService {
 
     @Override
     public void updateProjectView(UUID projectId) {
-        Optional<Project> result = projectRepository.findById(projectId);
-        if (result.isPresent()) {
-            Project project = result.get();
-            projectRepository.save(project);
-            return;
+        Project result = findProject(projectId);
+        projectRepository.save(result);
+    }
+
+    private void profileImageUpdate(final MultipartFile multipartFile, final Project project) throws IOException {
+        if (multipartFile != null) {
+            String storedFileName = s3Uploader.upload(multipartFile, "images");
+            URL updatedImageUrlObject = new URL(storedFileName);
+            project.setProjectImage(updatedImageUrlObject);
         }
-        throw new ProjectNotFoundException(new Throwable(String.valueOf(projectId)));
+    }
+
+    private Member findMember(final UUID memberUuid) {
+        return memberRepository.findById(memberUuid)
+                .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND,
+                        ErrorCode.USER_NOT_FOUND.getMessage()));
+    }
+
+    private Project findProject(final UUID projectId) {
+        return projectRepository.findById(projectId).orElseThrow(
+                () -> new ProjectNotFoundException(ErrorCode.PROJECT_NOT_FOUND,
+                        ErrorCode.PROJECT_NOT_FOUND.getMessage()));
     }
 }

@@ -1,8 +1,6 @@
 package com.task.weaver.domain.task.dto.response;
 
 import com.task.weaver.domain.issue.dto.request.RequestIssueForTask;
-import com.task.weaver.domain.issue.dto.response.ResponseIssueForTask;
-import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.task.entity.Task;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,7 +22,7 @@ public class ResponseGetTask {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private ResponseUpdateDetail lastUpdateDetail;
-    private List<String> taskTagList;
+    private String taskTags;
     private String editDeletePermission;
     private String taskStatus;
 
@@ -34,6 +32,7 @@ public class ResponseGetTask {
         this.taskId = task.getTaskId();
         this.taskTitle = task.getTaskTitle();
         this.taskContent = task.getTaskContent();
+        this.taskTags = task.getTags();
         this.startDate = task.getStartDate();
         this.endDate = task.getEndDate();
         this.editDeletePermission = task.getEditDeletePermission();
