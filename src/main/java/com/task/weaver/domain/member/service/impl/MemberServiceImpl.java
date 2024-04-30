@@ -17,8 +17,11 @@ import com.task.weaver.common.redis.RefreshTokenRepository;
 import com.task.weaver.common.redis.service.RedisService;
 import com.task.weaver.common.util.CookieUtil;
 import com.task.weaver.common.util.HttpHeaderUtil;
+import com.task.weaver.domain.issue.dto.response.GetIssueListResponse;
+import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.member.dto.MemberProjectDTO;
 import com.task.weaver.domain.member.dto.request.MemberDto;
+import com.task.weaver.domain.member.dto.response.GetMemberListResponse;
 import com.task.weaver.domain.member.dto.response.ResponseReIssueToken;
 import com.task.weaver.domain.member.dto.response.ResponseToken;
 import com.task.weaver.domain.member.dto.response.ResponseUserOauth.AllMember;
@@ -44,6 +47,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -177,6 +181,22 @@ public class MemberServiceImpl implements MemberService {
         Page<Member> memberPage = getMembersByProject(projectId, pageable);
         return memberPage.map(member -> new MemberProjectDTO(member.resolveMemberByLoginType(),
                 member.hasAssigneeIssueInProgress()));
+    }
+
+    @LoggingStopWatch
+    @Override
+    public ResponsePageResult<GetMemberListResponse, Member> getMemberList(int page, int size, UUID projectId) {
+        Pageable pageable = getPageable(Sort.by("id").descending(), page, size);
+        List<Member> members = memberRepository.findMembersByProject(projectId);
+        Page<Member> memberPage = createPage(members, pageable);
+        Function<Member, GetMemberListResponse> fn = GetMemberListResponse::of;
+        return new ResponsePageResult<>(memberPage, fn);
+    }
+
+    private Page<Member> createPage(List<Member> members, Pageable pageable) {
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), members.size());
+        return new PageImpl<>(members.subList(start, end), pageable, members.size());
     }
 
     @LoggingStopWatch

@@ -1,10 +1,12 @@
 package com.task.weaver.domain.member.service;
 
 import com.task.weaver.domain.member.dto.MemberProjectDTO;
+import com.task.weaver.domain.member.dto.response.GetMemberListResponse;
 import com.task.weaver.domain.member.dto.response.ResponseReIssueToken;
 import com.task.weaver.domain.member.dto.response.ResponseToken;
 import com.task.weaver.domain.member.dto.response.ResponseUserOauth;
 import com.task.weaver.domain.member.entity.Member;
+import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseGetMember;
 import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseGetUserForFront;
 import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseUserIdNickname;
@@ -36,6 +38,8 @@ public interface MemberService {
 	ResponseGetUserForFront getMemberFromToken(HttpServletRequest request);
 
 	Page<MemberProjectDTO> getMembers(int page, int size, UUID projectId);
+
+	ResponsePageResult<GetMemberListResponse, Member> getMemberList(int page, int size, UUID projectId);
 
 	List<MemberProjectDTO> getMembers(UUID projectId);
 

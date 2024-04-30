@@ -47,6 +47,8 @@ public class IssueController {
 	@Operation(summary = "이슈 생성", description = "이슈 생성")
 	@PostMapping
 	public ResponseEntity<?> addIssue(@RequestBody CreateIssueRequest createIssueRequest) {
+		log.info("startDate type = {}", createIssueRequest.startDate());
+		log.info("Date type = {}", createIssueRequest.endDate());
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "이슈 생성 성공", issueService.addIssue(createIssueRequest), true), HttpStatus.OK);
 	}
 
