@@ -78,7 +78,7 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = Comment.builder()
                 .member(writer)
                 .issue(issue)
-                .body(requestComment.body())
+                .body(requestComment.commentBody())
                 .build();
         commentRepository.save(comment);
         return new ResponseComment(comment);

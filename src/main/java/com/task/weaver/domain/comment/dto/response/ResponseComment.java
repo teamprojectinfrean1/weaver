@@ -8,7 +8,7 @@ import java.util.UUID;
 @Builder
 public record ResponseComment(
         UUID commentId,
-        String body
+        String commentBody
 ) {
     public ResponseComment(Comment comment) {
         this(comment.getCommentId(),comment.getBody());
