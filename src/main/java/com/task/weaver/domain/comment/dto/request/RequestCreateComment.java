@@ -10,6 +10,6 @@ public record RequestCreateComment
         (
                 UUID writerId,
                 UUID issueId,
-                String body
+                String commentBody
         ) {
 }
