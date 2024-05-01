@@ -68,16 +68,19 @@ public class IssueServiceImpl implements IssueService {
 				.collect(Collectors.toList());
 	}
 
-	/**TODO: 2024-04-29, 월, 1:27  -JEON
-	*  TASK: findById -> Create findIssuesByProject using QueryDsl
-	*/
-	private Stream<CompletableFuture<List<Issue>>> findIssueStream(final GetIssuePageRequest getIssuePageRequest, String status) {
+	/**
+	 * TODO: 2024-04-29, 월, 1:27  -JEON
+	 *  TASK: findById with EntityGraph version
+	 */
+	private Stream<CompletableFuture<List<Issue>>> findIssueStream(final GetIssuePageRequest getIssuePageRequest,
+																   String status) {
 		return projectRepository.findById(getIssuePageRequest.projectId()).stream()
-				.map(project -> CompletableFuture.supplyAsync(project::getTaskList, createDaemonThreadPool(project.getTaskList().size())))
+				.map(project -> CompletableFuture.supplyAsync(project::getTaskList,
+						createDaemonThreadPool(project.getTaskList().size())))
 				.map(future -> future.thenApplyAsync(tasks -> tasks.stream()
-				.flatMap(task -> task.getIssuesAsync(task, createDaemonThreadPool(tasks.size())).stream())
-				.filter(issue -> issue.getStatus().equals(Status.fromName(status)))
-				.collect(Collectors.toList())));
+						.flatMap(task -> task.getIssuesAsync(task, createDaemonThreadPool(tasks.size())).stream())
+						.filter(issue -> issue.getStatus().equals(Status.fromName(status)))
+						.collect(Collectors.toList())));
 	}
 
 	private Executor createDaemonThreadPool(int poolSize) {
@@ -88,19 +91,32 @@ public class IssueServiceImpl implements IssueService {
 		});
 	}
 
+	/**TODO: 2024-05-2, 목, 1:39  -JEON
+	*  TASK: findIssueByProject with QueryDsl version
+	*/
+	private List<Issue> findIssuesByStatusQueryDsl(final String status,
+												   final GetIssuePageRequest getIssuePageRequest) {
+		return findIssueStreamWithQueryDsl(getIssuePageRequest, status);
+	}
+
+	private List<Issue> findIssueStreamWithQueryDsl(final GetIssuePageRequest getIssuePageRequest, String status) {
+		return projectRepository.findIssueByProjectId(getIssuePageRequest.projectId(), status).orElseThrow();
+	}
+
 	@Override
 	public ResponsePageResult<GetIssueListResponse, Issue> getIssues(String status,
 																	 GetIssuePageRequest getIssuePageRequest) {
 
 		log.info("status ={}, project id ={}", status, getIssuePageRequest.projectId());
 
-		List<Issue> issuesByStatusAsync = findIssuesByStatusAsync(status, getIssuePageRequest);
+//		List<Issue> issuesByStatusAsync = findIssuesByStatusAsync(status, getIssuePageRequest);
+		List<Issue> issuesByStatusAsync = findIssuesByStatusQueryDsl(status, getIssuePageRequest);
 
 		Pageable pageable = getIssuePageRequest.getPageable(Sort.by("issueId").descending());
-		PageRequest pageRequest = getPageRequest(pageable);
 		int start = (int) pageable.getOffset();
 		int end = Math.min((start + pageable.getPageSize()), issuesByStatusAsync.size());
-		Page<Issue> issuePage = new PageImpl<>(issuesByStatusAsync.subList(start, end), pageRequest, issuesByStatusAsync.size());
+		Page<Issue> issuePage = new PageImpl<>(issuesByStatusAsync.subList(start, end), getPageRequest(pageable),
+				issuesByStatusAsync.size());
 
 		Function<Issue, GetIssueListResponse> fn = GetIssueListResponse::of;
 
