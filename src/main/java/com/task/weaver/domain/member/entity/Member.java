@@ -5,12 +5,13 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.chattingRoomMember.ChattingRoomMember;
 import com.task.weaver.domain.issue.entity.Issue;
+import com.task.weaver.domain.project.entity.Project;
+import com.task.weaver.domain.projectmember.entity.ProjectMember;
+import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.userOauthMember.LoginType;
 import com.task.weaver.domain.userOauthMember.UserOauthMember;
 import com.task.weaver.domain.userOauthMember.oauth.entity.OauthUser;
 import com.task.weaver.domain.userOauthMember.user.entity.User;
-import com.task.weaver.domain.project.entity.Project;
-import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,8 +30,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -94,11 +93,7 @@ public class Member extends BaseEntity {
         this.mainProject = project;
     }
 
-    public UserOauthMember resolveMemberByLoginType(){
+    public UserOauthMember resolveMemberByLoginType() {
         return loginType.equals(LoginType.OAUTH) ? oauthMember : user;
-    }
-
-    public boolean hasAssigneeIssueInProgress(){
-        return assigneeIssueList.stream().anyMatch(Issue::hasIssueProgress);
     }
 }

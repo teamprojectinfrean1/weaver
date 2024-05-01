@@ -1,7 +1,5 @@
 package com.task.weaver.domain.member.dto.response;
 
-import com.task.weaver.domain.issue.dto.response.GetIssueListResponse;
-import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.userOauthMember.UserOauthMember;
 import java.net.URL;
@@ -15,9 +13,8 @@ public record GetMemberListResponse (UUID memberId,
                                      URL userProfileImage,
                                      boolean hasAssigneeIssueInProgress){
 
-    public static GetMemberListResponse of(Member member) {
+    public static GetMemberListResponse of(Member member, boolean inProgress) {
         UserOauthMember userOauthMember = member.resolveMemberByLoginType();
-        boolean inProgress = member.hasAssigneeIssueInProgress();
         return GetMemberListResponse.builder()
                 .memberId(userOauthMember.getMemberUuid())
                 .userId(userOauthMember.getUuid())
