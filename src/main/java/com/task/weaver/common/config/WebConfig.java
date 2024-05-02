@@ -1,5 +1,6 @@
 package com.task.weaver.common.config;
 
+import com.task.weaver.domain.issue.util.IssueStatusTypeConverter;
 import com.task.weaver.domain.userOauthMember.oauth.util.OauthServerTypeConverter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
@@ -15,5 +16,6 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addFormatters(final FormatterRegistry registry) {
         registry.addConverter(new OauthServerTypeConverter());
+        registry.addConverter(new IssueStatusTypeConverter());
     }
 }

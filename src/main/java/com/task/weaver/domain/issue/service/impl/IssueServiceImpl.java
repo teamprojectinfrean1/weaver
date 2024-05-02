@@ -60,8 +60,7 @@ public class IssueServiceImpl implements IssueService {
 	private List<Issue> findIssuesByStatusAsync(final String status,
 										final GetIssuePageRequest getIssuePageRequest) {
 
-		Stream<CompletableFuture<List<Issue>>> completableFutureStream = findIssueStream(getIssuePageRequest, status);
-
+		Stream<CompletableFuture<List<Issue>>> completableFutureStream = findIssueStream(getIssuePageRequest.projectId(), status);
 		return completableFutureStream
 				.map(CompletableFuture::join)
 				.flatMap(List::stream)
@@ -70,11 +69,11 @@ public class IssueServiceImpl implements IssueService {
 
 	/**
 	 * TODO: 2024-04-29, 월, 1:27  -JEON
-	 *  TASK: findById with EntityGraph version
+	 *  TASK: findById with EntityGraph & Async version
 	 */
-	private Stream<CompletableFuture<List<Issue>>> findIssueStream(final GetIssuePageRequest getIssuePageRequest,
+	private Stream<CompletableFuture<List<Issue>>> findIssueStream(final UUID projectId,
 																   String status) {
-		return projectRepository.findById(getIssuePageRequest.projectId()).stream()
+		return projectRepository.findById(projectId).stream()
 				.map(project -> CompletableFuture.supplyAsync(project::getTaskList,
 						createDaemonThreadPool(project.getTaskList().size())))
 				.map(future -> future.thenApplyAsync(tasks -> tasks.stream()
@@ -94,17 +93,13 @@ public class IssueServiceImpl implements IssueService {
 	/**TODO: 2024-05-2, 목, 1:39  -JEON
 	*  TASK: findIssueByProject with QueryDsl version
 	*/
-	private List<Issue> findIssuesByStatusQueryDsl(final String status,
+	private List<Issue> findIssuesByStatusQueryDsl(final Status status,
 												   final GetIssuePageRequest getIssuePageRequest) {
-		return findIssueStreamWithQueryDsl(getIssuePageRequest, status);
-	}
-
-	private List<Issue> findIssueStreamWithQueryDsl(final GetIssuePageRequest getIssuePageRequest, String status) {
-		return projectRepository.findIssueByProjectId(getIssuePageRequest.projectId(), status).orElseThrow();
+		return projectRepository.findIssueByProjectId(getIssuePageRequest.projectId(), String.valueOf(status)).orElseThrow();
 	}
 
 	@Override
-	public ResponsePageResult<GetIssueListResponse, Issue> getIssues(String status,
+	public ResponsePageResult<GetIssueListResponse, Issue> getIssues(Status status,
 																	 GetIssuePageRequest getIssuePageRequest) {
 
 		log.info("status ={}, project id ={}", status, getIssuePageRequest.projectId());

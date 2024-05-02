@@ -1,6 +1,7 @@
 package com.task.weaver.domain.issue.controller;
 
 import com.task.weaver.common.aop.annotation.LoggingStopWatch;
+import com.task.weaver.common.model.Status;
 import java.util.UUID;
 
 import lombok.extern.slf4j.Slf4j;
@@ -66,7 +67,7 @@ public class IssueController {
 	@LoggingStopWatch
 	@Operation(summary = "이슈 조회", description = "status로 이슈 조회 (TODO / INPROGRESS / DONE)")
 	@GetMapping("/allTickets/{status}")
-	public ResponseEntity<?> getIssues(@PathVariable String status, @RequestParam UUID projectId, @RequestParam int page, @RequestParam int size){
+	public ResponseEntity<?> getIssues(@PathVariable Status status, @RequestParam UUID projectId, @RequestParam int page, @RequestParam int size){
 		log.info("status ={}, project id ={}", status, projectId, page, size);
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "status로 이슈 조회 성공", issueService.getIssues(status, new GetIssuePageRequest(page, size, projectId)), true), HttpStatus.OK);
 	}
