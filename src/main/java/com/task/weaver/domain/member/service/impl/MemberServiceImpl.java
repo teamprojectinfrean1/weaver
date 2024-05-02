@@ -38,6 +38,7 @@ import com.task.weaver.domain.userOauthMember.user.entity.User;
 import com.task.weaver.domain.userOauthMember.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -140,7 +141,7 @@ public class MemberServiceImpl implements MemberService {
         User findUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
         return ResponseUuid.builder()
-                .uuid(findUser.getUserId())
+                .uuid(findUser.getMemberUuid())
                 .build();
     }
 
@@ -197,14 +198,11 @@ public class MemberServiceImpl implements MemberService {
     }
 
     private boolean hasAnyIssueInProgressForProject(Member member, UUID projectId) {
-        if (hasIssuesEmpty(member)) return false;
-        return member.getAssigneeIssueList().stream()
-                .filter(issue -> getProjectIdByIssue(issue).equals(projectId))
-                .anyMatch(Issue::hasIssueProgress);
-    }
-
-    private boolean hasIssuesEmpty(final Member member) {
-        return member.getAssigneeIssueList().isEmpty();
+        return Optional.ofNullable(member.getAssigneeIssueList())
+                .map(issues -> issues.stream()
+                        .filter(issue -> getProjectIdByIssue(issue).equals(projectId))
+                        .anyMatch(Issue::hasIssueProgress))
+                .orElse(false);
     }
 
     private UUID getProjectIdByIssue(final Issue issue) {
