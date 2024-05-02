@@ -26,7 +26,7 @@ public class ResponseGetProject {
     private String projectTags;
     private ResponseUpdateDetail lastUpdateDetail;
 
-    public ResponseGetProject(Project project){
+    public ResponseGetProject(Project project, ResponseUpdateDetail responseUpdateDetail){
         this.projectId = project.getProjectId();
         this.projectName = project.getName();
         this.projectContent = project.getDetail();
@@ -34,5 +34,6 @@ public class ResponseGetProject {
         this.endDate = project.getEndDate();
         this.projectTags = project.getTags();
         this.projectImage = project.getProjectImage();
+        this.lastUpdateDetail = responseUpdateDetail;
     }
 }

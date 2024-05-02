@@ -21,10 +21,10 @@ public class ResponseGetProjectList {
     private Permission permission;
     private URL projectImage;
 
-    public ResponseGetProjectList(Project project, Permission permission){
+    public ResponseGetProjectList(Project project, Permission permission, UUID mainProjectId){
         this.projectId = project.getProjectId();
         this.projectName = project.getName();
-        this.isMainProject = false;
+        this.isMainProject = project.getProjectId().equals(mainProjectId);;
         this.permission = permission;
         this.projectImage = project.getProjectImage();
     }
