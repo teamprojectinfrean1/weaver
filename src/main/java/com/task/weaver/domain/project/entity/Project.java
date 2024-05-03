@@ -14,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -31,6 +32,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Builder
 @Getter
 @Setter
+@Table(name = "PROJECT")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Project extends BaseEntity {
