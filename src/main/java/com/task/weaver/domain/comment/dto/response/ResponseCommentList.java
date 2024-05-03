@@ -17,14 +17,14 @@ import java.util.UUID;
 public class ResponseCommentList {
     private UUID commentId;
     private UUID userId;
-    private String body;
+    private String commentBody;
     private URL userProfileImage;
     private String userNickname;
     private LocalDateTime updatedAt;
 
     public ResponseCommentList(Comment comment){
         this.commentId = comment.getCommentId();
-        this.body = comment.getBody();
+        this.commentBody = comment.getBody();
         this.userId = comment.getIssue().getModifier().getId();
         this.userProfileImage = comment.getIssue().getModifier().getUser().getProfileImage();
         this.userNickname = comment.getIssue().getModifier().getUser().getNickname();
