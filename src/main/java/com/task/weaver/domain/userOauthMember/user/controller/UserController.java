@@ -54,7 +54,6 @@ public class UserController {
     private final MemberService memberService;
     private final MailSendService mailService;
 
-    @Logger
     @Operation(summary = "회원가입", description = "사용자가 회원가입")
     @PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<DataResponse<ResponseGetMember>> addUser(@RequestPart(value = "requestCreateUser") RequestCreateUser requestCreateUser,

@@ -1,12 +1,14 @@
 package com.task.weaver.domain.userOauthMember.user.service.Impl;
 
-import static com.task.weaver.common.exception.ErrorCode.*;
+import static com.task.weaver.common.exception.ErrorCode.EMAIL_ALREADY_EXISTS;
+import static com.task.weaver.common.exception.ErrorCode.INVALID_PASSWORD;
+import static com.task.weaver.common.exception.ErrorCode.MISMATCHED_INPUT_VALUE;
 import static com.task.weaver.common.exception.ErrorCode.MISMATCHED_PASSWORD;
 import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.task.weaver.common.exception.BusinessException;
-import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.authorization.InvalidPasswordException;
+import com.task.weaver.common.exception.member.DuplicateEmailException;
 import com.task.weaver.common.exception.member.MismatchedInputException;
 import com.task.weaver.common.exception.member.MismatchedPassword;
 import com.task.weaver.common.exception.member.UserNotFoundException;
@@ -45,6 +47,12 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+    private static final String DIR_NAME = "images";
+    private static final String EMAIL = "email";
+    private static final String NICKNAME = "nickname";
+    private static final String PASSWORD = "password";
+    private static final String CURRENT_PASSWORD = "currentPassword";
+    private static final String UPDATE_PASSWORD = "updatePassword";
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -60,26 +68,21 @@ public class UserServiceImpl implements UserService {
     public ResponseToken weaverLogin(RequestSignIn requestSignIn) {
         return userRepository.findByUserId(requestSignIn.id())
                 .flatMap(user -> {
-                    hasMatched(requestSignIn);
+                    hasMatched(user, requestSignIn.password());
                     return memberRepository.findByUser(user)
                            .map(memberService::getAuthentication);
                 })
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
     }
 
-    private void hasMatched(final RequestSignIn requestSignIn) {
-        if (!checkPassword(requestSignIn)) {
+    private void hasMatched(final User user, final String requestPassword) {
+        if (!checkPassword(user, requestPassword)) {
             throw new InvalidPasswordException(INVALID_PASSWORD, INVALID_PASSWORD.getMessage());
         }
     }
 
-    private boolean checkPassword(RequestSignIn requestSignIn) {
-        User user = userRepository.findByUserId(requestSignIn.id())
-                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, " 해당 id가 존재하지 않습니다."));
-        log.info(user.getPassword());
-        log.info(requestSignIn.password());
-        log.info(passwordEncoder.matches(requestSignIn.password(), user.getPassword()) ? "true" : "false");
-        return passwordEncoder.matches(requestSignIn.password(), user.getPassword()); // 암호화된 비밀번호가 뒤로 와야 한다 순서
+    private boolean checkPassword(User user, String requestPassword) {
+        return passwordEncoder.matches(requestPassword, user.getPassword()); // 암호화된 비밀번호가 뒤로 와야 한다 순서
     }
 
     @Override
@@ -91,7 +94,6 @@ public class UserServiceImpl implements UserService {
         User user = hasImage(profileImage, requestCreateUser.dtoToUserDomain(passwordEncoder));
         Member member = memberFactory.createUserOauthMember(user);
         addMemberUuid(user, member);
-        log.info("user uuid : " + user.getUserId());
         return ResponseGetMember.of(member.getUser());
     }
 
@@ -102,22 +104,20 @@ public class UserServiceImpl implements UserService {
 
     private void isExistEmail(String email) {
         userRepository.findByEmail(email).ifPresent(user -> {
-            log.debug("userId : {}, 이메일 중복으로 회원가입 실패", email);
-            throw new RuntimeException("이메일 중복");
+            throw new DuplicateEmailException(EMAIL_ALREADY_EXISTS, EMAIL_ALREADY_EXISTS.getMessage());
         });
     }
 
     private User hasImage(final MultipartFile multipartFile, final User user) throws IOException {
         if (multipartFile != null) {
-            updateProfileImage(s3Uploader.upload(multipartFile, "images"), user);
+            updateProfileImage(s3Uploader.upload(multipartFile, DIR_NAME), user);
         }
         return userRepository.save(user);
     }
 
     @Override
     public ResponseGetMember updateUser(UUID memberId, RequestUpdateUser requestUpdateUser) {
-        Member findMember = memberRepository.findById(memberId)
-                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
+        Member findMember = getMemberByUuid(memberId);
         UserOauthMember userOauthMember = findMember.resolveMemberByLoginType();
         if (userOauthMember.isWeaver()) {
             return getResponseGetMemberWithUser(requestUpdateUser, findMember.getUser());
@@ -127,35 +127,35 @@ public class UserServiceImpl implements UserService {
 
     private ResponseGetMember getResponseGetMemberWithOauth(final RequestUpdateUser requestUpdateUser,
                                                             final OauthUser oauthMember) {
-        if (!requestUpdateUser.getType().equals("nickname")) {
-            throw new MismatchedInputException(
-                    MISMATCHED_INPUT_VALUE, MISMATCHED_INPUT_VALUE.getMessage());
+        if (!requestUpdateUser.getType().equals(NICKNAME)) {
+            throw new MismatchedInputException(MISMATCHED_INPUT_VALUE, MISMATCHED_INPUT_VALUE.getMessage());
         }
         oauthMember.updateNickname((String) requestUpdateUser.getValue());
-        log.info("update nickname = {}", requestUpdateUser.getValue());
         oauthMemberRepository.save(oauthMember);
         return ResponseGetMember.of(oauthMember);
     }
 
     private ResponseGetMember getResponseGetMemberWithUser(final RequestUpdateUser requestUpdateUser, final User user) {
         switch (requestUpdateUser.getType()) {
-            case "email" -> user.updateEmail((String) requestUpdateUser.getValue());
-            case "nickname" -> user.updateNickname((String) requestUpdateUser.getValue());
-            case "password" -> updatePassword(requestUpdateUser.getValue(), user);
+            case EMAIL -> user.updateEmail((String) requestUpdateUser.getValue());
+            case NICKNAME -> user.updateNickname((String) requestUpdateUser.getValue());
+            case PASSWORD -> updatePassword(requestUpdateUser.getValue(), user);
         }
         userRepository.save(user);
         return ResponseGetMember.of(user);
     }
 
     public ResponseSimpleURL updateProfile(final MultipartFile multipartFile, final UUID memberUUID) throws IOException {
-        Member member = memberRepository.findById(memberUUID)
-                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
+        Member member = getMemberByUuid(memberUUID);
         UserOauthMember userOauthMember = member.resolveMemberByLoginType();
         String oldFileUrl = userOauthMember.getProfileImage().getPath().substring(1);
-        log.info("user profile origin = {}", userOauthMember.getProfileImage().getPath());
-        log.info("oldFileUrl = {}", oldFileUrl);
-        updateProfileImage(s3Uploader.updateFile(multipartFile, oldFileUrl, "images"), userOauthMember);
+        updateProfileImage(s3Uploader.updateFile(multipartFile, oldFileUrl, DIR_NAME), userOauthMember);
         return new ResponseSimpleURL(userOauthMember.getProfileImage());
+    }
+
+    private Member getMemberByUuid(final UUID memberUUID) {
+        return memberRepository.findById(memberUUID)
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
     }
 
     private void updateProfileImage(final String s3Uploader, final UserOauthMember userOauthMember) throws IOException {
@@ -167,8 +167,8 @@ public class UserServiceImpl implements UserService {
     private void updatePassword(final Object requestUpdateUser, final User user) {
         if (requestUpdateUser instanceof LinkedHashMap) {
             JSONObject jsonObject = new JSONObject((LinkedHashMap) requestUpdateUser);
-            String currentPassword = (String) jsonObject.get("currentPassword");
-            String updatePassword = (String) jsonObject.get("updatePassword");
+            String currentPassword = (String) jsonObject.get(CURRENT_PASSWORD);
+            String updatePassword = (String) jsonObject.get(UPDATE_PASSWORD);
             validateMatchedPassword(user, currentPassword);
             user.updatePassword(passwordEncoder.encode(updatePassword));
         }
@@ -183,7 +183,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUser(final RequestUpdatePassword requestUpdatePassword) {
         UUID uuid = UUID.fromString(requestUpdatePassword.getUuid());
-        Member member = memberRepository.findById(uuid).orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
+        Member member = getMemberByUuid(uuid);
         member.resolveMemberByLoginType().updatePassword(passwordEncoder.encode(requestUpdatePassword.getPassword()));
     }
 

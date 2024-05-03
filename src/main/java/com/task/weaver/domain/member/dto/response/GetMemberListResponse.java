@@ -15,9 +15,8 @@ public record GetMemberListResponse (UUID memberId,
                                      URL userProfileImage,
                                      boolean hasAssigneeIssueInProgress){
 
-    public static GetMemberListResponse of(Member member) {
+    public static GetMemberListResponse of(Member member, boolean inProgress) {
         UserOauthMember userOauthMember = member.resolveMemberByLoginType();
-        boolean inProgress = member.hasAssigneeIssueInProgress();
         return GetMemberListResponse.builder()
                 .memberId(userOauthMember.getMemberUuid())
                 .userId(userOauthMember.getUuid())

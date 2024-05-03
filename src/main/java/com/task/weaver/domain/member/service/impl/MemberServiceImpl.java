@@ -5,19 +5,16 @@ import static com.task.weaver.common.exception.ErrorCode.REFRESH_TOKEN_RESOLVE;
 import static com.task.weaver.common.exception.ErrorCode.USER_EMAIL_NOT_FOUND;
 import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
 
-import com.task.weaver.common.aop.annotation.Logger;
 import com.task.weaver.common.aop.annotation.LoggingStopWatch;
 import com.task.weaver.common.exception.BusinessException;
 import com.task.weaver.common.exception.jwt.CannotResolveToken;
 import com.task.weaver.common.exception.member.UnableSendMailException;
-import com.task.weaver.common.exception.member.UserNotFoundException;
 import com.task.weaver.common.jwt.provider.JwtTokenProvider;
 import com.task.weaver.common.redis.RefreshToken;
 import com.task.weaver.common.redis.RefreshTokenRepository;
 import com.task.weaver.common.redis.service.RedisService;
 import com.task.weaver.common.util.CookieUtil;
 import com.task.weaver.common.util.HttpHeaderUtil;
-import com.task.weaver.domain.issue.dto.response.GetIssueListResponse;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.member.dto.MemberProjectDTO;
 import com.task.weaver.domain.member.dto.request.MemberDto;
@@ -30,7 +27,7 @@ import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.member.repository.MemberRepository;
 import com.task.weaver.domain.member.service.MemberService;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
-import com.task.weaver.domain.projectmember.repository.ProjectMemberRepository;
+import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.userOauthMember.LoginType;
 import com.task.weaver.domain.userOauthMember.UserOauthMember;
 import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseGetMember;
@@ -41,6 +38,7 @@ import com.task.weaver.domain.userOauthMember.user.entity.User;
 import com.task.weaver.domain.userOauthMember.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -143,6 +141,7 @@ public class MemberServiceImpl implements MemberService {
         User findUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
         return ResponseUuid.builder()
+                .uuid(findUser.getMemberUuid())
                 .uuid(findUser.getUserId())
                 .build();
     }
@@ -180,7 +179,7 @@ public class MemberServiceImpl implements MemberService {
         Pageable pageable = getPageable(Sort.by("id").descending(), page, size);
         Page<Member> memberPage = getMembersByProject(projectId, pageable);
         return memberPage.map(member -> new MemberProjectDTO(member.resolveMemberByLoginType(),
-                member.hasAssigneeIssueInProgress()));
+                hasAnyIssueInProgressForProject(member, projectId)));
     }
 
     @LoggingStopWatch
@@ -189,7 +188,7 @@ public class MemberServiceImpl implements MemberService {
         Pageable pageable = getPageable(Sort.by("id").descending(), page, size);
         List<Member> members = memberRepository.findMembersByProject(projectId);
         Page<Member> memberPage = createPage(members, pageable);
-        Function<Member, GetMemberListResponse> fn = GetMemberListResponse::of;
+        Function<Member, GetMemberListResponse> fn = (en -> GetMemberListResponse.of(en, hasAnyIssueInProgressForProject(en, projectId)));
         return new ResponsePageResult<>(memberPage, fn);
     }
 
@@ -199,20 +198,17 @@ public class MemberServiceImpl implements MemberService {
         return new PageImpl<>(members.subList(start, end), pageable, members.size());
     }
 
-    @LoggingStopWatch
-    @Override
-    public List<MemberProjectDTO> getMembers(final UUID projectId) {
-        List<Member> members = memberRepository.findMembersByProject(projectId);
-        Function<Member, MemberProjectDTO> fn = (en -> new MemberProjectDTO(en.resolveMemberByLoginType(), en.hasAssigneeIssueInProgress()));
-        return members.stream().map(fn).collect(Collectors.toList());
+    private boolean hasAnyIssueInProgressForProject(Member member, UUID projectId) {
+        return Optional.ofNullable(member.getAssigneeIssueList())
+                .map(issues -> issues.stream()
+                        .filter(issue -> getProjectIdByIssue(issue).equals(projectId))
+                        .anyMatch(Issue::hasIssueProgress))
+                .orElse(false);
     }
 
-    private Page<Member> getMembersByProject(UUID projectId, Pageable pageable) {
-        return memberRepository.findMembersByProject(projectId, pageable);
-    }
-
-    private Pageable getPageable(Sort sort, int page, int size) {
-        return PageRequest.of(page - 1, size, sort);
+    private UUID getProjectIdByIssue(final Issue issue) {
+        Project project = issue.getTask().getProject();
+        return project.getProjectId();
     }
 
     @LoggingStopWatch
@@ -223,6 +219,23 @@ public class MemberServiceImpl implements MemberService {
                 .map(Member::resolveMemberByLoginType)
                 .map(MemberDTO::create).toList();
         return AllMember.create(memberDTOS);
+    }
+
+    @LoggingStopWatch
+    @Override
+    public List<MemberProjectDTO> getMembers(final UUID projectId) {
+        List<Member> members = memberRepository.findMembersByProject(projectId);
+        Function<Member, MemberProjectDTO> fn = (en -> new MemberProjectDTO(en.resolveMemberByLoginType(),
+                en.hasAssigneeIssueInProgress()));
+        return members.stream().map(fn).collect(Collectors.toList());
+    }
+
+    private Page<Member> getMembersByProject(UUID projectId, Pageable pageable) {
+        return memberRepository.findMembersByProject(projectId, pageable);
+    }
+
+    private Pageable getPageable(Sort sort, int page, int size) {
+        return PageRequest.of(page - 1, size, sort);
     }
 
     @LoggingStopWatch

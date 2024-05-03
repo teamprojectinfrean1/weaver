@@ -80,7 +80,7 @@ public class Issue extends BaseEntity {
     }
 
     public boolean hasIssueProgress() {
-        return status != Status.DONE;
+        return status == Status.INPROGRESS;
     }
 
     public void updateTask(Task task) {

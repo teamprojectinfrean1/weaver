@@ -66,7 +66,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public ResponsePageResult<ResponseGetTaskList, Task> getTasks(int page, int size, UUID projectId) {
-        Pageable pageable = getPageable(Sort.by("task_id").descending(), page, size);
+        Pageable pageable = getPageable(Sort.by("taskId").descending(), page, size);
         Page<Task> taskPage = taskRepository.findByProject(getProjectById(projectId), pageable);
         Function<Task, ResponseGetTaskList> fn = ResponseGetTaskList::new;
         return new ResponsePageResult<>(taskPage, fn);
