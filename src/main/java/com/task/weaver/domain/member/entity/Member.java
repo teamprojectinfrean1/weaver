@@ -40,7 +40,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user_oauth_member", uniqueConstraints = {
+@Table(name = "USER_OAUTH_MEMBER", uniqueConstraints = {
         @UniqueConstraint(name = "unique_user_id", columnNames = {"user_id"}),
         @UniqueConstraint(name = "unique_oauth_member_id", columnNames = {"oauth_member_id"})
 })
