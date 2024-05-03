@@ -108,12 +108,12 @@ public class ProjectServiceImpl implements ProjectService {
         return new ResponseGetProject(project, responseUpdateDetail);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public UUID addProject(final RequestCreateProject dto, MultipartFile multipartFile) throws IOException {
         Member writer = getMemberById(dto.writerUuid());
         Project project = projectRepository.save(dtoToEntity(dto));
-        Set<ProjectMember> projectMembers = saveProjectMembers(project, dto);
+        Set<ProjectMember> projectMembers = saveProjectMembers(project, dto.writerUuid(), dto.memberUuidList());
 
         isFirstProject(project, writer);
         updateProjectDetails(dto, writer, project, projectMembers);
@@ -130,17 +130,18 @@ public class ProjectServiceImpl implements ProjectService {
         savedProject.setModifier(writer);
     }
 
-    private Set<ProjectMember> saveProjectMembers(final Project project, RequestCreateProject dto) {
-        UUID writerId = dto.writerUuid();
-        Set<ProjectMember> projectMemberList = dto.memberUuidList().parallelStream()
-                .map(memberId -> {
-                    Member member = getMemberById(memberId);
-                    isFirstProject(project, member);
-                    return ResponseProjectMember.dtoToEntity(project, member, writerId, memberId);
-                })
+    private Set<ProjectMember> saveProjectMembers(final Project project, UUID writerId, List<UUID> memberUuidList) {
+        Set<ProjectMember> projectMemberList = memberUuidList.parallelStream()
+                .map(memberId -> getProjectMember(project, writerId, memberId))
                 .collect(Collectors.toSet());
         projectMemberRepository.saveAll(projectMemberList);
         return projectMemberList;
+    }
+
+    private ProjectMember getProjectMember(final Project project, final UUID writerId, final UUID memberId) {
+        Member member = getMemberById(memberId);
+        isFirstProject(project, member);
+        return ResponseProjectMember.dtoToEntity(project, member, writerId, memberId);
     }
 
     private void isFirstProject(final Project project, final Member member) {
@@ -150,6 +151,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @Transactional
     public void updateProject(UUID projectId, final RequestUpdateProject dto, final MultipartFile multipartFile)
             throws IOException {
         Project project = getProjectById(projectId);
@@ -157,11 +159,21 @@ public class ProjectServiceImpl implements ProjectService {
         project.updateProject(dto, updater);
         project.updateTag(dto.projectTagList());
         profileImageUpdate(multipartFile, project);
+        projectMemberRepository.bulkDeleteProjectMembers(project, dto.memberUuidList());
+        bulkUpdateMembers(project, dto.updaterUuid(), dto.memberUuidList());
         projectRepository.save(project);
     }
 
-    @Transactional
+    private void bulkUpdateMembers(final Project project, UUID updaterId, final List<UUID> memberUuidList) {
+        Set<ProjectMember> newProjectMembers = memberUuidList.stream()
+                .filter(memberId -> !projectMemberRepository.findByProjectAndMemberId(memberId, project.getProjectId()))
+                .map(memberId -> getProjectMember(project, updaterId, memberId))
+                .collect(Collectors.toSet());
+        projectMemberRepository.saveAll(newProjectMembers);
+    }
+
     @Override
+    @Transactional
     public void updateMainProject(UUID projectId) {
         Project project = getProjectById(projectId);
         UUID writerId = project.getWriter().getId();
@@ -203,7 +215,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     private List<ProjectMember> getProjectsByMember(final Member member) {
-        return projectMemberRepository.findProjectsByMember(member)
+        return projectMemberRepository.findProjectMemberByMember(member)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
     }
 }
