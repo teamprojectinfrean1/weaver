@@ -21,7 +21,7 @@ import org.hibernate.annotations.GenericGenerator;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Table(name = "USER")
+@Table(name = "user")
 @Setter
 @Builder
 public class User extends BaseEntity implements UserOauthMember {

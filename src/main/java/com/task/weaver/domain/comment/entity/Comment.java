@@ -17,7 +17,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "COMMENT")
+@Table(name = "comment")
 @Builder
 public class Comment extends BaseEntity {
 
