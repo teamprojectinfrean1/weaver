@@ -82,6 +82,18 @@ public class IssueServiceImpl implements IssueService {
 						.collect(Collectors.toList())));
 	}
 
+	/**TODO: 2024-04-29, 월, 1:27  -JEON
+	*  TASK: findById -> Create findIssuesByProject using QueryDsl
+	*/
+	private Stream<CompletableFuture<List<Issue>>> findIssueStream(final GetIssuePageRequest getIssuePageRequest, String status) {
+		return projectRepository.findById(getIssuePageRequest.projectId()).stream()
+				.map(project -> CompletableFuture.supplyAsync(project::getTaskList, createDaemonThreadPool(project.getTaskList().size())))
+				.map(future -> future.thenApplyAsync(tasks -> tasks.stream()
+				.flatMap(task -> task.getIssuesAsync(task, createDaemonThreadPool(tasks.size())).stream())
+				.filter(issue -> issue.getStatus().equals(Status.fromName(status)))
+				.collect(Collectors.toList())));
+	}
+
 	private Executor createDaemonThreadPool(int poolSize) {
 		return Executors.newFixedThreadPool(poolSize, (Runnable r) -> {
 			Thread t = new Thread(r);

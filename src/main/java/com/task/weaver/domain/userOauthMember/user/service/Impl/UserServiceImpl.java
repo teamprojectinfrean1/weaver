@@ -1,11 +1,12 @@
 package com.task.weaver.domain.userOauthMember.user.service.Impl;
 
-import static com.task.weaver.common.exception.ErrorCode.*;
+import static com.task.weaver.common.exception.ErrorCode.EMAIL_ALREADY_EXISTS;
+import static com.task.weaver.common.exception.ErrorCode.INVALID_PASSWORD;
+import static com.task.weaver.common.exception.ErrorCode.MISMATCHED_INPUT_VALUE;
 import static com.task.weaver.common.exception.ErrorCode.MISMATCHED_PASSWORD;
 import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.task.weaver.common.exception.BusinessException;
-import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.authorization.InvalidPasswordException;
 import com.task.weaver.common.exception.member.DuplicateEmailException;
 import com.task.weaver.common.exception.member.MismatchedInputException;

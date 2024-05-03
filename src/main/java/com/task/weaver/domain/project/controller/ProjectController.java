@@ -6,7 +6,6 @@ import com.task.weaver.domain.project.dto.request.RequestCreateProject;
 import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
 import com.task.weaver.domain.project.dto.response.ResponseGetMainProjectList;
 import com.task.weaver.domain.project.dto.response.ResponseGetProject;
-import com.task.weaver.domain.project.dto.response.ResponseGetProjectList;
 import com.task.weaver.domain.project.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

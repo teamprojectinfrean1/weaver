@@ -7,7 +7,6 @@ import com.task.weaver.domain.chattingRoomMember.ChattingRoomMember;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
-import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.userOauthMember.LoginType;
 import com.task.weaver.domain.userOauthMember.UserOauthMember;
 import com.task.weaver.domain.userOauthMember.oauth.entity.OauthUser;
@@ -95,5 +94,9 @@ public class Member extends BaseEntity {
 
     public UserOauthMember resolveMemberByLoginType() {
         return loginType.equals(LoginType.OAUTH) ? oauthMember : user;
+    }
+
+    public boolean hasAssigneeIssueInProgress(){
+        return assigneeIssueList.stream().allMatch(Issue::hasIssueProgress);
     }
 }

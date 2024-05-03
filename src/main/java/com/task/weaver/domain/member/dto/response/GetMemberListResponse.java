@@ -1,5 +1,7 @@
 package com.task.weaver.domain.member.dto.response;
 
+import com.task.weaver.domain.issue.dto.response.GetIssueListResponse;
+import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.userOauthMember.UserOauthMember;
 import java.net.URL;

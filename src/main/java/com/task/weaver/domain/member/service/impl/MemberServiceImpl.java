@@ -142,6 +142,7 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
         return ResponseUuid.builder()
                 .uuid(findUser.getMemberUuid())
+                .uuid(findUser.getUserId())
                 .build();
     }
 
@@ -212,9 +213,20 @@ public class MemberServiceImpl implements MemberService {
 
     @LoggingStopWatch
     @Override
+    public AllMember getMembersForTest() {
+        List<MemberDTO> memberDTOS = memberRepository.findAll()
+                .parallelStream()
+                .map(Member::resolveMemberByLoginType)
+                .map(MemberDTO::create).toList();
+        return AllMember.create(memberDTOS);
+    }
+
+    @LoggingStopWatch
+    @Override
     public List<MemberProjectDTO> getMembers(final UUID projectId) {
         List<Member> members = memberRepository.findMembersByProject(projectId);
-        Function<Member, MemberProjectDTO> fn = (en -> new MemberProjectDTO(en.resolveMemberByLoginType(), hasAnyIssueInProgressForProject(en, projectId)));
+        Function<Member, MemberProjectDTO> fn = (en -> new MemberProjectDTO(en.resolveMemberByLoginType(),
+                en.hasAssigneeIssueInProgress()));
         return members.stream().map(fn).collect(Collectors.toList());
     }
 
@@ -224,16 +236,6 @@ public class MemberServiceImpl implements MemberService {
 
     private Pageable getPageable(Sort sort, int page, int size) {
         return PageRequest.of(page - 1, size, sort);
-    }
-
-    @LoggingStopWatch
-    @Override
-    public AllMember getMembersForTest() {
-        List<MemberDTO> memberDTOS = memberRepository.findAll()
-                .parallelStream()
-                .map(Member::resolveMemberByLoginType)
-                .map(MemberDTO::create).toList();
-        return AllMember.create(memberDTOS);
     }
 
     @LoggingStopWatch
