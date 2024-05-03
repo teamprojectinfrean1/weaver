@@ -173,7 +173,6 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     @Transactional
     public void deleteProject(final UUID projectId) {
-        Project project = getProjectById(projectId);
         projectRepository.deleteById(projectId);
     }
 
