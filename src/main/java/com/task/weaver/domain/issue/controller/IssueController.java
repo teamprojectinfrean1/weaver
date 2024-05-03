@@ -1,12 +1,12 @@
 package com.task.weaver.domain.issue.controller;
 
+import com.task.weaver.common.aop.annotation.LoggingStopWatch;
 import com.task.weaver.common.model.Status;
 import java.util.UUID;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,7 +24,6 @@ import com.task.weaver.domain.issue.dto.request.GetIssuePageRequest;
 import com.task.weaver.domain.issue.dto.request.UpdateIssueRequest;
 import com.task.weaver.domain.issue.dto.response.IssueResponse;
 import com.task.weaver.domain.issue.service.IssueService;
-import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -42,13 +41,15 @@ public class IssueController {
 	@Operation(summary = "이슈 단건 조회", description = "issueId로 이슈 단건 조회")
 	@GetMapping("/detail/{issueId}")
 	public ResponseEntity<?> getIssueInfo(@PathVariable UUID issueId){
-		IssueResponse issueResponse = issueService.getIssue(issueId);
+		IssueResponse issueResponse = issueService.getIssueResponse(issueId);
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "이슈 상세 조회 성공", issueResponse, true), HttpStatus.OK);
 	}
 
 	@Operation(summary = "이슈 생성", description = "이슈 생성")
 	@PostMapping
 	public ResponseEntity<?> addIssue(@RequestBody CreateIssueRequest createIssueRequest) {
+		log.info("startDate type = {}", createIssueRequest.startDate());
+		log.info("Date type = {}", createIssueRequest.endDate());
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "이슈 생성 성공", issueService.addIssue(createIssueRequest), true), HttpStatus.OK);
 	}
 
@@ -63,11 +64,11 @@ public class IssueController {
 	 * Pageable은 Query Parameter로 넘어온 데이터를 @ModelAttribute를 생략하고 받음
 	 * @return
 	 */
+	@LoggingStopWatch
 	@Operation(summary = "이슈 조회", description = "status로 이슈 조회 (TODO / INPROGRESS / DONE)")
 	@GetMapping("/allTickets/{status}")
-	public ResponseEntity<?> getIssues(@PathVariable String status, @RequestParam UUID projectId, @RequestParam int page, @RequestParam int size){
+	public ResponseEntity<?> getIssues(@PathVariable Status status, @RequestParam UUID projectId, @RequestParam int page, @RequestParam int size){
 		log.info("status ={}, project id ={}", status, projectId, page, size);
-		// issueService.getIssues(projectId, status, getIssuePageRequest);
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "status로 이슈 조회 성공", issueService.getIssues(status, new GetIssuePageRequest(page, size, projectId)), true), HttpStatus.OK);
 	}
 

@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
+	private static final Integer DEFAULT_BEGIN_INDEX = 7;
 	private static final String AUTHORIZATION_HEADER = "Authorization";
 
 	private final JwtTokenProvider jwtTokenProvider;
@@ -57,7 +57,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			request.setAttribute("exception", e);
 			log.info("jwtException : {}", e.getMessage());
 		}
-
 		filterChain.doFilter(request, response);
 	}
 
@@ -67,17 +66,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	 * @return
 	 */
 	private String parseBearerToken(HttpServletRequest request) {
-
 		String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-
 		log.info("parseBearerToken - bearerToken" + bearerToken);
-		// log.info(StringUtils.hasText(bearerToken) ? "true" : "f");
-
 		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-			log.info("Bearer 제거");
-			return bearerToken.substring(7);
+			return bearerToken.substring(DEFAULT_BEGIN_INDEX);
 		}
-
 		return null;
 	}
 }

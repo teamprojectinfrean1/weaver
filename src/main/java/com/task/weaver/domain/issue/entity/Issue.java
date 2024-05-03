@@ -51,7 +51,7 @@ public class Issue extends BaseEntity {
     @JoinColumn(name = "assignee_id")
     private Member assignee;
 
-    @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
 
     @Column(name = "issue_title", length = 100)
@@ -77,6 +77,10 @@ public class Issue extends BaseEntity {
         this.issueContent = updateIssueRequest.issueContent();
         this.startDate = updateIssueRequest.startDate();
         this.endDate = updateIssueRequest.endDate();
+    }
+
+    public boolean hasIssueProgress() {
+        return status == Status.INPROGRESS;
     }
 
     public void updateTask(Task task) {

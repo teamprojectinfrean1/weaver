@@ -4,6 +4,7 @@ import com.task.weaver.common.exception.BusinessException;
 import com.task.weaver.domain.project.dto.request.RequestCreateProject;
 import com.task.weaver.domain.project.dto.request.RequestPageProject;
 import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
+import com.task.weaver.domain.project.dto.response.ResponseGetMainProjectList;
 import com.task.weaver.domain.project.dto.response.ResponseGetProject;
 import com.task.weaver.domain.project.dto.response.ResponseGetProjectList;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
@@ -34,24 +35,22 @@ public interface ProjectService {
                 .build();
     }
 
-    ResponsePageResult<RequestCreateProject, Project> getProjects(RequestPageProject requestPageProject)
-            throws BusinessException;
+    ResponsePageResult<RequestCreateProject, Project> getProjects(RequestPageProject requestPageProject);
 
     List<ResponseGetProject> getProjectsForTest();
 
-    List<ResponseGetProjectList> getProejctsForMain(UUID userId) throws BusinessException;
+    ResponseGetMainProjectList getProejctsForMain(UUID userId);
 
-    ResponseGetProject getProject(UUID projectId) throws BusinessException;
+    ResponseGetProject getProject(UUID projectId);
 
-    UUID addProject(RequestCreateProject dto, MultipartFile multipartFile) throws BusinessException, IOException;
+    UUID addProject(RequestCreateProject dto, MultipartFile multipartFile) throws IOException;
 
-    void updateProjectView(Long projectId) throws BusinessException;
+    void updateProject(UUID projectId, RequestUpdateProject dto, MultipartFile multipartFile)
+            throws IOException;
 
-    void updateProject(UUID projectId, RequestUpdateProject dto) throws BusinessException;
+    void updateMainProject(UUID projectId);
 
-    void updateMainProject(UUID projectId) throws BusinessException;
-
-    void deleteProject(UUID projectId) throws BusinessException;
+    void deleteProject(UUID projectId);
 
     void updateProjectView(UUID projectId);
 }

@@ -1,5 +1,7 @@
 package com.task.weaver.domain.task.dto.response;
 
+import com.task.weaver.domain.member.entity.Member;
+import com.task.weaver.domain.userOauthMember.UserOauthMember;
 import com.task.weaver.domain.userOauthMember.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,9 +20,13 @@ public class ResponseUpdateDetail {
     private String userNickname;
     private LocalDateTime updatedDate;
 
-    public ResponseUpdateDetail(User modifier, LocalDateTime modDate){
-        this.memberUuid = modifier.getUserId();
+    private ResponseUpdateDetail(UserOauthMember modifier, LocalDateTime modDate){
+        this.memberUuid = modifier.getMemberUuid();
         this.userNickname = modifier.getNickname();
         this.updatedDate = modDate;
+    }
+
+    public static ResponseUpdateDetail of(UserOauthMember modifier, LocalDateTime modDate) {
+        return new ResponseUpdateDetail(modifier, modDate);
     }
 }

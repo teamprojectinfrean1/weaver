@@ -1,5 +1,6 @@
 package com.task.weaver.domain.issue.dto.response;
 
+import com.task.weaver.domain.issue.entity.Issue;
 import lombok.Builder;
 
 import java.net.URL;
@@ -8,18 +9,23 @@ import java.util.UUID;
 @Builder
 public record GetIssueListResponse(UUID issueId,
 								   String issueTitle,
+								   String issueStatus,
 								   UUID taskId,
 								   String taskTitle,
 								   UUID assigneeId,
 								   String assigneeNickname,
 								   URL assigneeProfileImage) {
-	// public GetIssueListResponse(Issue issue) {
-	// 	this.issueId = issue.getIssueId();
-	// 	this.issueTitle = issue.getIssueTitle();
-	// 	this.taskId = issue.getTask().getTaskId();
-	// 	this.taskTitle = issue.getTask().getTaskTitle();
-	// 	this.assigneeId = issue.getAssignee().getId();
-	// 	this.assigneeNickname = issue.getAssignee().getNickname();
-	// 	this.assigneeProfileImage = issue.getAssignee().getProfileImage();
-	// }
+
+	public static GetIssueListResponse of(Issue issue) {
+		return GetIssueListResponse.builder()
+				.issueId(issue.getIssueId())
+				.issueTitle(issue.getIssueTitle())
+				.issueStatus(String.valueOf(issue.getStatus()))
+				.taskId(issue.getTask().getTaskId())
+				.taskTitle(issue.getTask().getTaskTitle())
+				.assigneeId(issue.getAssignee().getId())
+				.assigneeNickname(issue.getAssignee().resolveMemberByLoginType().getNickname())
+				.assigneeProfileImage(issue.getAssignee().resolveMemberByLoginType().getProfileImage())
+				.build();
+	}
 }
