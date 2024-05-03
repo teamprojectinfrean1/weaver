@@ -22,7 +22,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Getter
 @Builder
-@Table(name = "PROJECT_MEMBER")
+@Table(name = "project_member")
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProjectMember extends BaseEntity {

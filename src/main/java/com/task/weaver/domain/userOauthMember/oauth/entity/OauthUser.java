@@ -22,7 +22,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "OAUTH_USER",
+@Table(name = "oauth_member",
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "oauth_id_unique",
