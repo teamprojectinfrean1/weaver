@@ -47,11 +47,8 @@ public interface ProjectService {
 
     void updateProject(UUID projectId, RequestUpdateProject dto, MultipartFile multipartFile)
             throws IOException;
-<<<<<<< HEAD
 
     void updateMainProject(UUID projectId);
-=======
->>>>>>> fda0b6092e357cc3d26a94c315114869baa4896d
 
     void deleteProject(UUID projectId);
 
