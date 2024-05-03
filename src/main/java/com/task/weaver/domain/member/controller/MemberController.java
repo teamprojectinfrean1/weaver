@@ -5,13 +5,14 @@ import static com.task.weaver.domain.member.service.impl.MemberServiceImpl.setCo
 import com.task.weaver.common.aop.annotation.Logger;
 import com.task.weaver.common.response.DataResponse;
 import com.task.weaver.domain.member.dto.MemberProjectDTO;
+import com.task.weaver.domain.member.dto.response.GetMemberListResponse;
 import com.task.weaver.domain.member.dto.response.ResponseToken;
 import com.task.weaver.domain.member.dto.response.ResponseUserOauth.AllMember;
+import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.member.service.MemberService;
-import com.task.weaver.domain.userOauthMember.user.dto.request.RequestGetUserPage;
+import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseGetMember;
 import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseGetUserForFront;
-import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -19,16 +20,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -75,12 +78,23 @@ public class MemberController {
 	}
 
 	@Logger
-	@Operation(summary = "프로젝트 구성원 조회", description = "프로젝트에 소속된 인원들 조회")
-	@GetMapping("/project/user-list")
-	public ResponseEntity<DataResponse<ResponsePageResult<MemberProjectDTO, Object[]>>> getMembersFromProject(
-			@RequestBody RequestGetUserPage requestGetUserPage) {
-		ResponsePageResult<MemberProjectDTO, Object[]> responseGetUserLists = memberService.getMembers(
-				requestGetUserPage);
+	@Operation(summary = "프로젝트 구성원 조회", description = "프로젝트에 소속된 인원 페이지 조회")
+	@GetMapping("/project/user/page")
+	public ResponseEntity<DataResponse<ResponsePageResult<GetMemberListResponse, Member>>> getMembersFromProject(
+			@RequestParam int page,
+			@RequestParam int size,
+			@RequestParam UUID projectId) {
+
+		ResponsePageResult<GetMemberListResponse, Member> responseGetUserLists = memberService.getMemberList(page, size, projectId);
+		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트 구성원 조회 성공", responseGetUserLists, true),
+				HttpStatus.OK);
+	}
+
+	@Logger
+	@Operation(summary = "프로젝트 구성원 조회", description = "프로젝트에 소속된 인원 전체 조회")
+	@GetMapping("/project/user/list")
+	public ResponseEntity<DataResponse<List<MemberProjectDTO>>> getMembersFromProject(@RequestParam UUID projectId) {
+		List<MemberProjectDTO> responseGetUserLists = memberService.getMembers(projectId);
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트 구성원 조회 성공", responseGetUserLists, true),
 				HttpStatus.OK);
 	}

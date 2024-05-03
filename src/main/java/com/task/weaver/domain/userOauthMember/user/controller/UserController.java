@@ -54,7 +54,6 @@ public class UserController {
     private final MemberService memberService;
     private final MailSendService mailService;
 
-    @Logger
     @Operation(summary = "회원가입", description = "사용자가 회원가입")
     @PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<DataResponse<ResponseGetMember>> addUser(@RequestPart(value = "requestCreateUser") RequestCreateUser requestCreateUser,
@@ -174,8 +173,7 @@ public class UserController {
     @Logger
     @Operation(summary = "비밀번호 재설정", description = "인증 확인된 사용자 비밀번호 재설정")
     @PutMapping("/findPassword/verification/update")
-    public ResponseEntity<MessageResponse> AuthPasswordUpdate(
-            @RequestBody @Valid RequestUpdatePassword requestUpdatePassword) {
+    public ResponseEntity<MessageResponse> AuthPasswordUpdate(@RequestBody @Valid RequestUpdatePassword requestUpdatePassword) {
         userService.updateUser(requestUpdatePassword);
         return ResponseEntity.ok(MessageResponse.of(HttpStatus.OK, "비밀번호 변경 성공", true));
     }

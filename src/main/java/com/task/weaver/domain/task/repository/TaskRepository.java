@@ -4,14 +4,20 @@ import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.repository.dsl.TaskRepositoryDsl;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 
 public interface TaskRepository extends JpaRepository<Task, UUID>, TaskRepositoryDsl {
     Page<Task> findByProject(Project project, Pageable pageable);
+
+    @EntityGraph(attributePaths = "project")
+    List<Task> findByProject(Project project);
     Page<Task> findByStatus(String status, Pageable pageable);
     Page<Task> findByMember(Member member, Pageable pageable);
     Page<Task> findByTaskTitle(String taskName, Pageable pageable);

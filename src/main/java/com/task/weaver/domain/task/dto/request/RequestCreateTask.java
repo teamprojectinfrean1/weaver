@@ -27,13 +27,14 @@ public class RequestCreateTask {
     private LocalDateTime endDate;
     private String editDeletePermission;
 
-    public Task toEntity(Member member, Project projects) {
+    public Task toEntity(Member member, Project projects, List<String> taskTagList) {
         return Task.builder()
                 .project(projects)
                 .member(member)
                 .modifier(member)
                 .taskTitle(taskTitle)
                 .taskContent(taskContent)
+                .tags(String.join(",", taskTagList))
                 .startDate(startDate)
                 .endDate(endDate)
                 .editDeletePermission(editDeletePermission)

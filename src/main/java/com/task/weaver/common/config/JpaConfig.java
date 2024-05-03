@@ -5,13 +5,19 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
-public class QueryDslConfig {
+@EnableJpaAuditing
+@EnableJpaRepositories(basePackages = "com.task.weaver.domain")
+public class JpaConfig {
+
     @PersistenceContext
-    EntityManager entityManager;
+    private EntityManager entityManager;
+
     @Bean
-    public JPAQueryFactory jpaQueryFactory(){
+    public JPAQueryFactory queryFactory() {
         return new JPAQueryFactory(entityManager);
     }
 }

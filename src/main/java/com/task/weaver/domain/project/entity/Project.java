@@ -5,15 +5,27 @@ import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import com.task.weaver.domain.task.entity.Task;
-import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Builder
@@ -35,26 +47,26 @@ public class Project extends BaseEntity {
     @Column(name = "detail")
     private String detail;
 
+    @Column(name = "project_tag")
+    private String tags;
+
     @Column(name = "start_date")
     private LocalDateTime startDate;
 
     @Column(name = "end_date")
     private LocalDateTime endDate;
 
-    @Column(name = "create_date")
-    private LocalDateTime created;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member writer;
 
     @Builder.Default
-    @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE)
-    private List<ProjectMember> projectMemberList = new ArrayList<>();
+    @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private Set<ProjectMember> projectMemberList = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE)
-    private List<Task> taskList = new ArrayList<>();
+    @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private Set<Task> taskList = new HashSet<>();
 
     @Column(name = "project_image")
     private URL projectImage;
@@ -71,7 +83,7 @@ public class Project extends BaseEntity {
         this.detail = detail;
     }
 
-    public void updateProject(RequestUpdateProject requestUpdateProject, Member updater){
+    public void updateProject(RequestUpdateProject requestUpdateProject, Member updater) {
         this.name = requestUpdateProject.projectName();
         this.detail = requestUpdateProject.projectContent();
         this.startDate = requestUpdateProject.startDate();
@@ -79,7 +91,7 @@ public class Project extends BaseEntity {
         this.modifier = updater;
     }
 
-//    public void changePublic() {
-//        this.isPublic = !isPublic;
-//    }
+    public void updateTag(List<String> projectTags) {
+        this.tags = String.join(",", projectTags);
+    }
 }

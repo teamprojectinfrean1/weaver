@@ -7,4 +7,8 @@ public class InvalidPasswordException extends BusinessException {
 	public InvalidPasswordException(Throwable cause) {
 		super(ErrorCode.INVALID_PASSWORD, cause);
 	}
+
+	public InvalidPasswordException(final ErrorCode errorCode, final String message) {
+		super(errorCode, message);
+	}
 }

@@ -1,5 +1,6 @@
 package com.task.weaver.domain.issue.service;
 
+import com.task.weaver.common.model.Status;
 import com.task.weaver.domain.issue.dto.request.CreateIssueRequest;
 import com.task.weaver.domain.issue.dto.request.GetIssuePageRequest;
 import com.task.weaver.domain.issue.dto.request.UpdateIssueRequest;
@@ -11,9 +12,9 @@ import java.util.UUID;
 
 public interface IssueService {
 
-    IssueResponse getIssue(UUID issueId);
+    IssueResponse getIssueResponse(UUID issueId);
 
-    ResponsePageResult<GetIssueListResponse, Issue> getIssues(String status, GetIssuePageRequest getIssuePageRequest);
+    ResponsePageResult<GetIssueListResponse, Issue> getIssues(Status status, GetIssuePageRequest getIssuePageRequest);
 
     IssueResponse addIssue(CreateIssueRequest issueRequest);
 

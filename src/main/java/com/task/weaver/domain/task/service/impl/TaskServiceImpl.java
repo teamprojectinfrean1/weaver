@@ -5,15 +5,13 @@ import com.task.weaver.common.exception.member.UserNotFoundException;
 import com.task.weaver.common.exception.project.AuthorizationException;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
 import com.task.weaver.common.exception.task.TaskNotFoundException;
+import com.task.weaver.domain.issue.dto.request.RequestIssueForTask;
 import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.member.repository.MemberRepository;
-import com.task.weaver.domain.issue.dto.request.RequestIssueForTask;
-import com.task.weaver.domain.userOauthMember.UserOauthMember;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
 import com.task.weaver.domain.task.dto.request.RequestCreateTask;
-import com.task.weaver.domain.task.dto.request.RequestGetTaskPage;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
 import com.task.weaver.domain.task.dto.response.ResponseGetTask;
 import com.task.weaver.domain.task.dto.response.ResponseGetTaskList;
@@ -21,12 +19,14 @@ import com.task.weaver.domain.task.dto.response.ResponseUpdateDetail;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.repository.TaskRepository;
 import com.task.weaver.domain.task.service.TaskService;
+import com.task.weaver.domain.userOauthMember.UserOauthMember;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -65,17 +65,22 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public ResponsePageResult<ResponseGetTaskList, Task> getTasks(RequestGetTaskPage requestGetTaskPage) {
-        log.info("Project ID ={}", requestGetTaskPage.getProjectId());
-        Project project = projectRepository.findById(requestGetTaskPage.getProjectId())
-                .orElseThrow(() -> new ProjectNotFoundException(ErrorCode.PROJECT_NOT_FOUND,
-                        ErrorCode.PROJECT_NOT_FOUND.getMessage()));
-
-        Pageable pageable = requestGetTaskPage.getPageable(Sort.by("taskId").descending());
-        Page<Task> taskPage = taskRepository.findByProject(project, pageable);
-
+    public ResponsePageResult<ResponseGetTaskList, Task> getTasks(int page, int size, UUID projectId) {
+        Pageable pageable = getPageable(Sort.by("taskId").descending(), page, size);
+        Page<Task> taskPage = taskRepository.findByProject(getProjectById(projectId), pageable);
         Function<Task, ResponseGetTaskList> fn = ResponseGetTaskList::new;
         return new ResponsePageResult<>(taskPage, fn);
+    }
+
+    @Override
+    public List<ResponseGetTaskList> getTasks(final UUID projectId) {
+        return taskRepository.findByProject(getProjectById(projectId))
+                .stream()
+                .map(ResponseGetTaskList::new).toList();
+    }
+
+    private Pageable getPageable(Sort sort, int page, int size) {
+        return PageRequest.of(page - 1, size, sort);
     }
 
     @Override
@@ -87,14 +92,8 @@ public class TaskServiceImpl implements TaskService {
     public UUID addTask(RequestCreateTask request) throws AuthorizationException {
         Member writer = memberRepository.findById(request.getWriterUuid())
                 .orElseThrow(() -> new UserNotFoundException(new Throwable(String.valueOf(request.getProjectId()))));
-
-        Project project = projectRepository.findById(request.getProjectId())
-                .orElseThrow(() -> new ProjectNotFoundException(new Throwable(String.valueOf(request.getProjectId()))));
-        log.info("writer id : " + request.getWriterUuid());
-        log.info("project id : " + request.getProjectId());
-        Task entity = request.toEntity(writer, project);
-        Task save = taskRepository.save(entity);
-        return save.getTaskId();
+        Task task = taskRepository.save(request.toEntity(writer, getProjectById(request.getProjectId()), request.getTaskTagList()));
+        return task.getTaskId();
     }
 
     @Override
@@ -107,6 +106,9 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.deleteById(taskId);
     }
 
+    /**TODO: 2024-04-30, 화, 1:41  -JEON
+    *  TASK: 사용 위치, 목적 ?
+    */
     @Override
     public ResponseGetTask updateTask(Task originalTask, Task newTask) {
         Task task = taskRepository.findById(originalTask.getTaskId()).get();
@@ -117,6 +119,9 @@ public class TaskServiceImpl implements TaskService {
         return new ResponseGetTask(task, requestIssueForTasks);
     }
 
+    /**TODO: 2024-04-30, 화, 1:41  -JEON
+     *  TASK: 사용 위치, 목적 ?
+     */
     @Override
     public ResponseGetTask updateTask(UUID originalTaskId, Task newTask) {
         Task task = taskRepository.findById(originalTaskId)
@@ -148,11 +153,18 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public ResponseGetTask updateTaskStatus(UUID taskId, String status) {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new TaskNotFoundException(ErrorCode.TASK_NOT_FOUND, ErrorCode.TASK_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new TaskNotFoundException(ErrorCode.TASK_NOT_FOUND,
+                        ErrorCode.TASK_NOT_FOUND.getMessage()));
         task.setStatus(status);
         taskRepository.save(task);
         List<RequestIssueForTask> requestIssueForTasks = task.getIssueList().stream()
                 .map(issue -> new RequestIssueForTask(issue.getIssueId(), issue.getIssueTitle())).toList();
         return new ResponseGetTask(task, requestIssueForTasks);
+    }
+
+    private Project getProjectById(UUID projectId) {
+        return projectRepository.findById(projectId)
+                .orElseThrow(() -> new ProjectNotFoundException(ErrorCode.PROJECT_NOT_FOUND,
+                        ErrorCode.PROJECT_NOT_FOUND.getMessage()));
     }
 }
