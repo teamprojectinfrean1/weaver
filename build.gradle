@@ -116,7 +116,6 @@ sourceSets {
 
 compileJava.dependsOn('clean')
 
-
 jar{
 	enabled = false
 }
