@@ -160,8 +160,8 @@ public class ProjectServiceImpl implements ProjectService {
         projectRepository.save(project);
     }
 
-    @Override
     @Transactional
+    @Override
     public void updateMainProject(UUID projectId) {
         Project project = getProjectById(projectId);
         UUID writerId = project.getWriter().getId();
