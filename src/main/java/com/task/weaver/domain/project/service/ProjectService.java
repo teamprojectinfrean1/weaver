@@ -48,6 +48,8 @@ public interface ProjectService {
     void updateProject(UUID projectId, RequestUpdateProject dto, MultipartFile multipartFile)
             throws IOException;
 
+    void updateMainProject(UUID projectId);
+
     void deleteProject(UUID projectId);
 
     void updateProjectView(UUID projectId);
