@@ -12,7 +12,10 @@ import com.task.weaver.domain.member.repository.MemberRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,7 +30,30 @@ class CommentServiceImplTest {
     private final Issue issue = mock(Issue.class);
     private final Member member = mock(Member.class);
     @Test
-    public void IssueTest(){
+    public void comment삭제시issue의comments에반영잘되는지(){
+        //given
+        RequestCreateComment requestCreateComment = RequestCreateComment.builder()
+                .issueId(UUID.randomUUID())
+                .writerId(UUID.randomUUID())
+                .commentBody("content")
+                .build();
+        Comment comment = Comment.builder()
+                .issue(issue)
+                .member(member)
+                .body("content")
+                .build();
+        List<Comment> commentList = new ArrayList<>();
+        when(issue.getComments()).thenReturn(commentList);
+        when(issueRepository.findById(any())).thenReturn(Optional.of(issue));
+        when(memberRepository.findById(any())).thenReturn(Optional.of(member));
+        when(commentRepository.save(any())).thenReturn(comment);
+        //when
+        issue.getComments().add(comment);
+        //then
+        Assertions.assertThat(issue.getComments().size()).isEqualTo(1);
+
+        service.deleteComment(comment);
+        Assertions.assertThat(issue.getComments().size()).isEqualTo(0);
 
     }
 }
