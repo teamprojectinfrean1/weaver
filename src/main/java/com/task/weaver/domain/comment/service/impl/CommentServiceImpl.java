@@ -93,9 +93,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void deleteComment(UUID commentId) {
-        commentRepository.deleteById(commentId);
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(COMMENT_NOT_FOUND, COMMENT_NOT_FOUND.getMessage()));
+        commentRepository.deleteById(commentId);
         issueRepository.delete(comment.getIssue());
     }
 
