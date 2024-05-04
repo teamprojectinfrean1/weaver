@@ -23,6 +23,8 @@ import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.issue.repository.IssueRepository;
 import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.member.repository.MemberRepository;
+
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
@@ -92,6 +94,9 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void deleteComment(UUID commentId) {
         commentRepository.deleteById(commentId);
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException(COMMENT_NOT_FOUND, COMMENT_NOT_FOUND.getMessage()));
+        issueRepository.delete(comment.getIssue());
     }
 
     @Override
