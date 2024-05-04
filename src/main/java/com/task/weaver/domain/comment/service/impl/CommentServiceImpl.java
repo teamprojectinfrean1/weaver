@@ -61,7 +61,7 @@ public class CommentServiceImpl implements CommentService {
         Issue issue = issueRepository.findById(issueId)
                 .orElseThrow(() -> new IssueNotFoundException(ISSUE_NOT_FOUND, ISSUE_NOT_FOUND.getMessage()));
 
-        Pageable pageable = getPageable(Sort.by("regdate").descending(), page, size);
+        Pageable pageable = getPageable(Sort.by("regDate").ascending(), page, size);
         Page<Comment> comments = commentRepository.findByIssue(issue, pageable);
         Function<Comment, ResponseCommentList> fn = ResponseCommentList::new;
         return new ResponsePageComment<>(comments, fn);
