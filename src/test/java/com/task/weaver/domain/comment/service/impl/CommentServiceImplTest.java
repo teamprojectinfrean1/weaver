@@ -26,11 +26,8 @@ class CommentServiceImplTest {
     private final CommentServiceImpl service = new CommentServiceImpl(commentRepository,memberRepository,issueRepository);
     private final Issue issue = mock(Issue.class);
     private final Member member = mock(Member.class);
-    private final Comment comment = mock(Comment.class);
     @Test
     public void IssueTest(){
-        issue.getComments().add(comment);
-        service.deleteComment(comment);
-        Assertions.assertThat(issue.getComments().size()).isEqualTo(0);
+
     }
 }

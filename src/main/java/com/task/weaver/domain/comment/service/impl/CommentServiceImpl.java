@@ -27,6 +27,7 @@ import com.task.weaver.domain.member.repository.MemberRepository;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -82,6 +83,7 @@ public class CommentServiceImpl implements CommentService {
                 .issue(issue)
                 .body(requestComment.commentBody())
                 .build();
+        issue.getComments().add(comment);
         commentRepository.save(comment);
         return new ResponseComment(comment);
     }
@@ -92,11 +94,11 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public void deleteComment(UUID commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(COMMENT_NOT_FOUND, COMMENT_NOT_FOUND.getMessage()));
-        commentRepository.deleteById(commentId);
-        issueRepository.delete(comment.getIssue());
+        comment.getIssue().getComments().remove(comment);
     }
 
     @Override
