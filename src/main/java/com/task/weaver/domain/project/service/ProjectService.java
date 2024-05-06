@@ -1,12 +1,10 @@
 package com.task.weaver.domain.project.service;
 
-import com.task.weaver.common.exception.BusinessException;
 import com.task.weaver.domain.project.dto.request.RequestCreateProject;
 import com.task.weaver.domain.project.dto.request.RequestPageProject;
 import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
-import com.task.weaver.domain.project.dto.response.ResponseGetMainProjectList;
+import com.task.weaver.domain.project.dto.response.ResponseMainAndOtherProjects;
 import com.task.weaver.domain.project.dto.response.ResponseGetProject;
-import com.task.weaver.domain.project.dto.response.ResponseGetProjectList;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,13 +33,13 @@ public interface ProjectService {
                 .build();
     }
 
-    ResponsePageResult<RequestCreateProject, Project> getProjects(RequestPageProject requestPageProject);
+    ResponsePageResult<RequestCreateProject, Project> fetchPagedProjects(RequestPageProject requestPageProject);
 
-    List<ResponseGetProject> getProjectsForTest();
+    List<ResponseGetProject> fetchAllProjectsForDeveloper();
 
-    ResponseGetMainProjectList getProejctsForMain(UUID userId);
+    ResponseMainAndOtherProjects fetchMainAndOtherProjects(UUID userId);
 
-    ResponseGetProject getProject(UUID projectId);
+    ResponseGetProject fetchProject(UUID projectId);
 
     UUID addProject(RequestCreateProject dto, MultipartFile multipartFile) throws IOException;
 
@@ -51,6 +49,4 @@ public interface ProjectService {
     void updateMainProject(UUID projectId);
 
     void deleteProject(UUID projectId);
-
-    void updateProjectView(UUID projectId);
 }

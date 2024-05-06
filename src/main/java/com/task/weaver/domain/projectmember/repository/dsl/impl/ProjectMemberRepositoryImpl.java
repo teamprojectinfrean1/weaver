@@ -1,18 +1,13 @@
 package com.task.weaver.domain.projectmember.repository.dsl.impl;
 
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import com.task.weaver.domain.projectmember.entity.QProjectMember;
 import com.task.weaver.domain.projectmember.repository.dsl.ProjectMemberRepositoryDsl;
-import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 
