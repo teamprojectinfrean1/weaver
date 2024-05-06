@@ -18,6 +18,8 @@ import jakarta.persistence.Table;
 import java.util.UUID;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Getter
@@ -28,6 +30,7 @@ import org.hibernate.annotations.GenericGenerator;
 public class ProjectMember extends BaseEntity {
 
     @Id
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(columnDefinition = "BINARY(16)", name = "project_member_id")

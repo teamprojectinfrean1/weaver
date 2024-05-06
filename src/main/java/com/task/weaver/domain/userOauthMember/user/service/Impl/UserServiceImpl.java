@@ -34,6 +34,7 @@ import com.task.weaver.domain.userOauthMember.util.MemberStorageHandler;
 import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedHashMap;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -67,12 +68,14 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public ResponseToken weaverLogin(RequestSignIn requestSignIn) {
         return userRepository.findByUserId(requestSignIn.id())
-                .flatMap(user -> {
-                    hasMatched(user, requestSignIn.password());
-                    return memberRepository.findByUser(user)
-                           .map(memberService::getAuthentication);
-                })
+                .flatMap(user -> getResponseToken(requestSignIn, user))
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
+    }
+
+    private Optional<ResponseToken> getResponseToken(final RequestSignIn requestSignIn, final User user) {
+        hasMatched(user, requestSignIn.password());
+        return memberRepository.findByUser(user)
+                .map(memberService::getAuthentication);
     }
 
     private void hasMatched(final User user, final String requestPassword) {

@@ -16,6 +16,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.id.uuid.UuidGenerator;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @AllArgsConstructor
@@ -27,8 +30,9 @@ import org.hibernate.annotations.GenericGenerator;
 public class User extends BaseEntity implements UserOauthMember {
 
     @Id
-    @GeneratedValue(generator = "uuid2")
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @GeneratedValue(generator = "uuid2")
     @Column(columnDefinition = "BINARY(16)", name = "user_id")
     private UUID userId;
 

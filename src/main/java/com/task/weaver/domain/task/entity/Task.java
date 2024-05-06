@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @NoArgsConstructor
@@ -26,6 +28,7 @@ import java.util.UUID;
 public class Task extends BaseEntity {
 
     @Id
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(columnDefinition = "BINARY(16)", name = "task_id")

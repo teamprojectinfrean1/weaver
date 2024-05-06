@@ -11,9 +11,9 @@ import com.task.weaver.domain.member.repository.MemberRepository;
 import com.task.weaver.domain.project.dto.request.RequestCreateProject;
 import com.task.weaver.domain.project.dto.request.RequestPageProject;
 import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
-import com.task.weaver.domain.project.dto.response.ResponseGetMainProjectList;
+import com.task.weaver.domain.project.dto.response.ResponseMainAndOtherProjects;
 import com.task.weaver.domain.project.dto.response.ResponseGetProject;
-import com.task.weaver.domain.project.dto.response.ResponseGetProjectList;
+import com.task.weaver.domain.project.dto.response.ResponseProjects;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.project.repository.ProjectRepository;
@@ -22,6 +22,7 @@ import com.task.weaver.domain.projectmember.dto.ResponseProjectMember;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import com.task.weaver.domain.projectmember.repository.ProjectMemberRepository;
 import com.task.weaver.domain.task.dto.response.ResponseUpdateDetail;
+import com.task.weaver.domain.userOauthMember.UserOauthMember;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -46,7 +47,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProjectServiceImpl implements ProjectService {
     private static final boolean MAIN_PROJECT = true;
     private static final boolean OTHER_PROJECT = false;
-    private static final int FIND = 0;
     private static final String DIR_NAME = "images";
     private static final String PROPERTIES = "projectId";
 
@@ -56,7 +56,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final S3Uploader s3Uploader;
 
     @Override
-    public ResponsePageResult<RequestCreateProject, Project> getProjects(final RequestPageProject requestPageProject) {
+    public ResponsePageResult<RequestCreateProject, Project> fetchPagedProjects(final RequestPageProject requestPageProject) {
         Pageable pageable = requestPageProject.getPageable(Sort.by(PROPERTIES).descending());
         Page<Project> result = projectRepository.findAll(pageable);
         Function<Project, RequestCreateProject> fn = (this::entityToDto);
@@ -64,104 +64,120 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<ResponseGetProject> getProjectsForTest() {
+    public List<ResponseGetProject> fetchAllProjectsForDeveloper() {
         List<Project> projects = projectRepository.findAll();
         return projects.parallelStream()
                 .map(project -> new ResponseGetProject(project, null)).toList();
     }
 
     @Override
-    public ResponseGetMainProjectList getProejctsForMain(UUID memberId) {
-
+    public ResponseMainAndOtherProjects fetchMainAndOtherProjects(UUID memberId) {
         Member member = getMemberById(memberId);
         List<ProjectMember> projects = getProjectsByMember(member);
-
-        Map<Boolean, List<ResponseGetProjectList>> projectListMap = getMainAndOtherProjectLists(member, projects);
-
-        ResponseGetProjectList mainProject = projectListMap.get(MAIN_PROJECT).get(FIND);
-        List<ResponseGetProjectList> noMainProjects = projectListMap.get(OTHER_PROJECT);
-
-        ResponseGetMainProjectList mainProjectList = new ResponseGetMainProjectList();
-        mainProjectList.setMainProject(mainProject);
-        mainProjectList.setNoMainProject(noMainProjects);
-        return mainProjectList;
+        Map<Boolean, List<ResponseProjects>> projectListMap = partitionProjects(member, projects);
+        return getMainAndOtherProjects(projectListMap);
     }
 
-    private Map<Boolean, List<ResponseGetProjectList>> getMainAndOtherProjectLists(final Member member,
-                                                                                   final List<ProjectMember> projects) {
-        return projects.stream()
-                .map(projectMember -> new ResponseGetProjectList(projectMember.getProject(),
-                        projectMember.getPermission(), member.getMainProject().getProjectId()))
+    private ResponseMainAndOtherProjects getMainAndOtherProjects(
+            final Map<Boolean, List<ResponseProjects>> projectListMap) {
+        ResponseMainAndOtherProjects projects = new ResponseMainAndOtherProjects();
+        projects.setMainProject(projectListMap.get(MAIN_PROJECT));
+        projects.setNoMainProject(projectListMap.get(OTHER_PROJECT));
+        return projects;
+    }
+
+    private Map<Boolean, List<ResponseProjects>> partitionProjects(final Member member,
+                                                                   final List<ProjectMember> projectMembers) {
+        return projectMembers.stream()
+                .map(projectMember -> getResponseProjects(member, projectMember))
                 .collect(Collectors.partitioningBy(
-                        responseGetProjectList -> responseGetProjectList.getProjectId()
-                                .equals(member.getMainProject().getProjectId()),
+                        projects -> containsMemberUuid(member, projects),
                         Collectors.toList()
                 ));
     }
 
-    @Override
-    public ResponseGetProject getProject(final UUID projectId) {
-        Project project = getProjectById(projectId);
-        Member modifier = project.getModifier();
-        ResponseUpdateDetail responseUpdateDetail = ResponseUpdateDetail.of(modifier.resolveMemberByLoginType(),
-                project.getModDate());
-        return new ResponseGetProject(project, responseUpdateDetail);
+    private boolean containsMemberUuid(final Member member, final ResponseProjects responseProjects) {
+        return responseProjects.getProjectId()
+                .equals(member.getMainProject().getProjectId());
     }
 
-    @Transactional
+    private ResponseProjects getResponseProjects(final Member member,
+                                                 final ProjectMember projectMember) {
+        return new ResponseProjects(projectMember.getProject(),
+                projectMember.getPermission(), member.getMainProject().getProjectId());
+    }
+
     @Override
+    public ResponseGetProject fetchProject(final UUID projectId) {
+        Project project = getProjectById(projectId);
+        UserOauthMember modifier = project.getModifier().resolveMemberByLoginType();
+        return new ResponseGetProject(project, ResponseUpdateDetail.of(modifier, project.getModDate()));
+    }
+
+    @Override
+    @Transactional
     public UUID addProject(final RequestCreateProject dto, MultipartFile multipartFile) throws IOException {
         Member writer = getMemberById(dto.writerUuid());
         Project project = projectRepository.save(dtoToEntity(dto));
-        Set<ProjectMember> projectMembers = saveProjectMembers(project, dto);
-
-        isFirstProject(project, writer);
-        updateProjectDetails(dto, writer, project, projectMembers);
-        profileImageUpdate(multipartFile, project);
-        projectRepository.save(project);
+        Set<ProjectMember> projectMembers = saveProjectMembers(project, dto.writerUuid(), dto.memberUuidList());
+        editProject(dto, multipartFile, writer, project, projectMembers);
         return project.getProjectId();
     }
 
-    private void updateProjectDetails(final RequestCreateProject dto, final Member writer, final Project savedProject,
-                                      final Set<ProjectMember> projectMembers) {
+    private void editProject(final RequestCreateProject dto, final MultipartFile multipartFile, final Member writer,
+                             final Project project, final Set<ProjectMember> projectMembers) throws IOException {
+        writer.isFirstProject(project);
+        editProjectDetails(dto, writer, project, projectMembers);
+        profileImageUpdate(multipartFile, project);
+        projectRepository.save(project);
+    }
+
+    private void editProjectDetails(final RequestCreateProject dto, final Member writer, final Project savedProject,
+                                    final Set<ProjectMember> projectMembers) {
         savedProject.updateTag(dto.projectTagList());
         savedProject.setProjectMemberList(projectMembers);
         savedProject.setWriter(writer);
         savedProject.setModifier(writer);
     }
 
-    private Set<ProjectMember> saveProjectMembers(final Project project, RequestCreateProject dto) {
-        UUID writerId = dto.writerUuid();
-        Set<ProjectMember> projectMemberList = dto.memberUuidList().parallelStream()
-                .map(memberId -> {
-                    Member member = getMemberById(memberId);
-                    isFirstProject(project, member);
-                    return ResponseProjectMember.dtoToEntity(project, member, writerId, memberId);
-                })
+    private Set<ProjectMember> saveProjectMembers(final Project project, UUID writerId, List<UUID> memberUuidList) {
+        Set<ProjectMember> projectMemberList = memberUuidList.parallelStream()
+                .filter(memberId -> !projectMemberRepository.findByProjectAndMemberId(memberId, project.getProjectId()))
+                .map(memberId -> createProjectMember(project, writerId, memberId))
                 .collect(Collectors.toSet());
         projectMemberRepository.saveAll(projectMemberList);
         return projectMemberList;
     }
 
-    private void isFirstProject(final Project project, final Member member) {
-        if (member.getMainProject() == null) {
-            member.updateMainProject(project);
-        }
+    private ProjectMember createProjectMember(final Project project, final UUID writerId, final UUID memberId) {
+        Member member = getMemberById(memberId);
+        member.isFirstProject(project);
+        return ResponseProjectMember.dtoToEntity(project, member, writerId, memberId);
     }
 
     @Override
+    @Transactional
     public void updateProject(UUID projectId, final RequestUpdateProject dto, final MultipartFile multipartFile)
             throws IOException {
         Project project = getProjectById(projectId);
-        Member updater = getMemberById(dto.updaterUuid());
-        project.updateProject(dto, updater);
+        project.updateProject(dto, getMemberById(dto.updaterUuid()));
         project.updateTag(dto.projectTagList());
         profileImageUpdate(multipartFile, project);
+        projectMemberRepository.bulkDeleteProjectMembers(project, dto.memberUuidList());
+        saveProjectMembers(project, dto.updaterUuid(), dto.memberUuidList());
         projectRepository.save(project);
     }
 
-    @Transactional
+    private void bulkUpdateMembers(final Project project, UUID updaterId, final List<UUID> memberUuidList) {
+        Set<ProjectMember> newProjectMembers = memberUuidList.parallelStream()
+                .filter(memberId -> !projectMemberRepository.findByProjectAndMemberId(memberId, project.getProjectId()))
+                .map(memberId -> createProjectMember(project, updaterId, memberId))
+                .collect(Collectors.toSet());
+        projectMemberRepository.saveAll(newProjectMembers);
+    }
+
     @Override
+    @Transactional
     public void updateMainProject(UUID projectId) {
         Project project = getProjectById(projectId);
         UUID writerId = project.getWriter().getId();
@@ -174,12 +190,6 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional
     public void deleteProject(final UUID projectId) {
         projectRepository.deleteById(projectId);
-    }
-
-    @Override
-    public void updateProjectView(UUID projectId) {
-        Project result = getProjectById(projectId);
-        projectRepository.save(result);
     }
 
     private void profileImageUpdate(final MultipartFile multipartFile, final Project project) throws IOException {
@@ -203,7 +213,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     private List<ProjectMember> getProjectsByMember(final Member member) {
-        return projectMemberRepository.findProjectsByMember(member)
+        return projectMemberRepository.findProjectMemberByMember(member)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
     }
 }

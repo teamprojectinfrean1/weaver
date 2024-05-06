@@ -6,8 +6,9 @@ import static com.task.weaver.common.exception.ErrorCode.USER_EMAIL_NOT_FOUND;
 import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.task.weaver.common.aop.annotation.LoggingStopWatch;
-import com.task.weaver.common.exception.BusinessException;
 import com.task.weaver.common.exception.jwt.CannotResolveToken;
+import com.task.weaver.common.exception.jwt.RefreshTokenNotFoundException;
+import com.task.weaver.common.exception.jwt.RefreshTokenNotMatchedException;
 import com.task.weaver.common.exception.member.UnableSendMailException;
 import com.task.weaver.common.jwt.provider.JwtTokenProvider;
 import com.task.weaver.common.redis.RefreshToken;
@@ -60,6 +61,9 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
+    private static final String ACCESS_TOKEN_STARTS = "Bearer ";
+    private static final String SORT_PROPERTIES = "id";
+    private static final int BEGIN_INDEX = 7;
 
     private final MemberRepository memberRepository;
     private final UserRepository userRepository;
@@ -70,44 +74,19 @@ public class MemberServiceImpl implements MemberService {
     @LoggingStopWatch
     public ResponseToken reissue(String refreshToken, String loginType) {
 
-        log.info("Current Refresh Token = {}", refreshToken);
         jwtTokenProvider.validateToken(refreshToken);
         Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
-        RefreshToken currentRefreshToken = refreshTokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new RuntimeException(""));
+        RefreshToken currentRefreshToken = getCurrentRefreshToken(refreshToken);
 
         validateMatchedToken(refreshToken, currentRefreshToken);
 
         String newRefreshToken = jwtTokenProvider.createRefreshToken(authentication);
         String newAccessToken = jwtTokenProvider.createAccessToken(authentication, LoginType.fromName(loginType));
 
-        log.info("new Refresh Token = {}", newRefreshToken);
         redisService.deleteRefreshToken(currentRefreshToken);
         refreshTokenRepository.save(new RefreshToken(currentRefreshToken.getId(), newRefreshToken));
 
-        return ResponseToken.builder()
-                .accessToken("Bearer " + newAccessToken)
-                .refreshToken(newRefreshToken)
-                .build();
-    }
-
-    private static void validateMatchedToken(final String refreshToken, final RefreshToken currentRefreshToken) {
-        if (!refreshToken.equals(currentRefreshToken.getRefreshToken())) {
-            throw new IllegalArgumentException("");
-        }
-    }
-
-    /**
-     * token 앞 "Bearer-" 제거
-     *
-     * @param accessToken
-     * @return
-     */
-    private String resolveToken(String accessToken) {
-        if (accessToken.startsWith("Bearer ")) {
-            return accessToken.substring(7);
-        }
-        throw new CannotResolveToken(REFRESH_TOKEN_RESOLVE, REFRESH_TOKEN_RESOLVE.getMessage());
+        return ResponseToken.of(ACCESS_TOKEN_STARTS + newAccessToken, newRefreshToken);
     }
 
     @Override
@@ -133,22 +112,21 @@ public class MemberServiceImpl implements MemberService {
 
     @LoggingStopWatch
     @Override
-    public ResponseUuid getUuid(final String email, final Boolean checked) {
+    public ResponseUuid fetchUuid(final String email, final Boolean checked) {
+        validVerificationCode(checked);
+        User findUser = getUserByEmail(email);
+        return ResponseUuid.of(findUser.getMemberUuid(), findUser.getUserId());
+    }
+
+    private static void validVerificationCode(final Boolean checked) {
         if (!checked) {
             throw new UnableSendMailException(NO_MATCHED_VERIFICATION_CODE, NO_MATCHED_VERIFICATION_CODE.getMessage());
         }
-
-        User findUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
-        return ResponseUuid.builder()
-                .uuid(findUser.getMemberUuid())
-                .uuid(findUser.getUserId())
-                .build();
     }
 
     @LoggingStopWatch
     @Override
-    public ResponseGetMember getMember(UUID uuid) {
+    public ResponseGetMember fetchMemberByUuid(UUID uuid) {
         Member member = getMemberById(uuid);
         UserOauthMember userOauthMemberData = member.resolveMemberByLoginType();
         return ResponseGetMember.of(MemberDto.memberDomainToDto(userOauthMemberData, member));
@@ -156,18 +134,14 @@ public class MemberServiceImpl implements MemberService {
 
     @LoggingStopWatch
     @Override
-    public ResponseUserIdNickname getMember(String email, Boolean checked) {
-        if (!checked) {
-            throw new UnableSendMailException(NO_MATCHED_VERIFICATION_CODE, ": Redis to SMTP DATA");
-        }
-        User findUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
-        return ResponseUserIdNickname.userToDto(findUser);
+    public ResponseUserIdNickname fetchMemberByEmail(String email, Boolean checked) {
+        validVerificationCode(checked);
+        return ResponseUserIdNickname.userToDto(getUserByEmail(email));
     }
 
     @LoggingStopWatch
     @Override
-    public ResponseGetUserForFront getMemberFromToken(HttpServletRequest request) {
+    public ResponseGetUserForFront fetchMemberFromToken(HttpServletRequest request) {
         String memberUuid = jwtTokenProvider.getMemberIdByAssessToken(request);
         Member member = getMemberById(UUID.fromString(memberUuid));
         return ResponseGetUserForFront.of(MemberDto.memberDomainToDto(member.resolveMemberByLoginType(), member));
@@ -175,20 +149,21 @@ public class MemberServiceImpl implements MemberService {
 
     @LoggingStopWatch
     @Override
-    public Page<MemberProjectDTO> getMembers(int page, int size, UUID projectId) throws BusinessException {
-        Pageable pageable = getPageable(Sort.by("id").descending(), page, size);
+    public Page<MemberProjectDTO> fetchSimplePagedMembers(int page, int size, UUID projectId) {
+        Pageable pageable = getPageable(Sort.by(SORT_PROPERTIES).descending(), page, size);
         Page<Member> memberPage = getMembersByProject(projectId, pageable);
         return memberPage.map(member -> new MemberProjectDTO(member.resolveMemberByLoginType(),
-                hasAnyIssueInProgressForProject(member, projectId)));
+                hasAnyIssueInProgress(member, projectId)));
     }
 
     @LoggingStopWatch
     @Override
-    public ResponsePageResult<GetMemberListResponse, Member> getMemberList(int page, int size, UUID projectId) {
-        Pageable pageable = getPageable(Sort.by("id").descending(), page, size);
+    public ResponsePageResult<GetMemberListResponse, Member> fetchPagedMembers(int page, int size, UUID projectId) {
+        Pageable pageable = getPageable(Sort.by(SORT_PROPERTIES).descending(), page, size);
         List<Member> members = memberRepository.findMembersByProject(projectId);
         Page<Member> memberPage = createPage(members, pageable);
-        Function<Member, GetMemberListResponse> fn = (en -> GetMemberListResponse.of(en, hasAnyIssueInProgressForProject(en, projectId)));
+        Function<Member, GetMemberListResponse> fn = (en -> GetMemberListResponse.of(en,
+                hasAnyIssueInProgress(en, projectId)));
         return new ResponsePageResult<>(memberPage, fn);
     }
 
@@ -198,7 +173,7 @@ public class MemberServiceImpl implements MemberService {
         return new PageImpl<>(members.subList(start, end), pageable, members.size());
     }
 
-    private boolean hasAnyIssueInProgressForProject(Member member, UUID projectId) {
+    private boolean hasAnyIssueInProgress(Member member, UUID projectId) {
         return Optional.ofNullable(member.getAssigneeIssueList())
                 .map(issues -> issues.stream()
                         .filter(issue -> getProjectIdByIssue(issue).equals(projectId))
@@ -213,7 +188,7 @@ public class MemberServiceImpl implements MemberService {
 
     @LoggingStopWatch
     @Override
-    public AllMember getMembersForTest() {
+    public AllMember fetchMembersForDeveloper() {
         List<MemberDTO> memberDTOS = memberRepository.findAll()
                 .parallelStream()
                 .map(Member::resolveMemberByLoginType)
@@ -223,7 +198,7 @@ public class MemberServiceImpl implements MemberService {
 
     @LoggingStopWatch
     @Override
-    public List<MemberProjectDTO> getMembers(final UUID projectId) {
+    public List<MemberProjectDTO> fetchMembers(final UUID projectId) {
         List<Member> members = memberRepository.findMembersByProject(projectId);
         Function<Member, MemberProjectDTO> fn = (en -> new MemberProjectDTO(en.resolveMemberByLoginType(),
                 en.hasAssigneeIssueInProgress()));
@@ -250,14 +225,7 @@ public class MemberServiceImpl implements MemberService {
         String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
         saveRefreshToken(member.getId(), refreshToken);
 
-        return ResponseToken.builder()
-                .accessToken("Bearer " + accessToken)
-                .refreshToken(refreshToken)
-                .build();
-    }
-
-    private void saveRefreshToken(final UUID uuid, final String refreshToken) {
-        refreshTokenRepository.save(new RefreshToken(uuid, refreshToken));
+        return ResponseToken.of(ACCESS_TOKEN_STARTS + accessToken, refreshToken);
     }
 
     public static HttpHeaders setCookieAndHeader(final ResponseToken responseToken) {
@@ -277,5 +245,33 @@ public class MemberServiceImpl implements MemberService {
     private Member getMemberById(UUID uuid) {
         return memberRepository.findById(uuid)
                 .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND.getMessage()));
+    }
+
+    private User getUserByEmail(final String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
+    }
+
+    private RefreshToken getCurrentRefreshToken(final String refreshToken) {
+        return refreshTokenRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new RefreshTokenNotFoundException(REFRESH_TOKEN_RESOLVE,
+                        REFRESH_TOKEN_RESOLVE.getMessage()));
+    }
+
+    private static void validateMatchedToken(final String refreshToken, final RefreshToken currentRefreshToken) {
+        if (!refreshToken.equals(currentRefreshToken.getRefreshToken())) {
+            throw new RefreshTokenNotMatchedException(REFRESH_TOKEN_RESOLVE, REFRESH_TOKEN_RESOLVE.getMessage());
+        }
+    }
+
+    private String resolveToken(String accessToken) {
+        if (accessToken.startsWith(ACCESS_TOKEN_STARTS)) {
+            return accessToken.substring(BEGIN_INDEX);
+        }
+        throw new CannotResolveToken(REFRESH_TOKEN_RESOLVE, REFRESH_TOKEN_RESOLVE.getMessage());
+    }
+
+    private void saveRefreshToken(final UUID uuid, final String refreshToken) {
+        refreshTokenRepository.save(new RefreshToken(uuid, refreshToken));
     }
 }

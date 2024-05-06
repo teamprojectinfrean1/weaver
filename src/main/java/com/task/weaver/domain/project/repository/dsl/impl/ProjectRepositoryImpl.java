@@ -18,12 +18,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProjectRepositoryImpl implements ProjectRepositoryDsl {
     private final JPAQueryFactory jpaQueryFactory;
-    private QProjectMember qProjectMember = QProjectMember.projectMember;
-    private QProject qProject = QProject.project;
-    private QIssue qIssue = QIssue.issue;
 
     @Override
     public Optional<List<Project>> findProjectsByMember(Member member) {
+        QProjectMember qProjectMember = QProjectMember.projectMember;
+        QProject qProject = QProject.project;
+
         List<Project> projects = jpaQueryFactory.selectFrom(qProject)
                 .join(qProject.projectMemberList, qProjectMember).fetchJoin()
                 .where(qProjectMember.member.id.eq(member.getId()))
@@ -35,6 +35,8 @@ public class ProjectRepositoryImpl implements ProjectRepositoryDsl {
 
     @Override
     public Optional<List<Issue>> findIssueByProjectId(final UUID projectId, final String status) {
+        QIssue qIssue = QIssue.issue;
+
         BooleanExpression expression = qIssue.task.project.projectId.eq(projectId)
                 .and(qIssue.status.eq(Status.fromName(status)));
 

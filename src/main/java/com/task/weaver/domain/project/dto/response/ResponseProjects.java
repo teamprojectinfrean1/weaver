@@ -14,14 +14,14 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ResponseGetProjectList {
+public class ResponseProjects {
     private UUID projectId;
     private String projectName;
     private Boolean isMainProject;
     private Permission permission;
     private URL projectImage;
 
-    public ResponseGetProjectList(Project project, Permission permission, UUID mainProjectId) {
+    public ResponseProjects(Project project, Permission permission, UUID mainProjectId) {
         this.projectId = project.getProjectId();
         this.projectName = project.getName();
         this.isMainProject = project.getProjectId().equals(mainProjectId);

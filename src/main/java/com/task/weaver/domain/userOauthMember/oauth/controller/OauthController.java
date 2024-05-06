@@ -39,7 +39,6 @@ public class OauthController {
      * @param response        Service 로직을 통해 생성된 URL로 사용자 Redirect
      * @return Void
      */
-    @Logger
     @SneakyThrows
     @GetMapping("/{oauthServerType}")
     ResponseEntity<Void> redirectAuthCodeRequestUrl(@PathVariable OauthServerType oauthServerType,
@@ -50,7 +49,6 @@ public class OauthController {
         return ResponseEntity.ok().build();
     }
 
-    @Logger
     @GetMapping("/login/{oauthServerType}")
     ResponseEntity<?> login(@PathVariable OauthServerType oauthServerType,
                                                       @RequestParam("code") String code) {

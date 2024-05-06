@@ -4,7 +4,7 @@ import com.task.weaver.common.response.DataResponse;
 import com.task.weaver.common.response.MessageResponse;
 import com.task.weaver.domain.project.dto.request.RequestCreateProject;
 import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
-import com.task.weaver.domain.project.dto.response.ResponseGetMainProjectList;
+import com.task.weaver.domain.project.dto.response.ResponseMainAndOtherProjects;
 import com.task.weaver.domain.project.dto.response.ResponseGetProject;
 import com.task.weaver.domain.project.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,23 +33,23 @@ public class ProjectController {
     @Operation(summary = "프로젝트 단건 조회", description = "프로젝트 단건 조회")
     @GetMapping("/{projectId}")
     @Parameter(name = "projectId", description = "프로젝트 id", in = ParameterIn.PATH)
-    public ResponseEntity<DataResponse<ResponseGetProject>> getProject(@PathVariable("projectId") UUID projectId) {
-        ResponseGetProject project = projectService.getProject(projectId);
+    public ResponseEntity<DataResponse<ResponseGetProject>> getOwnProjectByMemberId(@PathVariable("projectId") UUID projectId) {
+        ResponseGetProject project = projectService.fetchProject(projectId);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "프로젝트 조회 성공", project, true), HttpStatus.OK);
     }
 
     @Operation(summary = "유저 id 기반으로 프로젝트 리스트 조회", description = "로그인한 사용자가 참여한 프로젝트들을 조회")
     @GetMapping("/list/{memberId}")
     @Parameter(name = "memberId", description = "멤버 id", in = ParameterIn.PATH)
-    public ResponseEntity<DataResponse<ResponseGetMainProjectList>> getProjects(@PathVariable("memberId") UUID memberId){
-        ResponseGetMainProjectList projects = projectService.getProejctsForMain(memberId);
+    public ResponseEntity<DataResponse<ResponseMainAndOtherProjects>> getProjectsByMemberId(@PathVariable("memberId") UUID memberId){
+        ResponseMainAndOtherProjects projects = projectService.fetchMainAndOtherProjects(memberId);
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "유저의 프로젝트 리스트 조회 성공", projects, true), HttpStatus.OK);
     }
 
     @Operation(summary = "개발자용 프로젝트 리스트 확인 api", description = "사용되지 않는 api로, 모든 프로젝트를 가져옵니다.")
     @GetMapping("/list/test")
-    public ResponseEntity<DataResponse<List<ResponseGetProject>>> getProjectsForTest() {
-        List<ResponseGetProject> projects = projectService.getProjectsForTest();
+    public ResponseEntity<DataResponse<List<ResponseGetProject>>> getProjectsForDev() {
+        List<ResponseGetProject> projects = projectService.fetchAllProjectsForDeveloper();
 
         return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "모든 프로젝트 조회", projects, true), HttpStatus.OK);
     }
