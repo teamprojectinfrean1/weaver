@@ -147,7 +147,7 @@ public class UserController {
     public ResponseEntity<DataResponse<ResponseUserIdNickname>> AuthCheckForId(
             @RequestBody @Valid EmailCheckDto emailCheckDto) {
         Boolean checked = mailService.CheckAuthNum(emailCheckDto.email(), emailCheckDto.verificationCode());
-        ResponseUserIdNickname targetUser = memberService.getMember(emailCheckDto.email(), checked);
+        ResponseUserIdNickname targetUser = memberService.fetchMemberByEmail(emailCheckDto.email(), checked);
         return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "해당 유저를 반환합니다.", targetUser, true));
     }
 
@@ -166,7 +166,7 @@ public class UserController {
     public ResponseEntity<DataResponse<ResponseUuid>> AuthCheckForPassword(
             @RequestBody @Valid EmailCheckDto emailCheckDto) {
         Boolean checked = mailService.CheckAuthNum(emailCheckDto.email(), emailCheckDto.verificationCode());
-        ResponseUuid targetUser = memberService.getUuid(emailCheckDto.email(), checked);
+        ResponseUuid targetUser = memberService.fetchUuid(emailCheckDto.email(), checked);
         return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "verificationCode 인증 성공", targetUser, true));
     }
 

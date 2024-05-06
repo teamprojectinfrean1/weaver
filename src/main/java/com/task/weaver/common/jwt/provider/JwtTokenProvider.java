@@ -121,11 +121,7 @@ public class JwtTokenProvider {
 	 */
 	public Authentication getAuthentication(String token) {
 		Claims claims = parseClaims(token);
-		log.info( "claims.getSubject : " + claims.getSubject());
 		PrincipalDetails userDetails = principalDetailService.loadUserByUsername(claims.getSubject());
-		log.info("userDetails.getUsername = {}", userDetails.getUsername());
-		log.info("userDetails.getPassword = {}", userDetails.getPassword());
-
 		return new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword());
 	}
 

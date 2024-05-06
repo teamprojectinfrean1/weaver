@@ -29,21 +29,21 @@ public interface MemberService {
 
 	Boolean checkNickname(String nickname);
 
-	ResponseUuid getUuid(String email, Boolean checked);
+	ResponseUuid fetchUuid(String email, Boolean checked);
 
-	ResponseGetMember getMember(UUID userId);
+	ResponseGetMember fetchMemberByUuid(UUID userId);
 
-	ResponseUserIdNickname getMember(String email, Boolean checked);
+	ResponseUserIdNickname fetchMemberByEmail(String email, Boolean checked);
 
-	ResponseGetUserForFront getMemberFromToken(HttpServletRequest request);
+	ResponseGetUserForFront fetchMemberFromToken(HttpServletRequest request);
 
-	Page<MemberProjectDTO> getMembers(int page, int size, UUID projectId);
+	Page<MemberProjectDTO> fetchSimplePagedMembers(int page, int size, UUID projectId);
 
-	ResponsePageResult<GetMemberListResponse, Member> getMemberList(int page, int size, UUID projectId);
+	ResponsePageResult<GetMemberListResponse, Member> fetchPagedMembers(int page, int size, UUID projectId);
 
-	List<MemberProjectDTO> getMembers(UUID projectId);
+	List<MemberProjectDTO> fetchMembers(UUID projectId);
 
-	ResponseUserOauth.AllMember getMembersForTest();
+	ResponseUserOauth.AllMember fetchMembersForDeveloper();
 
 	ResponseToken getAuthentication(Member member);
 

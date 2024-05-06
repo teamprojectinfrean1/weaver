@@ -102,4 +102,10 @@ public class Member extends BaseEntity {
     public boolean hasAssigneeIssueInProgress(){
         return assigneeIssueList.stream().allMatch(Issue::hasIssueProgress);
     }
+
+    public void isFirstProject(final Project project) {
+        if (this.mainProject == null) {
+            updateMainProject(project);
+        }
+    }
 }
