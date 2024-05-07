@@ -97,10 +97,11 @@ public class UserServiceImpl implements UserService {
         User user = hasImage(profileImage, requestCreateUser.dtoToUserDomain(passwordEncoder));
         Member member = memberFactory.createUserOauthMember(user);
         addMemberUuid(user, member);
-        return ResponseGetMember.of(member.getUser());
+        return ResponseGetMember.of(member.getUser(), member.getId());
     }
 
     private void addMemberUuid(final User user, final Member member) {
+        memberRepository.save(member);
         user.updateMemberUuid(member.getId());
         userRepository.save(user);
     }
@@ -135,7 +136,7 @@ public class UserServiceImpl implements UserService {
         }
         oauthMember.updateNickname((String) requestUpdateUser.getValue());
         oauthMemberRepository.save(oauthMember);
-        return ResponseGetMember.of(oauthMember);
+        return ResponseGetMember.of(oauthMember, oauthMember.getMemberUuid());
     }
 
     private ResponseGetMember getResponseGetMemberWithUser(final RequestUpdateUser requestUpdateUser, final User user) {
@@ -145,7 +146,7 @@ public class UserServiceImpl implements UserService {
             case PASSWORD -> updatePassword(requestUpdateUser.getValue(), user);
         }
         userRepository.save(user);
-        return ResponseGetMember.of(user);
+        return ResponseGetMember.of(user, user.getMemberUuid());
     }
 
     public ResponseSimpleURL updateProfile(final MultipartFile multipartFile, final UUID memberUUID) throws IOException {

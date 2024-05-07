@@ -129,7 +129,7 @@ public class MemberServiceImpl implements MemberService {
     public ResponseGetMember fetchMemberByUuid(UUID uuid) {
         Member member = getMemberById(uuid);
         UserOauthMember userOauthMemberData = member.resolveMemberByLoginType();
-        return ResponseGetMember.of(MemberDto.memberDomainToDto(userOauthMemberData, member));
+        return ResponseGetMember.of(MemberDto.memberDomainToDto(userOauthMemberData, member), member.getId());
     }
 
     @LoggingStopWatch

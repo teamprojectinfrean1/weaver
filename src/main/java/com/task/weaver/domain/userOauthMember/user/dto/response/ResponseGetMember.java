@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ResponseGetMember {
 
+    private UUID memberUuid;
     private UUID userOauthUuid;
     private String nickname;
     private String id;
@@ -22,7 +23,8 @@ public class ResponseGetMember {
     private String password;
     private String profileImageUrl;
 
-    private ResponseGetMember(User user){
+    private ResponseGetMember(User user, UUID memberUuid){
+        this.memberUuid = memberUuid;
         this.userOauthUuid = user.getUserId();
         this.id = user.getId();
         this.nickname = user.getNickname();
@@ -31,12 +33,14 @@ public class ResponseGetMember {
         this.profileImageUrl = String.valueOf(user.getProfileImage());
     }
 
-    private ResponseGetMember(OauthUser oauthMember) {
+    private ResponseGetMember(OauthUser oauthMember, UUID memberUuid) {
+        this.memberUuid = memberUuid;
         this.nickname = oauthMember.getNickname();
         this.profileImageUrl = String.valueOf(oauthMember.getProfileImage());
     }
 
-    private ResponseGetMember(MemberDto memberDto){
+    private ResponseGetMember(MemberDto memberDto, UUID memberUuid){
+        this.memberUuid = memberUuid;
         this.userOauthUuid = memberDto.getUserId();
         this.id = memberDto.getId();
         this.nickname = memberDto.getNickname();
@@ -45,15 +49,15 @@ public class ResponseGetMember {
         this.profileImageUrl = String.valueOf(memberDto.getProfileImageUrl());
     }
 
-    public static ResponseGetMember of(User user) {
-        return new ResponseGetMember(user);
+    public static ResponseGetMember of(User user, UUID memberUuid) {
+        return new ResponseGetMember(user, memberUuid);
     }
 
-    public static ResponseGetMember of(OauthUser oauthMember) {
-        return new ResponseGetMember(oauthMember);
+    public static ResponseGetMember of(OauthUser oauthMember, UUID memberUuid) {
+        return new ResponseGetMember(oauthMember, memberUuid);
     }
 
-    public static ResponseGetMember of(MemberDto memberDto) {
-        return new ResponseGetMember(memberDto);
+    public static ResponseGetMember of(MemberDto memberDto, UUID memberUuid) {
+        return new ResponseGetMember(memberDto, memberUuid);
     }
 }
