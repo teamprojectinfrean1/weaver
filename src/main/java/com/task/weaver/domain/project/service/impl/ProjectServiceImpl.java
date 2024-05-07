@@ -5,6 +5,7 @@ import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.task.weaver.common.exception.member.UserNotFoundException;
 import com.task.weaver.common.exception.project.ProjectNotFoundException;
+import com.task.weaver.common.model.Permission;
 import com.task.weaver.common.s3.S3Uploader;
 import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.member.repository.MemberRepository;
@@ -126,7 +127,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     private void editProject(final RequestCreateProject dto, final MultipartFile multipartFile, final Member writer,
                              final Project project, final Set<ProjectMember> projectMembers) throws IOException {
-        writer.isFirstProject(project);
+        writer.initMainProject(project);
         editProjectDetails(dto, writer, project, projectMembers);
         profileImageUpdate(multipartFile, project);
         projectRepository.save(project);
@@ -141,18 +142,18 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     private Set<ProjectMember> saveProjectMembers(final Project project, UUID writerId, List<UUID> memberUuidList) {
-        Set<ProjectMember> projectMemberList = memberUuidList.parallelStream()
-                .filter(memberId -> !projectMemberRepository.findByProjectAndMemberId(memberId, project.getProjectId()))
-                .map(memberId -> createProjectMember(project, writerId, memberId))
+        Set<ProjectMember> projectMemberList = memberRepository.findAllById(memberUuidList).stream()
+                .filter(member -> !projectMemberRepository.findByProjectAndMemberId(member.getId(), project.getProjectId()))
+                .peek(member -> member.initMainProject(project))
+                .map(member -> ResponseProjectMember.dtoToEntity(project, member, Permission.MEMBER))
                 .collect(Collectors.toSet());
-        projectMemberRepository.saveAll(projectMemberList);
+        addWriterAsLeader(project, writerId, projectMemberList);
         return projectMemberList;
     }
 
-    private ProjectMember createProjectMember(final Project project, final UUID writerId, final UUID memberId) {
-        Member member = getMemberById(memberId);
-        member.isFirstProject(project);
-        return ResponseProjectMember.dtoToEntity(project, member, writerId, memberId);
+    private void addWriterAsLeader(final Project project, final UUID writerId, final Set<ProjectMember> projectMemberList) {
+        projectMemberList.add(ResponseProjectMember.dtoToEntity(project, getMemberById(writerId), Permission.LEADER));
+        projectMemberRepository.saveAll(projectMemberList);
     }
 
     @Override
@@ -166,14 +167,6 @@ public class ProjectServiceImpl implements ProjectService {
         projectMemberRepository.bulkDeleteProjectMembers(project, dto.memberUuidList());
         saveProjectMembers(project, dto.updaterUuid(), dto.memberUuidList());
         projectRepository.save(project);
-    }
-
-    private void bulkUpdateMembers(final Project project, UUID updaterId, final List<UUID> memberUuidList) {
-        Set<ProjectMember> newProjectMembers = memberUuidList.parallelStream()
-                .filter(memberId -> !projectMemberRepository.findByProjectAndMemberId(memberId, project.getProjectId()))
-                .map(memberId -> createProjectMember(project, updaterId, memberId))
-                .collect(Collectors.toSet());
-        projectMemberRepository.saveAll(newProjectMembers);
     }
 
     @Override
