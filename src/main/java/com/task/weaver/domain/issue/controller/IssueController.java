@@ -1,5 +1,6 @@
 package com.task.weaver.domain.issue.controller;
 
+import com.task.weaver.common.aop.annotation.HasTasks;
 import com.task.weaver.common.aop.annotation.LoggingStopWatch;
 import com.task.weaver.common.model.Status;
 import com.task.weaver.common.response.DataResponse;
@@ -15,9 +16,13 @@ import com.task.weaver.domain.issue.service.IssueService;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -66,8 +71,9 @@ public class IssueController {
 	@Operation(summary = "이슈 조회", description = "status로 이슈 조회 (TODO / INPROGRESS / DONE)")
 	@GetMapping("/allTickets/{status}")
 	public ResponseEntity<DataResponse<ResponsePageResult<GetIssueListResponse, Issue>>> getIssues(
-			@PathVariable Status status, @RequestParam UUID projectId, @RequestParam int page, @RequestParam int size) {
-		log.info("status ={}, project id ={}", status, projectId, page, size);
+			@PathVariable Status status,
+			@Valid @HasTasks @RequestParam UUID projectId,
+			@RequestParam int page, @RequestParam int size) {
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "status로 이슈 조회 성공",
 				issueService.getIssues(status, new GetIssuePageRequest(page, size, projectId)), true), HttpStatus.OK);
 	}
@@ -76,7 +82,7 @@ public class IssueController {
 	@GetMapping("/search/{status}")
 	public ResponseEntity<DataResponse<ResponsePageResult<GetIssueListResponse, Issue>>> getSearchIssues(
 			@PathVariable String status, @RequestParam("filter") String filter, @RequestParam("word") String word,
-			@RequestParam UUID projectId, @RequestParam int page, @RequestParam int size) {
+			@Valid @HasTasks @RequestParam UUID projectId, @RequestParam int page, @RequestParam int size) {
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "이슈 검색 조회 성공",
 				issueService.getSearchIssues(status, filter, word, new GetIssuePageRequest(page, size, projectId)),
 				true), HttpStatus.OK);

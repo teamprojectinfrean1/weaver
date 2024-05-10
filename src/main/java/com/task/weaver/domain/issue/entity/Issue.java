@@ -6,6 +6,7 @@ import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.comment.entity.Comment;
 import com.task.weaver.domain.issue.dto.request.UpdateIssueRequest;
 import com.task.weaver.domain.task.entity.Task;
+import com.task.weaver.domain.userOauthMember.UserOauthMember;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -79,41 +80,17 @@ public class Issue extends BaseEntity {
         this.modifier = modifier;
         this.assignee = assignee;
         this.issueTitle = updateIssueRequest.issueTitle();
-        this.issueContent = updateIssueRequest.issueContent();
-        this.startDate = updateIssueRequest.startDate();
-        this.endDate = updateIssueRequest.endDate();
+        this.issueContent = updateIssueRequest.issueContent().orElse("NO_CONTENT");
+        this.startDate = updateIssueRequest.startDate().orElse(LocalDateTime.now());
+        this.endDate = updateIssueRequest.endDate().orElse(LocalDateTime.now());
     }
 
     public boolean hasIssueProgress() {
         return status == Status.INPROGRESS;
     }
 
-    public void updateTask(Task task) {
-        this.task = task;
-    }
-
     public void updateModifier(Member modifier) {
         this.modifier = modifier;
-    }
-
-    public void updateAssignee(Member assignee) {
-        this.assignee = assignee;
-    }
-
-    public void updateIssueTitle(String issueTitle) {
-        this.issueTitle = issueTitle;
-    }
-
-    public void updateIssueContent(String issueContent) {
-        this.issueContent = issueContent;
-    }
-
-    public void updateStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
-    }
-
-    public void updateEndDate(LocalDateTime endDate) {
-        this.endDate = endDate;
     }
 
     public void updateStatus(Status status) {
