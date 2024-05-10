@@ -18,14 +18,13 @@ public interface IssueService {
 
     IssueResponse addIssue(CreateIssueRequest issueRequest);
 
-
     IssueResponse updateIssue(UUID issueId, UpdateIssueRequest updateIssueRequest);
 
     void updateIssueStatus(UUID issueId, String status);
 
     void deleteIssue(Issue issue);
 
-    void deleteIssue(UUID issueId);
+    UUID deleteIssue(UUID issueId);
 
     ResponsePageResult<GetIssueListResponse, Issue> getSearchIssues(String status, String filter, String word,
                                                                     GetIssuePageRequest getIssuePageRequest);

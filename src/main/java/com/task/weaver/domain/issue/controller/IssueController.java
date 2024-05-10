@@ -55,9 +55,8 @@ public class IssueController {
 
 	@Operation(summary = "이슈 삭제", description = "issueId로 이슈 삭제")
 	@DeleteMapping("/{issueId}")
-	public ResponseEntity<?> removeIssue(@PathVariable UUID issueId){
-		issueService.deleteIssue(issueId);
-		return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "이슈 삭제 성공", true), HttpStatus.OK);
+	public ResponseEntity<DataResponse<UUID>> removeIssue(@PathVariable UUID issueId){
+		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "이슈 삭제 성공", issueService.deleteIssue(issueId), true), HttpStatus.OK);
 	}
 
 	/**

@@ -1,5 +1,6 @@
 package com.task.weaver.domain.issue.dto.request;
 
+import java.util.Optional;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -7,11 +8,11 @@ import java.util.UUID;
 
 @Builder
 public record CreateIssueRequest(UUID creatorId,
-								 UUID assigneeId,
+								 Optional<UUID> assigneeId,
 								 UUID taskId,
-								 LocalDateTime startDate,
-								 LocalDateTime endDate,
+								 Optional<LocalDateTime> startDate,
+								 Optional<LocalDateTime> endDate,
 								 String issueTitle,
-								 String issueContent,
+								 Optional<String> issueContent,
 								 String status) {
 }

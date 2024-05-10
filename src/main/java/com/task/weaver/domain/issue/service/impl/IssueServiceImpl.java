@@ -276,7 +276,8 @@ public class IssueServiceImpl implements IssueService {
 	}
 
 	@Override
-	public void deleteIssue(UUID issueId) {
+	public UUID deleteIssue(UUID issueId) {
 		issueRepository.deleteById(issueId);
+		return issueId;
 	}
 }
