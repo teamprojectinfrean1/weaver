@@ -4,13 +4,13 @@ import com.task.weaver.common.aop.annotation.HasTasks;
 import com.task.weaver.common.aop.annotation.LoggingStopWatch;
 import com.task.weaver.common.model.Status;
 import com.task.weaver.common.response.DataResponse;
-import com.task.weaver.common.response.MessageResponse;
 import com.task.weaver.domain.issue.dto.request.CreateIssueRequest;
 import com.task.weaver.domain.issue.dto.request.GetIssuePageRequest;
 import com.task.weaver.domain.issue.dto.request.UpdateIssueRequest;
 import com.task.weaver.domain.issue.dto.request.UpdateIssueStatusRequest;
 import com.task.weaver.domain.issue.dto.response.GetIssueListResponse;
 import com.task.weaver.domain.issue.dto.response.IssueResponse;
+import com.task.weaver.domain.issue.dto.response.UpdateIssueStatus;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.issue.service.IssueService;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
@@ -20,9 +20,6 @@ import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -54,8 +51,6 @@ public class IssueController {
 	@Operation(summary = "이슈 생성", description = "이슈 생성")
 	@PostMapping
 	public ResponseEntity<DataResponse<IssueResponse>> addIssue(@RequestBody CreateIssueRequest createIssueRequest) {
-		log.info("startDate type = {}", createIssueRequest.startDate());
-		log.info("Date type = {}", createIssueRequest.endDate());
 		return new ResponseEntity<>(
 				DataResponse.of(HttpStatus.OK, "이슈 생성 성공", issueService.addIssue(createIssueRequest), true),
 				HttpStatus.OK);
@@ -92,7 +87,6 @@ public class IssueController {
 	@PutMapping("/detail/{issueId}")
 	public ResponseEntity<DataResponse<IssueResponse>> updateTask(@PathVariable UUID issueId,
 																  @RequestBody UpdateIssueRequest updateIssueRequest) {
-		log.info("modifierId = {}", updateIssueRequest.modifierId());
 		return new ResponseEntity<>(
 				DataResponse.of(HttpStatus.OK, "이슈 상세 정보 수정 성공", issueService.updateIssue(issueId, updateIssueRequest),
 						true), HttpStatus.OK);
@@ -100,9 +94,10 @@ public class IssueController {
 
 	@Operation(summary = "이슈 상태 수정", description = "issueId로 이슈 상세 상태 수정")
 	@PutMapping("/status/{issueId}")
-	public ResponseEntity<MessageResponse> updateTask(@PathVariable UUID issueId,
-													  @RequestBody UpdateIssueStatusRequest updateIssueStatusRequest) {
-		issueService.updateIssueStatus(issueId, updateIssueStatusRequest);
-		return new ResponseEntity<>(MessageResponse.of(HttpStatus.OK, "이슈 상태 수정 성공", true), HttpStatus.OK);
+	public ResponseEntity<DataResponse<UpdateIssueStatus>> updateTask(@PathVariable UUID issueId,
+																	  @RequestBody UpdateIssueStatusRequest updateIssueStatusRequest) {
+		UpdateIssueStatus updateIssueStatus = issueService.updateIssueStatus(issueId, updateIssueStatusRequest);
+		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "이슈 상태 수정 성공", updateIssueStatus, true),
+				HttpStatus.OK);
 	}
 }

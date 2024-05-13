@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Builder
 public record CreateIssueRequest(UUID creatorId,
-								 UUID assigneeId,
+								 Optional<UUID> assigneeId,
 								 UUID taskId,
 								 Optional<LocalDateTime> startDate,
 								 Optional<LocalDateTime> endDate,

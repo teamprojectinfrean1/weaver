@@ -10,7 +10,7 @@ import lombok.Builder;
 
 @Builder
 public record UpdateIssueRequest(UUID modifierId,
-								 UUID assigneeId,
+								 Optional<UUID> assigneeId,
 								 UUID taskId,
 								 Optional<LocalDateTime> startDate,
 								 Optional<LocalDateTime> endDate,

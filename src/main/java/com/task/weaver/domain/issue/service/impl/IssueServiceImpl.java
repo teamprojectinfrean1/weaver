@@ -16,6 +16,7 @@ import com.task.weaver.domain.issue.dto.request.UpdateIssueRequest;
 import com.task.weaver.domain.issue.dto.request.UpdateIssueStatusRequest;
 import com.task.weaver.domain.issue.dto.response.GetIssueListResponse;
 import com.task.weaver.domain.issue.dto.response.IssueResponse;
+import com.task.weaver.domain.issue.dto.response.UpdateIssueStatus;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.issue.repository.IssueRepository;
 import com.task.weaver.domain.issue.service.IssueService;
@@ -27,6 +28,7 @@ import com.task.weaver.domain.project.repository.ProjectRepository;
 import com.task.weaver.domain.task.entity.Task;
 import com.task.weaver.domain.task.repository.TaskRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -84,7 +86,7 @@ public class IssueServiceImpl implements IssueService {
 	public IssueResponse addIssue(CreateIssueRequest createIssueRequest) {
 		Task task = getTask(createIssueRequest.taskId());
 		Member creator = getMember(createIssueRequest.creatorId());
-		Member assignee = getMember(createIssueRequest.assigneeId());
+		Member assignee = hasAssigneeMember(createIssueRequest.assigneeId());
 
 		Issue issue = CreateIssueRequest.dtoToEntity(task, creator, assignee, createIssueRequest);
 		issueRepository.save(issue);
@@ -101,7 +103,7 @@ public class IssueServiceImpl implements IssueService {
 		Issue issue = getIssue(issueId);
 		Task task = getTask(updateIssueRequest.taskId());
 		Member modifier = getMember(updateIssueRequest.modifierId());
-		Member assignee = getMember(updateIssueRequest.assigneeId());
+		Member assignee = hasAssigneeMember(updateIssueRequest.assigneeId());
 
 		issue.updateIssue(updateIssueRequest, task, modifier, assignee);
 		issue.updateStatus(Status.fromName(updateIssueRequest.status()));
@@ -109,20 +111,21 @@ public class IssueServiceImpl implements IssueService {
 		return new IssueResponse(issue);
 	}
 
+	private Member hasAssigneeMember(Optional<UUID> assigneeId) {
+		return assigneeId.map(this::getMember).orElse(null);
+	}
+
 	@Override
 	@Transactional
-	public void updateIssueStatus(UUID issueId, UpdateIssueStatusRequest updateIssueStatusRequest) {
+	public UpdateIssueStatus updateIssueStatus(UUID issueId, UpdateIssueStatusRequest updateIssueStatusRequest) {
 		Issue issue = getIssue(issueId);
 		issue.updateStatus(Status.fromName(updateIssueStatusRequest.status()));
 		issue.updateModifier(getMember(updateIssueStatusRequest.memberId()));
+		return UpdateIssueStatus.of(issueId, issue.getStatus());
 	}
 
 	@Override
-	public void deleteIssue(Issue issue) {
-		issueRepository.delete(issue);
-	}
-
-	@Override
+	@Transactional
 	public UUID deleteIssue(UUID issueId) {
 		issueRepository.deleteById(issueId);
 		return issueId;
