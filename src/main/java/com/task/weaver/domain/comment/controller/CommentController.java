@@ -5,6 +5,7 @@ import com.task.weaver.domain.comment.dto.request.RequestCreateComment;
 import com.task.weaver.domain.comment.dto.request.RequestUpdateComment;
 import com.task.weaver.domain.comment.dto.response.ResponseComment;
 import com.task.weaver.domain.comment.dto.response.ResponseCommentList;
+import com.task.weaver.domain.comment.dto.response.ResponseCommentUuid;
 import com.task.weaver.domain.comment.dto.response.ResponsePageComment;
 import com.task.weaver.domain.comment.entity.Comment;
 import com.task.weaver.domain.comment.service.CommentService;
@@ -47,9 +48,9 @@ public class CommentController {
 
     @Operation(summary = "코멘트 삭제", description = "commentId로 코멘트 삭제")
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<?> deleteComment(@PathVariable UUID commentId){
-        commentService.deleteComment(commentId);
-        return ResponseEntity.ok().body("Successfully deleted provided comment");
+    public ResponseEntity<DataResponse<?>> deleteComment(@PathVariable UUID commentId){
+        ResponseCommentUuid responseCommentUuid = commentService.deleteComment(commentId);
+        return ResponseEntity.ok().body(DataResponse.of(HttpStatus.OK, "Successfully deleted comment", responseCommentUuid, true));
     }
 
     @Operation(summary = "코멘트 수정", description = "코멘트 수정")

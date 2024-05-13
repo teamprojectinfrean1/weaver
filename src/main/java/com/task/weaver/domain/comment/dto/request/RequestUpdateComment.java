@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class RequestUpdateComment {
-    private UUID updaterUUID;
+    private UUID writerId;
     private UUID issueId;
     private String commentBody;
 }
