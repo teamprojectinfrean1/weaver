@@ -1,5 +1,6 @@
 package com.task.weaver.domain.issue.controller;
 
+import com.task.weaver.common.aop.annotation.HasFilter;
 import com.task.weaver.common.aop.annotation.HasTasks;
 import com.task.weaver.common.aop.annotation.LoggingStopWatch;
 import com.task.weaver.common.model.Status;
@@ -44,7 +45,7 @@ public class IssueController {
 	@Operation(summary = "이슈 단건 조회", description = "issueId로 이슈 단건 조회")
 	@GetMapping("/detail/{issueId}")
 	public ResponseEntity<DataResponse<IssueResponse>> getIssueInfo(@PathVariable UUID issueId) {
-		IssueResponse issueResponse = issueService.getIssueResponse(issueId);
+		IssueResponse issueResponse = issueService.fetchIssue(issueId);
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "이슈 상세 조회 성공", issueResponse, true), HttpStatus.OK);
 	}
 
@@ -70,16 +71,19 @@ public class IssueController {
 			@Valid @HasTasks @RequestParam UUID projectId,
 			@RequestParam int page, @RequestParam int size) {
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "status로 이슈 조회 성공",
-				issueService.getIssues(status, new GetIssuePageRequest(page, size, projectId)), true), HttpStatus.OK);
+				issueService.fetchIssues(status, new GetIssuePageRequest(page, size, projectId)), true), HttpStatus.OK);
 	}
 
 	@Operation(summary = "이슈 검색 조회", description = "filter로 이슈 검색 조회 (MANAGER / TASK / ISSUE)")
 	@GetMapping("/search/{status}")
 	public ResponseEntity<DataResponse<ResponsePageResult<GetIssueListResponse, Issue>>> getSearchIssues(
-			@PathVariable String status, @RequestParam("filter") String filter, @RequestParam("word") String word,
-			@Valid @HasTasks @RequestParam UUID projectId, @RequestParam int page, @RequestParam int size) {
+			@PathVariable String status,
+			@Valid @HasFilter @RequestParam("filter") String filter,
+			@RequestParam("word") String word,
+			@Valid @HasTasks @RequestParam UUID projectId,
+			@RequestParam int page, @RequestParam int size) {
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "이슈 검색 조회 성공",
-				issueService.getSearchIssues(status, filter, word, new GetIssuePageRequest(page, size, projectId)),
+				issueService.fetchSearchIssues(status, filter, word, new GetIssuePageRequest(page, size, projectId)),
 				true), HttpStatus.OK);
 	}
 
