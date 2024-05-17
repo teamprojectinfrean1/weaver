@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 
 public interface ProjectMemberRepositoryDsl {
-    Optional<List<ProjectMember>> findProjectMemberByMember(Member member);
+    List<ProjectMember> findProjectMemberByMember(Member member);
 
     void bulkDeleteProjectMembers(final Project project, final List<UUID> memberUuidList);
 

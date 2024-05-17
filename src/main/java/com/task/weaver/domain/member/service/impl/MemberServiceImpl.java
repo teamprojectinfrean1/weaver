@@ -57,7 +57,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -215,10 +214,6 @@ public class MemberServiceImpl implements MemberService {
                 en.getMember().hasAssigneeIssueInProgress(), en.getPermission());
     }
 
-    private Page<Member> getMembersByProject(UUID projectId, Pageable pageable) {
-        return memberRepository.findMembersByProject(projectId, pageable);
-    }
-
     private Pageable getPageable(Sort sort, int page, int size) {
         return PageRequest.of(page - 1, size, sort);
     }
@@ -286,7 +281,10 @@ public class MemberServiceImpl implements MemberService {
     }
 
     private List<ProjectMember> getProjectsByMember(final Member member) {
-        return projectMemberRepository.findProjectMemberByMember(member)
-                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
+        return projectMemberRepository.findProjectMemberByMember(member);
+    }
+
+    private Page<Member> getMembersByProject(UUID projectId, Pageable pageable) {
+        return memberRepository.findMembersByProject(projectId, pageable);
     }
 }

@@ -207,7 +207,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     private List<ProjectMember> getProjectsByMember(final Member member) {
-        return projectMemberRepository.findProjectMemberByMember(member)
-                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
+        return projectMemberRepository.findProjectMemberByMember(member);
     }
+
 }

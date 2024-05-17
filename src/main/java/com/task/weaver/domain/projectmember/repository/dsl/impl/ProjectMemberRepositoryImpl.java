@@ -23,13 +23,12 @@ public class ProjectMemberRepositoryImpl implements ProjectMemberRepositoryDsl {
 
 
     @Override
-    public Optional<List<ProjectMember>> findProjectMemberByMember(Member member) {
-        List<ProjectMember> projects = jpaQueryFactory.selectFrom(qProjectMember)
+    public List<ProjectMember> findProjectMemberByMember(Member member) {
+        return jpaQueryFactory.selectFrom(qProjectMember)
                 .leftJoin(qProjectMember.project)
                 .where(qProjectMember.member.id.eq(member.getId()))
                 .orderBy(qProjectMember.regDate.desc())
                 .fetch();
-        return Optional.of(projects);
     }
 
     @Override
