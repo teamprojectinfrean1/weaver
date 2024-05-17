@@ -16,17 +16,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
 
-    @LoggingStopWatch
     ResponseToken weaverLogin(RequestSignIn requestSignIn);
-    @LoggingStopWatch
-    ResponseGetMember addUser(RequestCreateUser requestCreateUser, MultipartFile multipartFile) throws IOException;
-    @LoggingStopWatch
-    ResponseGetMember updateUser(UUID userId, RequestUpdateUser requestUpdateUser)
+    ResponseGetMember signup(RequestCreateUser requestCreateUser, MultipartFile multipartFile) throws IOException;
+    ResponseGetMember updateUserProfile(UUID userId, RequestUpdateUser requestUpdateUser)
             throws IOException, ParseException;
-    @LoggingStopWatch
     void updateUser(RequestUpdatePassword requestUpdateUser);
-    @LoggingStopWatch
-    ResponseSimpleURL updateProfile(MultipartFile multipartFile, UUID memberUUID) throws IOException;
-    @LoggingStopWatch
+    ResponseSimpleURL updateProfileImage(MultipartFile multipartFile, UUID memberUUID) throws IOException;
     void deleteUser(UUID userId);
 }

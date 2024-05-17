@@ -24,6 +24,7 @@ public class ResponseProjects {
     public ResponseProjects(Project project, Permission permission, UUID mainProjectId) {
         this.projectId = project.getProjectId();
         this.projectName = project.getName();
+        this.permission = permission;
         this.isMainProject = project.getProjectId().equals(mainProjectId);
     }
 }

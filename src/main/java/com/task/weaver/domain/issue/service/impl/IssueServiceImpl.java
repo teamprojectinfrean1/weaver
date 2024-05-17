@@ -57,23 +57,24 @@ public class IssueServiceImpl implements IssueService {
 	private final ProjectRepository projectRepository;
 
 	@Override
-	public IssueResponse getIssueResponse(UUID issueId) {
+	public IssueResponse fetchIssue(UUID issueId) {
 		return new IssueResponse(getIssue(issueId));
 	}
 
 	@Override
-	public ResponsePageResult<GetIssueListResponse, Issue> getIssues(Status status,
-																	 GetIssuePageRequest getIssuePageRequest) {
+	public ResponsePageResult<GetIssueListResponse, Issue> fetchIssues(Status status,
+																	   GetIssuePageRequest getIssuePageRequest) {
 		Pageable pageable = getIssuePageRequest.getPageable(Sort.by(PROPERTIES).descending());
-		Page<Issue> issuePage = projectRepository.findIssuePageByProjectId(getIssuePageRequest.projectId(),
-				String.valueOf(status), pageable);
+		Page<Issue> issuePage = projectRepository.findIssuePageByProjectId(getIssuePageRequest.projectId(),	String.valueOf(status), pageable);
+
 		Function<Issue, GetIssueListResponse> fn = GetIssueListResponse::of;
 		return new ResponsePageResult<>(issuePage, fn);
 	}
 
 	@Override
-	public ResponsePageResult<GetIssueListResponse, Issue> getSearchIssues(String status, String filter, String word,
-																		   GetIssuePageRequest getIssuePageRequest) {
+	public ResponsePageResult<GetIssueListResponse, Issue> fetchSearchIssues(String status, String filter, String word,
+																			 GetIssuePageRequest getIssuePageRequest) {
+		log.info("status = {}, filter = {}, word = {}", status, filter, word);
 		Pageable pageable = getIssuePageRequest.getPageable(Sort.by(PROPERTIES).descending());
 		Page<Issue> issuePage = issueRepository.findBySearch(getIssuePageRequest.projectId(), status, filter, word,
 				pageable);

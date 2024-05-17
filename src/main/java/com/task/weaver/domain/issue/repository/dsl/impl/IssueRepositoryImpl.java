@@ -2,13 +2,12 @@ package com.task.weaver.domain.issue.repository.dsl.impl;
 
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.task.weaver.common.model.Status;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.issue.entity.QIssue;
 import com.task.weaver.domain.issue.repository.dsl.IssueRepositoryDsl;
-import com.task.weaver.domain.userOauthMember.LoginType;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -25,21 +24,21 @@ public class IssueRepositoryImpl implements IssueRepositoryDsl {
 
 	@Override
 	public Page<Issue> findBySearch(final UUID projectId, final String status, final String filter, final String word, final Pageable pageable) {
-
-		BooleanBuilder predicate = getBooleanBuilder(projectId, status, filter, word);
+		BooleanBuilder predicate = getBooleanBuilder(projectId, status, filter.trim(), word.trim());
 
 		List<Issue> issues = jpaQueryFactory
 				.selectFrom(issue)
 				.where(predicate)
-				.offset((int) pageable.getOffset())
 				.orderBy(issue.modDate.desc())
+				.offset((int) pageable.getOffset())
 				.limit(pageable.getPageSize())
 				.fetch();
 
 		long total = jpaQueryFactory
 				.selectFrom(issue)
 				.where(predicate)
-				.stream().count();
+				.stream()
+				.count();
 
 		return new PageImpl<>(issues, pageable, total);
 	}
@@ -47,60 +46,41 @@ public class IssueRepositoryImpl implements IssueRepositoryDsl {
 	private BooleanBuilder getBooleanBuilder(final UUID projectId, final String status, final String filter,
 											 final String word) {
 		BooleanBuilder predicate = new BooleanBuilder();
-		predicate.and(projectIdEq(projectId))
-				.and(statusEq(status));
-		hasContainsIssue(filter, word, predicate);
-		hasContainsTask(filter, word, predicate);
-		hasContainsOAuthAssignee(filter, word, predicate);
-		hasContainsUserAssignee(filter, word, predicate);
+
+		predicate.and(issue.task.project.projectId.eq(projectId))
+				.and(issue.status.eq(Status.fromName(status)));
+
+		hasFilterEqManager(filter, word, predicate);
+		hasFilterEqTask(filter, word, predicate);
+		hasFilterEqIssue(filter, word, predicate);
 		return predicate;
 	}
 
-	private void hasContainsOAuthAssignee(final String filter, final String word, final BooleanBuilder predicate) {
-		if (filter.equalsIgnoreCase("MANAGER") && issue.assignee.loginType.equals(LoginType.OAUTH)) {
-			predicate.and(oauthNameEq(word));
-		}
-	}
-
-	private void hasContainsUserAssignee(final String filter, final String word, final BooleanBuilder predicate) {
-		if (filter.equalsIgnoreCase("MANAGER") && issue.assignee.loginType.equals(LoginType.WEAVER)) {
-			predicate.and(userNameEq(word));
-		}
-	}
-
-	private void hasContainsTask(final String filter, final String word, final BooleanBuilder predicate) {
-		if (filter.equalsIgnoreCase("TASK")) {
-			predicate.and(taskTitleEq(word));
-		}
-	}
-
-	private void hasContainsIssue(final String filter, final String word, final BooleanBuilder predicate) {
+	private void hasFilterEqIssue(final String filter, final String word, final BooleanBuilder predicate) {
 		if (filter.equalsIgnoreCase("ISSUE")) {
-			predicate.and(issueTitleEq(word));
+			predicate.and(issue.issueTitle.containsIgnoreCase(word));
 		}
 	}
 
-	private BooleanExpression projectIdEq(final UUID projectId) {
-		return issue.task.project.projectId.eq(projectId);
+	private void hasFilterEqManager(final String filter, final String word, final BooleanBuilder predicate) {
+		if (isManagerTypeUser(filter)) {
+			predicate.and(issue.assignee.user.nickname.containsIgnoreCase(word));
+		} else if (isManagerTypeOauthMember(filter)) {
+			predicate.and(issue.assignee.oauthMember.nickname.containsIgnoreCase(word));
+		}
 	}
 
-	private BooleanExpression statusEq(final String status) {
-		return issue.status.eq(Status.fromName(status));
+	private void hasFilterEqTask(final String filter, final String word, final BooleanBuilder predicate) {
+		if (filter.equalsIgnoreCase("TASK")) {
+			predicate.and(issue.task.taskTitle.containsIgnoreCase(word));
+		}
 	}
 
-	private BooleanExpression issueTitleEq(final String title) {
-		return issue.issueTitle.containsIgnoreCase(title);
+	private boolean isManagerTypeOauthMember(final String filter) {
+		return filter.equalsIgnoreCase("MANAGER") && issue.assignee.oauthMember != null;
 	}
 
-	private BooleanExpression taskTitleEq(final String title) {
-		return issue.task.taskTitle.containsIgnoreCase(title);
-	}
-
-	private BooleanExpression oauthNameEq(final String nickname) {
-		return issue.assignee.oauthMember.nickname.containsIgnoreCase(nickname);
-	}
-
-	private BooleanExpression userNameEq(final String nickname) {
-		return issue.assignee.user.nickname.containsIgnoreCase(nickname);
+	private boolean isManagerTypeUser(final String filter) {
+		return filter.equalsIgnoreCase("MANAGER") && issue.assignee.user != null;
 	}
 }

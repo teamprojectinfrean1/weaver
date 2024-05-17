@@ -43,7 +43,6 @@ class UserServiceTest {
         // Given
         RequestSignIn requestSignIn = new RequestSignIn("testId", "testPassword");
 
-        // Mock UserRepository behavior
         when(userRepository.findByUserId(requestSignIn.id())).thenReturn(Optional.empty());
 
         // When & Then

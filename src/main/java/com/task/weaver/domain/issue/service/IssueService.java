@@ -14,9 +14,9 @@ import java.util.UUID;
 
 public interface IssueService {
 
-    IssueResponse getIssueResponse(UUID issueId);
+    IssueResponse fetchIssue(UUID issueId);
 
-    ResponsePageResult<GetIssueListResponse, Issue> getIssues(Status status, GetIssuePageRequest getIssuePageRequest);
+    ResponsePageResult<GetIssueListResponse, Issue> fetchIssues(Status status, GetIssuePageRequest getIssuePageRequest);
 
     IssueResponse addIssue(CreateIssueRequest issueRequest);
 
@@ -26,6 +26,6 @@ public interface IssueService {
 
     UUID deleteIssue(UUID issueId);
 
-    ResponsePageResult<GetIssueListResponse, Issue> getSearchIssues(String status, String filter, String word,
-                                                                    GetIssuePageRequest getIssuePageRequest);
+    ResponsePageResult<GetIssueListResponse, Issue> fetchSearchIssues(String status, String filter, String word,
+                                                                      GetIssuePageRequest getIssuePageRequest);
 }

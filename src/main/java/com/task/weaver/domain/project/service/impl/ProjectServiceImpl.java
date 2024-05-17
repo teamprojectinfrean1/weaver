@@ -143,7 +143,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     private Set<ProjectMember> saveProjectMembers(final Project project, UUID writerId, List<UUID> memberUuidList) {
         Set<ProjectMember> projectMemberList = memberRepository.findAllById(memberUuidList).stream()
-                .filter(member -> !projectMemberRepository.findByProjectAndMemberId(member.getId(), project.getProjectId()))
+                .filter(member -> !projectMemberRepository.hasMatchedProjectAndMemberId(member.getId(), project.getProjectId()))
                 .peek(member -> member.initMainProject(project))
                 .map(member -> ResponseProjectMember.dtoToEntity(project, member, Permission.MEMBER))
                 .collect(Collectors.toSet());
@@ -199,7 +199,8 @@ public class ProjectServiceImpl implements ProjectService {
                         USER_NOT_FOUND.getMessage()));
     }
 
-    private Project getProjectById(final UUID projectId) {
+    @Override
+    public Project getProjectById(final UUID projectId) {
         return projectRepository.findById(projectId).orElseThrow(
                 () -> new ProjectNotFoundException(PROJECT_NOT_FOUND,
                         PROJECT_NOT_FOUND.getMessage()));
