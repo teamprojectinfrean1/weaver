@@ -26,5 +26,6 @@ public class ResponseProjects {
         this.projectName = project.getName();
         this.permission = permission;
         this.isMainProject = project.getProjectId().equals(mainProjectId);
+        this.projectImage = project.getProjectImage();
     }
 }
