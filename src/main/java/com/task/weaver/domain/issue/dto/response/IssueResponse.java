@@ -1,9 +1,11 @@
 package com.task.weaver.domain.issue.dto.response;
 
 import com.task.weaver.domain.issue.entity.Issue;
+import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.task.dto.response.ResponseUpdateDetail;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,9 +40,9 @@ public class IssueResponse {
 		this.issueTitle = issue.getIssueTitle();
 		this.issueContent = issue.getIssueContent();
 		this.status = issue.getStatus().toString();
-		this.assigneeId = issue.getAssignee().getId();
-		this.assigneeNickname = issue.getAssignee().resolveMemberByLoginType().getNickname();
-		this.assigneeProfileImage = issue.getAssignee().resolveMemberByLoginType().getProfileImage();
+		this.assigneeId = Optional.ofNullable(issue.getAssignee()).map(Member::getId).orElse(null);
+		this.assigneeNickname = Optional.ofNullable(issue.getAssignee()).map(member -> member.resolveMemberByLoginType().getNickname()).orElse(null);
+		this.assigneeProfileImage = Optional.ofNullable(issue.getAssignee()).map(member -> member.resolveMemberByLoginType().getProfileImage()).orElse(null);
 		this.startDate = issue.getStartDate();
 		this.endDate = issue.getEndDate();
 		this.lastUpdateDetail = ResponseUpdateDetail.builder()

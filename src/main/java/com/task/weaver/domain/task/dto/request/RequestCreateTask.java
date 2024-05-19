@@ -3,6 +3,7 @@ package com.task.weaver.domain.task.dto.request;
 import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.task.entity.Task;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,8 +24,8 @@ public class RequestCreateTask {
     private String taskTitle;
     private String taskContent;
     private List<String> taskTagList;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private Optional<LocalDateTime> startDate;
+    private Optional<LocalDateTime> endDate;
     private String editDeletePermission;
 
     public Task toEntity(Member member, Project projects, List<String> taskTagList) {
@@ -35,8 +36,8 @@ public class RequestCreateTask {
                 .taskTitle(taskTitle)
                 .taskContent(taskContent)
                 .tags(String.join(",", taskTagList))
-                .startDate(startDate)
-                .endDate(endDate)
+                .startDate(startDate.orElse(null))
+                .endDate(endDate.orElse(null))
                 .editDeletePermission(editDeletePermission)
                 .status("진행 중")
                 .build();

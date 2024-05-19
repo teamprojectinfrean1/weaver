@@ -23,6 +23,7 @@ import com.task.weaver.domain.userOauthMember.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import java.io.IOException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -56,12 +57,12 @@ public class UserController {
 
     @Operation(summary = "회원가입", description = "사용자가 회원가입")
     @PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<DataResponse<ResponseGetMember>> addUser(@RequestPart(value = "requestCreateUser") RequestCreateUser requestCreateUser,
-                                                                   @RequestPart(value = "multipartFile", required = false) MultipartFile multipartFile)
+    public ResponseEntity<DataResponse<ResponseGetMember>> registerWeaver(@RequestPart(value = "requestCreateUser") RequestCreateUser requestCreateUser,
+                                                                          @RequestPart(value = "multipartFile", required = false) MultipartFile multipartFile)
                                                                     throws IOException {
 
         log.info("controller - join - before");
-        ResponseGetMember responseGetMember = userService.addUser(requestCreateUser, multipartFile);
+        ResponseGetMember responseGetMember = userService.signup(requestCreateUser, multipartFile);
         log.info("controller - join - after");
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponse.of(HttpStatus.OK, "회원 가입 성공", responseGetMember, true));
@@ -70,7 +71,7 @@ public class UserController {
     @Logger
     @Operation(summary = "로그인", description = "로그인")
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody RequestSignIn requestSignIn) {
+    public ResponseEntity<DataResponse<HttpHeaders>> login(@RequestBody RequestSignIn requestSignIn) {
         ResponseToken responseToken = userService.weaverLogin(requestSignIn);
         log.info("accessToken = {}", responseToken.accessToken());
         log.info("refreshToken : " + responseToken.refreshToken());
@@ -82,11 +83,11 @@ public class UserController {
     @Logger
     @Operation(summary = "사용자 정보 수정", description = "사용자의 정보 (닉네임, 비밀번호, 이메일) 업데이트")
     @PutMapping("/update")
-    public ResponseEntity<DataResponse<ResponseGetMember>> updateUser(@RequestParam("uuid") UUID uuid,
-                                                                      @RequestBody RequestUpdateUser requestUpdateUser)
+    public ResponseEntity<DataResponse<ResponseGetMember>> updateUserInfo(@RequestParam("uuid") UUID uuid,
+                                                                          @RequestBody RequestUpdateUser requestUpdateUser)
             throws ParseException, IOException {
 
-        ResponseGetMember responseGetMember = userService.updateUser(uuid, requestUpdateUser);
+        ResponseGetMember responseGetMember = userService.updateUserProfile(uuid, requestUpdateUser);
         return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "유저 정보 수정 성공", responseGetMember, true));
     }
 
@@ -96,7 +97,7 @@ public class UserController {
     public ResponseEntity<DataResponse<ResponseSimpleURL>> updateProfileImage(@RequestParam("uuid") UUID uuid,
                                                                               @RequestPart(value = "multipartFile") MultipartFile multipartFile) throws IOException {
 
-        ResponseSimpleURL responseGetMember = userService.updateProfile(multipartFile, uuid);
+        ResponseSimpleURL responseGetMember = userService.updateProfileImage(multipartFile, uuid);
         return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "멤버 프로필 이미지 업데이트 성공", responseGetMember, true));
     }
 
@@ -111,7 +112,7 @@ public class UserController {
     @Logger
     @Operation(summary = "이메일 중복 체크", description = "이메일 중복을 체크")
     @GetMapping("/checkMail")
-    public ResponseEntity<DataResponse<Boolean>> checkMail(@RequestParam("email") String email) {
+    public ResponseEntity<DataResponse<Boolean>> checkMail(@RequestParam("email") @Email String email) {
         return new ResponseEntity<>(
                 DataResponse.of(HttpStatus.OK, "중복 체크 동작", memberService.checkMail(email), true), HttpStatus.OK);
     }

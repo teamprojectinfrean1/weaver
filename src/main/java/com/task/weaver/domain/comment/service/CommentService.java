@@ -4,12 +4,13 @@ import com.task.weaver.domain.comment.dto.request.RequestCreateComment;
 import com.task.weaver.domain.comment.dto.request.RequestUpdateComment;
 import com.task.weaver.domain.comment.dto.response.ResponseComment;
 import com.task.weaver.domain.comment.dto.response.ResponseCommentList;
+import com.task.weaver.domain.comment.dto.response.ResponseCommentUuid;
 import com.task.weaver.domain.comment.dto.response.ResponsePageComment;
 import com.task.weaver.domain.comment.entity.Comment;
 import java.util.UUID;
 
 public interface CommentService {
-    ResponseComment getComment(UUID uuid);
+    ResponseComment fetchComment(UUID uuid);
 
     ResponseComment addComment(RequestCreateComment requestComment);
 
@@ -17,7 +18,7 @@ public interface CommentService {
 
     ResponsePageComment<ResponseCommentList, Comment> getComments(int page, int size, UUID issueId);
 
-    void deleteComment(UUID commentId);
+    ResponseCommentUuid deleteComment(UUID commentId);
 
     ResponseComment updateComment(UUID originalCommentId, RequestUpdateComment requestUpdateComment);
 }

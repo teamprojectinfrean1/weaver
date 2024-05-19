@@ -1,10 +1,8 @@
 package com.task.weaver.domain.comment.service.impl;
 
 import static com.task.weaver.common.exception.ErrorCode.COMMENT_NOT_FOUND;
-import static com.task.weaver.common.exception.ErrorCode.INVALID_INPUT_VALUE;
 import static com.task.weaver.common.exception.ErrorCode.ISSUE_NOT_FOUND;
 import static com.task.weaver.common.exception.ErrorCode.MISMATCHED_MEMBER;
-import static com.task.weaver.common.exception.ErrorCode.USER_EMAIL_NOT_FOUND;
 import static com.task.weaver.common.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.task.weaver.common.exception.comment.CommentNotFoundException;
@@ -15,6 +13,7 @@ import com.task.weaver.domain.comment.dto.request.RequestCreateComment;
 import com.task.weaver.domain.comment.dto.request.RequestUpdateComment;
 import com.task.weaver.domain.comment.dto.response.ResponseComment;
 import com.task.weaver.domain.comment.dto.response.ResponseCommentList;
+import com.task.weaver.domain.comment.dto.response.ResponseCommentUuid;
 import com.task.weaver.domain.comment.dto.response.ResponsePageComment;
 import com.task.weaver.domain.comment.entity.Comment;
 import com.task.weaver.domain.comment.repository.CommentRepository;
@@ -23,11 +22,8 @@ import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.issue.repository.IssueRepository;
 import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.member.repository.MemberRepository;
-
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -48,21 +44,14 @@ public class CommentServiceImpl implements CommentService {
     private final IssueRepository issueRepository;
 
     @Override
-    public ResponseComment getComment(UUID uuid) {
-        Comment comment = commentRepository.findById(uuid)
-                .orElseThrow(() -> new CommentNotFoundException(COMMENT_NOT_FOUND, COMMENT_NOT_FOUND.getMessage()));
-        return new ResponseComment(comment);
-
+    public ResponseComment fetchComment(UUID uuid) {
+        return new ResponseComment(getComment(uuid));
     }
 
     @Override
     public ResponsePageComment<ResponseCommentList, Comment> getComments(int page, int size, UUID issueId) {
-        log.info("Issue ID={}", issueId);
-        Issue issue = issueRepository.findById(issueId)
-                .orElseThrow(() -> new IssueNotFoundException(ISSUE_NOT_FOUND, ISSUE_NOT_FOUND.getMessage()));
-
-        Pageable pageable = getPageable(Sort.by("regDate").ascending(), page, size);
-        Page<Comment> comments = commentRepository.findByIssue(issue, pageable);
+        Pageable pageable = getPageable(Sort.by("regDate").descending(), page, size);
+        Page<Comment> comments = commentRepository.findByIssue(getIssue(issueId), pageable);
         Function<Comment, ResponseCommentList> fn = ResponseCommentList::new;
         return new ResponsePageComment<>(comments, fn);
     }
@@ -74,21 +63,19 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public ResponseComment addComment(RequestCreateComment requestComment) {
-        Member writer = memberRepository.findById(requestComment.writerId())
-                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_EMAIL_NOT_FOUND.getMessage()));
-        Issue issue = issueRepository.findById(requestComment.issueId())
-                .orElseThrow(() -> new IssueNotFoundException(ISSUE_NOT_FOUND, INVALID_INPUT_VALUE.getMessage()));
+        Issue issue = getIssue(requestComment.issueId());
         Comment comment = Comment.builder()
-                .member(writer)
+                .member(getMember(requestComment.writerId()))
                 .issue(issue)
                 .body(requestComment.commentBody())
                 .build();
-        issue.getComments().add(comment);
+        issueRepository.save(issue);
         commentRepository.save(comment);
         return new ResponseComment(comment);
     }
 
     @Override
+    @Transactional
     public void deleteComment(Comment comment) {
         comment.getIssue().getComments().remove(comment);
         commentRepository.delete(comment);
@@ -96,23 +83,21 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public void deleteComment(UUID commentId) {
+    public ResponseCommentUuid deleteComment(UUID commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(COMMENT_NOT_FOUND, COMMENT_NOT_FOUND.getMessage()));
         comment.getIssue().getComments().remove(comment);
         commentRepository.delete(comment);
+        return new ResponseCommentUuid(commentId);
     }
 
     @Override
     @Transactional
     public ResponseComment updateComment(UUID originalCommentId, RequestUpdateComment requestUpdateComment) {
-        Comment comment = commentRepository.findById(originalCommentId)
-                .orElseThrow(() -> new CommentNotFoundException(COMMENT_NOT_FOUND, COMMENT_NOT_FOUND.getMessage()));
-        Member updater = memberRepository.findById(requestUpdateComment.getUpdaterUUID())
-                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
+        Comment comment = getComment(originalCommentId);
+        Member updater = getMember(requestUpdateComment.getWriterId());
         validMemberUuid(comment, updater);
-        Issue issue = issueRepository.findById(requestUpdateComment.getIssueId())
-                .orElseThrow(() -> new IssueNotFoundException(ISSUE_NOT_FOUND, ISSUE_NOT_FOUND.getMessage()));
+        Issue issue = getIssue(requestUpdateComment.getIssueId());
         comment.updateComment(requestUpdateComment, issue);
         return new ResponseComment(comment);
     }
@@ -121,5 +106,20 @@ public class CommentServiceImpl implements CommentService {
         if (!(comment.getMember().getId().equals(updater.getId()))) {
             throw new MismatchedMember(MISMATCHED_MEMBER, MISMATCHED_MEMBER.getMessage());
         }
+    }
+
+    private Comment getComment(final UUID uuid) {
+        return commentRepository.findById(uuid)
+                .orElseThrow(() -> new CommentNotFoundException(COMMENT_NOT_FOUND, COMMENT_NOT_FOUND.getMessage()));
+    }
+
+    private Issue getIssue(final UUID issueId) {
+        return issueRepository.findById(issueId)
+                .orElseThrow(() -> new IssueNotFoundException(ISSUE_NOT_FOUND, ISSUE_NOT_FOUND.getMessage()));
+    }
+
+    private Member getMember(final UUID requestComment) {
+        return memberRepository.findById(requestComment)
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
     }
 }

@@ -3,15 +3,15 @@ package com.task.weaver.domain.project.service;
 import com.task.weaver.domain.project.dto.request.RequestCreateProject;
 import com.task.weaver.domain.project.dto.request.RequestPageProject;
 import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
-import com.task.weaver.domain.project.dto.response.ResponseMainAndOtherProjects;
 import com.task.weaver.domain.project.dto.response.ResponseGetProject;
+import com.task.weaver.domain.project.dto.response.ResponseMainAndOtherProjects;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface ProjectService {
 
@@ -19,8 +19,8 @@ public interface ProjectService {
         return Project.builder()
                 .name(dto.projectName())
                 .detail(dto.projectContent())
-                .startDate(dto.startDate())
-                .endDate(dto.endDate())
+                .startDate(dto.startDate().orElse(null))
+                .endDate(dto.endDate().orElse(null))
                 .build();
     }
 
@@ -28,8 +28,8 @@ public interface ProjectService {
         return RequestCreateProject.builder()
                 .projectName(entity.getName())
                 .projectContent(entity.getDetail())
-                .startDate(entity.getStartDate())
-                .endDate(entity.getEndDate())
+                .startDate(Optional.ofNullable(entity.getStartDate()))
+                .endDate(Optional.ofNullable(entity.getEndDate()))
                 .build();
     }
 
@@ -49,4 +49,6 @@ public interface ProjectService {
     void updateMainProject(UUID projectId);
 
     void deleteProject(UUID projectId);
+
+    Project getProjectById(final UUID projectId);
 }

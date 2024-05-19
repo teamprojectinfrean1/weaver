@@ -1,5 +1,6 @@
 package com.task.weaver.domain.member.repository;
 
+import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import com.task.weaver.domain.userOauthMember.oauth.entity.OauthUser;
@@ -21,9 +22,12 @@ public interface MemberRepository extends JpaRepository<Member, UUID>, MemberRep
 
     Optional<Member> findByOauthMember(OauthUser oauthMember);
 
-
     @EntityGraph(attributePaths = {"user", "oauthMember"})
     @Override
     List<Member> findAll();
+
+    @EntityGraph(attributePaths = {"user", "oauthMember"})
+    @Override
+    Optional<Member> findById(UUID uuid);
 }
 

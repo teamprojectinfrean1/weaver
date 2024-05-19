@@ -10,6 +10,5 @@ import org.springframework.data.domain.Pageable;
 import com.task.weaver.domain.issue.entity.Issue;
 
 public interface IssueRepositoryDsl {
-	// Page<Issue> findBySearch(UUID projectId, String status, String filter, String word, Pageable pageable);
-	// Optional<List<Issue>> findIssuesByFilter()
+	 Page<Issue> findBySearch(UUID projectId, String status, String filter, String word, Pageable pageable);
 }

@@ -8,11 +8,11 @@ import java.util.UUID;
 
 public class ResponseProjectMember {
 
-    public static ProjectMember dtoToEntity(Project project, Member member, UUID writerId, UUID memberId) {
+    public static ProjectMember dtoToEntity(Project project, Member member, Permission permission) {
         return ProjectMember.builder()
                 .project(project)
                 .member(member)
-                .permission(memberId.equals(writerId) ? Permission.LEADER : Permission.MEMBER)
+                .permission(permission)
                 .build();
     }
 }

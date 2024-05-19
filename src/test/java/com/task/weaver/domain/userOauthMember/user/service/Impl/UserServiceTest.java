@@ -1,33 +1,26 @@
 package com.task.weaver.domain.userOauthMember.user.service.Impl;
 
-import static com.task.weaver.common.exception.ErrorCode.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.task.weaver.common.exception.ErrorCode;
 import com.task.weaver.common.exception.authorization.InvalidPasswordException;
-import com.task.weaver.common.exception.member.DuplicateEmailException;
 import com.task.weaver.common.exception.member.UserNotFoundException;
-import com.task.weaver.common.s3.S3Uploader;
+import com.task.weaver.common.jwt.provider.JwtTokenProvider;
 import com.task.weaver.domain.member.dto.request.RequestSignIn;
 import com.task.weaver.domain.member.dto.response.ResponseToken;
 import com.task.weaver.domain.member.entity.Member;
-import com.task.weaver.domain.member.factory.MemberFactory;
 import com.task.weaver.domain.member.repository.MemberRepository;
-import com.task.weaver.domain.member.service.MemberService;
 import com.task.weaver.domain.member.service.impl.MemberServiceImpl;
 import com.task.weaver.domain.userOauthMember.LoginType;
-import com.task.weaver.domain.userOauthMember.oauth.repository.OauthMemberRepository;
 import com.task.weaver.domain.userOauthMember.user.dto.request.RequestCreateUser;
 import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseGetMember;
 import com.task.weaver.domain.userOauthMember.user.entity.User;
 import com.task.weaver.domain.userOauthMember.user.repository.UserRepository;
-import com.task.weaver.domain.userOauthMember.user.service.UserService;
-import com.task.weaver.domain.userOauthMember.util.MemberStorageHandler;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
@@ -37,29 +30,21 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceImplTest {
+class UserServiceTest {
 
     @InjectMocks
     private UserServiceImpl userService;
 
     @Mock
-    private MemberRepository memberRepository;
-
-    @Mock
-    private MemberFactory memberFactory;
-
-    @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private JwtTokenProvider jwtTokenProvider;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -67,35 +52,50 @@ class UserServiceImplTest {
     @DisplayName(value = "유저 로그인 실패 (해당 유저가 존재하지 않음)")
     @Test
     public void testWeaverLogin_UserNotFound() {
+        // Given
         RequestSignIn requestSignIn = new RequestSignIn("testId", "testPassword");
+
         when(userRepository.findByUserId(requestSignIn.id())).thenReturn(Optional.empty());
 
+        // When & Then
         assertThrows(UserNotFoundException.class, () -> userService.weaverLogin(requestSignIn));
+
+        // Verify
+        verify(userRepository, times(1)).findByUserId(requestSignIn.id());
+        verifyNoInteractions(jwtTokenProvider);
     }
 
     @DisplayName("유저 로그인 실패 (패스워드 불일치)")
     @Test
     public void testWeaverLogin_InvalidPassword() {
+        // Given
         RequestSignIn requestSignIn = new RequestSignIn("testId", "testPassword");
-        User user = new User(UUID.randomUUID(), UUID.randomUUID(), "testId", "testNickname", "testEmail", "wrongPassword", null);
+
+        User user = new User(UUID.randomUUID(), UUID.randomUUID(), "testId", "testNickname", "testEmail",
+                "wrongPassword", null);
         when(userRepository.findByUserId(requestSignIn.id())).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches(any(), any())).thenReturn(false);
+        when(passwordEncoder.matches(requestSignIn.password(), user.getPassword())).thenReturn(false);
 
         assertThrows(InvalidPasswordException.class, () -> userService.weaverLogin(requestSignIn));
+
+        // Verify
+        verify(userRepository, times(1)).findByUserId(requestSignIn.id());
+        verify(passwordEncoder, times(1)).matches(requestSignIn.password(), user.getPassword());
+        verifyNoInteractions(jwtTokenProvider);
     }
 
     @DisplayName("Weaver 회원 가입 성공")
     @Test
     public void testWeaverRegister_Successfully() throws IOException {
-       //GIVEN
+        //GIVEN
         RequestCreateUser requestCreateUser = new RequestCreateUser("testId", "testName", "testEmail@example.com",
                 "testPassword");
         MultipartFile multipartFile = mock(MultipartFile.class);
 
         //WHEN
-        ResponseGetMember responseGetMember = userService.addUser(requestCreateUser, null);
+        ResponseGetMember responseGetMember = userService.signup(requestCreateUser, null);
 
-       //THEN
+        //THEN
         Assertions.assertThat(responseGetMember).isNotNull();
     }
 
@@ -128,6 +128,4 @@ class UserServiceImplTest {
 
         Assertions.assertThat(responseToken).isNotNull();
     }
-
-
 }

@@ -3,6 +3,8 @@ package com.task.weaver.common.config;
 import com.task.weaver.common.jwt.filter.JwtAuthenticationFilter;
 import com.task.weaver.common.jwt.handler.JwtAuthenticationEntryPoint;
 import com.task.weaver.common.jwt.provider.JwtTokenProvider;
+import java.util.Arrays;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +14,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -94,9 +97,9 @@ public class SecurityConfig {
 	@Bean
 	protected SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity
-				.csrf(CsrfConfigurer::disable) // rest api이므로 기본 설정 미사용
 				.httpBasic(HttpBasicConfigurer::disable) // header에 id, pw가 아닌 jwt 달고감. 따라서 basic 아닌 bearer 사용
-				.cors(Customizer.withDefaults())
+				.csrf(AbstractHttpConfigurer::disable) // rest api이므로 기본 설정 미사용
+				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.exceptionHandling(handler -> handler
 				.authenticationEntryPoint(jwtAuthenticationEntryPoint))
 				// JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣는다
@@ -113,11 +116,11 @@ public class SecurityConfig {
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 
-		configuration.addAllowedOriginPattern("*");
-		configuration.addAllowedHeader("*");
-		configuration.addAllowedMethod("*");
+		configuration.setAllowedOriginPatterns(List.of("*"));
+		configuration.setAllowedHeaders(List.of("*"));
+		configuration.setAllowedMethods(Arrays.asList("HEAD","POST","GET","DELETE","PUT"));
 		configuration.setAllowCredentials(true);
-		configuration.addExposedHeader("Authorization");
+		configuration.setExposedHeaders(List.of("Authorization"));
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);

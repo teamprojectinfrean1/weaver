@@ -127,6 +127,8 @@ public class JwtTokenProvider {
 
 	public String getMemberIdByAssessToken(HttpServletRequest request){
 		String header = request.getHeader(AUTHORIZATION_HEADER);
+		log.info("HttpServletRequest header ={}", header);
+		hasStartWithBearer(header);
 		String token = header.substring(7);
 		Claims claims = parseClaims(token);
 		log.info("claims subject = {}, claims id = {}", claims.getSubject(), claims.getId());
@@ -135,6 +137,12 @@ public class JwtTokenProvider {
 				.parseClaimsJws(token)
 				.getBody()
 				.getSubject();
+	}
+
+	private static void hasStartWithBearer(final String header) {
+		if (header == null || !header.startsWith("Bearer ")) {
+			throw new IllegalArgumentException("Invalid or missing authorization header");
+		}
 	}
 
 	public LoginType decodeAccessToken(String accessToken) {

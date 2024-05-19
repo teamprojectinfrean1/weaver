@@ -10,6 +10,7 @@ import com.task.weaver.common.exception.jwt.CannotResolveToken;
 import com.task.weaver.common.exception.jwt.RefreshTokenNotFoundException;
 import com.task.weaver.common.exception.jwt.RefreshTokenNotMatchedException;
 import com.task.weaver.common.exception.member.UnableSendMailException;
+import com.task.weaver.common.exception.member.UserNotFoundException;
 import com.task.weaver.common.jwt.provider.JwtTokenProvider;
 import com.task.weaver.common.redis.RefreshToken;
 import com.task.weaver.common.redis.RefreshTokenRepository;
@@ -29,6 +30,8 @@ import com.task.weaver.domain.member.repository.MemberRepository;
 import com.task.weaver.domain.member.service.MemberService;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
+import com.task.weaver.domain.projectmember.entity.ProjectMember;
+import com.task.weaver.domain.projectmember.repository.ProjectMemberRepository;
 import com.task.weaver.domain.userOauthMember.LoginType;
 import com.task.weaver.domain.userOauthMember.UserOauthMember;
 import com.task.weaver.domain.userOauthMember.user.dto.response.ResponseGetMember;
@@ -54,7 +57,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -65,6 +67,7 @@ public class MemberServiceImpl implements MemberService {
     private static final String SORT_PROPERTIES = "id";
     private static final int BEGIN_INDEX = 7;
 
+    private final ProjectMemberRepository projectMemberRepository;
     private final MemberRepository memberRepository;
     private final UserRepository userRepository;
     private final RedisService redisService;
@@ -129,7 +132,7 @@ public class MemberServiceImpl implements MemberService {
     public ResponseGetMember fetchMemberByUuid(UUID uuid) {
         Member member = getMemberById(uuid);
         UserOauthMember userOauthMemberData = member.resolveMemberByLoginType();
-        return ResponseGetMember.of(MemberDto.memberDomainToDto(userOauthMemberData, member));
+        return ResponseGetMember.of(MemberDto.memberDomainToDto(userOauthMemberData, member), member.getId());
     }
 
     @LoggingStopWatch
@@ -151,9 +154,11 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public Page<MemberProjectDTO> fetchSimplePagedMembers(int page, int size, UUID projectId) {
         Pageable pageable = getPageable(Sort.by(SORT_PROPERTIES).descending(), page, size);
-        Page<Member> memberPage = getMembersByProject(projectId, pageable);
-        return memberPage.map(member -> new MemberProjectDTO(member.resolveMemberByLoginType(),
-                hasAnyIssueInProgress(member, projectId)));
+        Page<ProjectMember> projectMembers = projectMemberRepository.findProjectMemberPageByProjectId(projectId,
+                pageable);
+        return projectMembers.map(
+                projectMember -> new MemberProjectDTO(projectMember.getMember().resolveMemberByLoginType(),
+                        hasAnyIssueInProgress(projectMember.getMember(), projectId), projectMember.getPermission()));
     }
 
     @LoggingStopWatch
@@ -199,14 +204,14 @@ public class MemberServiceImpl implements MemberService {
     @LoggingStopWatch
     @Override
     public List<MemberProjectDTO> fetchMembers(final UUID projectId) {
-        List<Member> members = memberRepository.findMembersByProject(projectId);
-        Function<Member, MemberProjectDTO> fn = (en -> new MemberProjectDTO(en.resolveMemberByLoginType(),
-                en.hasAssigneeIssueInProgress()));
-        return members.stream().map(fn).collect(Collectors.toList());
+        List<ProjectMember> projectMembers = projectMemberRepository.findByProjectId(projectId);
+        Function<ProjectMember, MemberProjectDTO> fn = (MemberServiceImpl::getMemberProjectDTO);
+        return projectMembers.stream().map(fn).collect(Collectors.toList());
     }
 
-    private Page<Member> getMembersByProject(UUID projectId, Pageable pageable) {
-        return memberRepository.findMembersByProject(projectId, pageable);
+    private static MemberProjectDTO getMemberProjectDTO(final ProjectMember en) {
+        return new MemberProjectDTO(en.getMember().resolveMemberByLoginType(),
+                en.getMember().hasAssigneeIssueInProgress(), en.getPermission());
     }
 
     private Pageable getPageable(Sort sort, int page, int size) {
@@ -244,12 +249,12 @@ public class MemberServiceImpl implements MemberService {
 
     private Member getMemberById(UUID uuid) {
         return memberRepository.findById(uuid)
-                .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
     }
 
     private User getUserByEmail(final String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(USER_EMAIL_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new UserNotFoundException(USER_EMAIL_NOT_FOUND, USER_EMAIL_NOT_FOUND.getMessage()));
     }
 
     private RefreshToken getCurrentRefreshToken(final String refreshToken) {
@@ -273,5 +278,13 @@ public class MemberServiceImpl implements MemberService {
 
     private void saveRefreshToken(final UUID uuid, final String refreshToken) {
         refreshTokenRepository.save(new RefreshToken(uuid, refreshToken));
+    }
+
+    private List<ProjectMember> getProjectsByMember(final Member member) {
+        return projectMemberRepository.findProjectMemberByMember(member);
+    }
+
+    private Page<Member> getMembersByProject(UUID projectId, Pageable pageable) {
+        return memberRepository.findMembersByProject(projectId, pageable);
     }
 }
