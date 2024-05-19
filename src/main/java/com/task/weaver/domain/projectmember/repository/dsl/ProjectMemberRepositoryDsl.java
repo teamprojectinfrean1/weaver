@@ -19,4 +19,5 @@ public interface ProjectMemberRepositoryDsl {
 
     Page<ProjectMember> findProjectMemberPageByProjectId(UUID projectId, Pageable pageable);
 
+    boolean findByProjectAndMemberId(@Param("memberId") UUID memberId, @Param("projectId") UUID projectId);
 }

@@ -8,7 +8,6 @@ import com.task.weaver.domain.projectmember.entity.ProjectMember;
 import com.task.weaver.domain.projectmember.entity.QProjectMember;
 import com.task.weaver.domain.projectmember.repository.dsl.ProjectMemberRepositoryDsl;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,11 +18,11 @@ import org.springframework.data.domain.Pageable;
 public class ProjectMemberRepositoryImpl implements ProjectMemberRepositoryDsl {
 
     private final JPAQueryFactory jpaQueryFactory;
-    QProjectMember qProjectMember = QProjectMember.projectMember;
-
+    private final QProjectMember qProjectMember = QProjectMember.projectMember;
 
     @Override
     public List<ProjectMember> findProjectMemberByMember(Member member) {
+        QProjectMember qProjectMember = QProjectMember.projectMember;
         return jpaQueryFactory.selectFrom(qProjectMember)
                 .leftJoin(qProjectMember.project)
                 .where(qProjectMember.member.id.eq(member.getId()))
@@ -71,5 +70,18 @@ public class ProjectMemberRepositoryImpl implements ProjectMemberRepositoryDsl {
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), members.size());
         return new PageImpl<>(members.subList(start, end), pageable, members.size());
+    }
+
+    @Override
+    public boolean findByProjectAndMemberId(final UUID memberId, final UUID projectId) {
+        QProjectMember qProjectMember = QProjectMember.projectMember;
+
+        Integer fetchOne = jpaQueryFactory
+                .selectOne()
+                .from(qProjectMember)
+                .where(qProjectMember.member.id.eq(memberId).and(qProjectMember.project.projectId.eq(projectId)))
+                .fetchFirst();
+
+        return fetchOne != null;
     }
 }

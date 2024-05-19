@@ -63,11 +63,13 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public ResponseComment addComment(RequestCreateComment requestComment) {
+        Issue issue = getIssue(requestComment.issueId());
         Comment comment = Comment.builder()
                 .member(getMember(requestComment.writerId()))
-                .issue(getIssue(requestComment.issueId()))
+                .issue(issue)
                 .body(requestComment.commentBody())
                 .build();
+        issueRepository.save(issue);
         commentRepository.save(comment);
         return new ResponseComment(comment);
     }
@@ -75,13 +77,17 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public void deleteComment(Comment comment) {
+        comment.getIssue().getComments().remove(comment);
         commentRepository.delete(comment);
     }
 
     @Override
     @Transactional
     public ResponseCommentUuid deleteComment(UUID commentId) {
-        commentRepository.deleteById(commentId);
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException(COMMENT_NOT_FOUND, COMMENT_NOT_FOUND.getMessage()));
+        comment.getIssue().getComments().remove(comment);
+        commentRepository.delete(comment);
         return new ResponseCommentUuid(commentId);
     }
 

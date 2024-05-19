@@ -1,8 +1,7 @@
 package com.task.weaver.domain.userOauthMember.oauth.entity;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URL;
 import java.util.UUID;
@@ -17,7 +16,6 @@ class OauthUserTest {
 
     @InjectMocks
     private OauthUser oauthUser;
-
 
     @Test
     public void testUpdatePassword() {

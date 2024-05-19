@@ -18,7 +18,6 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
@@ -31,6 +30,9 @@ public class ProjectRepositoryImpl implements ProjectRepositoryDsl {
 
     @Override
     public Optional<List<Project>> findProjectsByMember(Member member) {
+        QProjectMember qProjectMember = QProjectMember.projectMember;
+        QProject qProject = QProject.project;
+
         List<Project> projects = jpaQueryFactory.selectFrom(qProject)
                 .join(qProject.projectMemberList, qProjectMember).fetchJoin()
                 .where(qProjectMember.member.id.eq(member.getId()))

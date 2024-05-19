@@ -209,5 +209,4 @@ public class ProjectServiceImpl implements ProjectService {
     private List<ProjectMember> getProjectsByMember(final Member member) {
         return projectMemberRepository.findProjectMemberByMember(member);
     }
-
 }
