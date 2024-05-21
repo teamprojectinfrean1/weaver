@@ -33,7 +33,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -99,14 +98,6 @@ public class UserController {
 
         ResponseSimpleURL responseGetMember = userService.updateProfileImage(multipartFile, uuid);
         return ResponseEntity.ok(DataResponse.of(HttpStatus.OK, "멤버 프로필 이미지 업데이트 성공", responseGetMember, true));
-    }
-
-    @Logger
-    @Operation(summary = "사용자 삭제", description = "사용자 정보 삭제, 사용자는 사용 불가")
-    @DeleteMapping()
-    public ResponseEntity<String> deleteUser(@RequestParam("userId") UUID userId) {
-        userService.deleteUser(userId);
-        return ResponseEntity.status(HttpStatus.OK).body("user deleted");
     }
 
     @Logger

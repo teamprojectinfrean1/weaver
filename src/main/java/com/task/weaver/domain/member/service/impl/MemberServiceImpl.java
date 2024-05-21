@@ -247,6 +247,11 @@ public class MemberServiceImpl implements MemberService {
         return headers;
     }
 
+    @Override
+    public void deleteMember(final UUID memberId) {
+        memberRepository.deleteById(memberId);
+    }
+
     private Member getMemberById(UUID uuid) {
         return memberRepository.findById(uuid)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));

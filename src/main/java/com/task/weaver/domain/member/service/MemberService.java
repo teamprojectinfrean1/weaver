@@ -54,4 +54,6 @@ public interface MemberService {
 	static HttpHeaders setCookieAndHeader(ResponseReIssueToken reIssueToken) {
 		return null;
 	}
+
+	void deleteMember(UUID memberId);
 }

@@ -28,7 +28,7 @@ public class OauthService {
         return authCodeRequestUrlProviderComposite.provide(oauthServerType);
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public OauthUser login(OauthServerType oauthServerType, String authCode) {
         OauthUser oauthMember = oauthMemberClientComposite.fetch(oauthServerType, authCode);
         return oauthMemberRepository.findByOauthId(oauthMember.oauthId())
