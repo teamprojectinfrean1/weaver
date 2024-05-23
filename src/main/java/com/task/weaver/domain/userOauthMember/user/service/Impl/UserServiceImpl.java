@@ -34,6 +34,7 @@ import com.task.weaver.domain.userOauthMember.util.MemberStorageHandler;
 import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedHashMap;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -67,12 +68,14 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public ResponseToken weaverLogin(RequestSignIn requestSignIn) {
         return userRepository.findByUserId(requestSignIn.id())
-                .flatMap(user -> {
-                    hasMatched(user, requestSignIn.password());
-                    return memberRepository.findByUser(user)
-                           .map(memberService::getAuthentication);
-                })
+                .flatMap(user -> getResponseToken(requestSignIn, user))
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
+    }
+
+    private Optional<ResponseToken> getResponseToken(final RequestSignIn requestSignIn, final User user) {
+        hasMatched(user, requestSignIn.password());
+        return memberRepository.findByUser(user)
+                .map(memberService::getAuthentication);
     }
 
     private void hasMatched(final User user, final String requestPassword) {
@@ -87,17 +90,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseGetMember addUser(RequestCreateUser requestCreateUser, MultipartFile profileImage)
+    public ResponseGetMember signup(RequestCreateUser requestCreateUser, MultipartFile profileImage)
             throws BusinessException, IOException {
 
         isExistEmail(requestCreateUser.getEmail());
         User user = hasImage(profileImage, requestCreateUser.dtoToUserDomain(passwordEncoder));
         Member member = memberFactory.createUserOauthMember(user);
         addMemberUuid(user, member);
-        return ResponseGetMember.of(member.getUser());
+        return ResponseGetMember.of(member.getUser(), member.getId());
     }
 
     private void addMemberUuid(final User user, final Member member) {
+        memberRepository.save(member);
         user.updateMemberUuid(member.getId());
         userRepository.save(user);
     }
@@ -116,36 +120,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseGetMember updateUser(UUID memberId, RequestUpdateUser requestUpdateUser) {
+    public ResponseGetMember updateUserProfile(UUID memberId, RequestUpdateUser requestUpdateUser) {
         Member findMember = getMemberByUuid(memberId);
         UserOauthMember userOauthMember = findMember.resolveMemberByLoginType();
         if (userOauthMember.isWeaver()) {
-            return getResponseGetMemberWithUser(requestUpdateUser, findMember.getUser());
+            return responseGetMemberWithUser(requestUpdateUser, findMember.getUser());
         }
-        return getResponseGetMemberWithOauth(requestUpdateUser, findMember.getOauthMember());
+        return responseGetMemberWithOauth(requestUpdateUser, findMember.getOauthMember());
     }
 
-    private ResponseGetMember getResponseGetMemberWithOauth(final RequestUpdateUser requestUpdateUser,
-                                                            final OauthUser oauthMember) {
+    private ResponseGetMember responseGetMemberWithOauth(final RequestUpdateUser requestUpdateUser,
+                                                         final OauthUser oauthMember) {
         if (!requestUpdateUser.getType().equals(NICKNAME)) {
             throw new MismatchedInputException(MISMATCHED_INPUT_VALUE, MISMATCHED_INPUT_VALUE.getMessage());
         }
         oauthMember.updateNickname((String) requestUpdateUser.getValue());
         oauthMemberRepository.save(oauthMember);
-        return ResponseGetMember.of(oauthMember);
+        return ResponseGetMember.of(oauthMember, oauthMember.getMemberUuid());
     }
 
-    private ResponseGetMember getResponseGetMemberWithUser(final RequestUpdateUser requestUpdateUser, final User user) {
+    private ResponseGetMember responseGetMemberWithUser(final RequestUpdateUser requestUpdateUser, final User user) {
         switch (requestUpdateUser.getType()) {
             case EMAIL -> user.updateEmail((String) requestUpdateUser.getValue());
             case NICKNAME -> user.updateNickname((String) requestUpdateUser.getValue());
             case PASSWORD -> updatePassword(requestUpdateUser.getValue(), user);
         }
         userRepository.save(user);
-        return ResponseGetMember.of(user);
+        return ResponseGetMember.of(user, user.getMemberUuid());
     }
 
-    public ResponseSimpleURL updateProfile(final MultipartFile multipartFile, final UUID memberUUID) throws IOException {
+    public ResponseSimpleURL updateProfileImage(final MultipartFile multipartFile, final UUID memberUUID) throws IOException {
         Member member = getMemberByUuid(memberUUID);
         UserOauthMember userOauthMember = member.resolveMemberByLoginType();
         String oldFileUrl = userOauthMember.getProfileImage().getPath().substring(1);
@@ -185,10 +189,5 @@ public class UserServiceImpl implements UserService {
         UUID uuid = UUID.fromString(requestUpdatePassword.getUuid());
         Member member = getMemberByUuid(uuid);
         member.resolveMemberByLoginType().updatePassword(passwordEncoder.encode(requestUpdatePassword.getPassword()));
-    }
-
-    @Override
-    public void deleteUser(UUID userId) {
-        userRepository.deleteById(userId);
     }
 }

@@ -6,6 +6,7 @@ import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.comment.entity.Comment;
 import com.task.weaver.domain.issue.dto.request.UpdateIssueRequest;
 import com.task.weaver.domain.task.entity.Task;
+import com.task.weaver.domain.userOauthMember.UserOauthMember;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,6 +20,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -26,6 +28,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @AllArgsConstructor
@@ -36,6 +40,7 @@ import org.hibernate.annotations.GenericGenerator;
 public class Issue extends BaseEntity {
 
     @Id
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(columnDefinition = "BINARY(16)", name = "issue_id")
@@ -54,7 +59,8 @@ public class Issue extends BaseEntity {
     private Member assignee;
 
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> comments;
+    @Builder.Default
+    private List<Comment> comments = new ArrayList<>();
 
     @Column(name = "issue_title", length = 100)
     private String issueTitle;
@@ -76,41 +82,17 @@ public class Issue extends BaseEntity {
         this.modifier = modifier;
         this.assignee = assignee;
         this.issueTitle = updateIssueRequest.issueTitle();
-        this.issueContent = updateIssueRequest.issueContent();
-        this.startDate = updateIssueRequest.startDate();
-        this.endDate = updateIssueRequest.endDate();
+        this.issueContent = updateIssueRequest.issueContent().orElse("NO_CONTENT");
+        this.startDate = updateIssueRequest.startDate().orElse(LocalDateTime.now());
+        this.endDate = updateIssueRequest.endDate().orElse(LocalDateTime.now());
     }
 
     public boolean hasIssueProgress() {
         return status == Status.INPROGRESS;
     }
 
-    public void updateTask(Task task) {
-        this.task = task;
-    }
-
     public void updateModifier(Member modifier) {
         this.modifier = modifier;
-    }
-
-    public void updateAssignee(Member assignee) {
-        this.assignee = assignee;
-    }
-
-    public void updateIssueTitle(String issueTitle) {
-        this.issueTitle = issueTitle;
-    }
-
-    public void updateIssueContent(String issueContent) {
-        this.issueContent = issueContent;
-    }
-
-    public void updateStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
-    }
-
-    public void updateEndDate(LocalDateTime endDate) {
-        this.endDate = endDate;
     }
 
     public void updateStatus(Status status) {

@@ -12,8 +12,9 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResponseGetMainProjectList {
-    private ResponseGetProjectList mainProject;
+public class ResponseMainAndOtherProjects {
     @Builder.Default
-    private List<ResponseGetProjectList> noMainProject = new ArrayList<>();
+    private List<ResponseProjects> mainProject = new ArrayList<>();
+    @Builder.Default
+    private List<ResponseProjects> noMainProject = new ArrayList<>();
 }

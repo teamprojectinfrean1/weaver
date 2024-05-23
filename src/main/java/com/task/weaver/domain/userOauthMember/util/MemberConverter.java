@@ -46,12 +46,12 @@ public class MemberConverter {
 
     private ResponseGetMember convertUser(UserOauthMember userOauthMember) {
         User user = (User) userOauthMember;
-        return ResponseGetMember.of(user);
+        return ResponseGetMember.of(user, user.getMemberUuid());
     }
 
     private ResponseGetMember convertOauthMember(UserOauthMember userOauthMember) {
         OauthUser oauthMember = (OauthUser) userOauthMember;
-        return ResponseGetMember.of(oauthMember);
+        return ResponseGetMember.of(oauthMember, oauthMember.getMemberUuid());
     }
 
     private ResponseGetUserForFront convertForFrontByUser(UserOauthMember userOauthMember) {

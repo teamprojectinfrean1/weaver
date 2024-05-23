@@ -24,9 +24,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -34,6 +32,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Getter
@@ -47,17 +47,18 @@ import org.hibernate.annotations.GenericGenerator;
 public class Member extends BaseEntity {
 
     @Id
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(columnDefinition = "BINARY(16)", name = "user_oauth_member_id")
     private UUID id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JsonBackReference
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "oauth_id")
     private OauthUser oauthMember;
 
@@ -70,11 +71,11 @@ public class Member extends BaseEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<ChattingRoomMember> chattingRoomMemberList = new ArrayList<>();
+    private Set<ChattingRoomMember> chattingRoomMemberList = new HashSet<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<ProjectMember> projectMemberList = new ArrayList<>();
+    private Set<ProjectMember> projectMemberList = new HashSet<>();
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "main_project_id")
@@ -98,5 +99,11 @@ public class Member extends BaseEntity {
 
     public boolean hasAssigneeIssueInProgress(){
         return assigneeIssueList.stream().allMatch(Issue::hasIssueProgress);
+    }
+
+    public void initMainProject(final Project project) {
+        if (this.mainProject == null) {
+            updateMainProject(project);
+        }
     }
 }
