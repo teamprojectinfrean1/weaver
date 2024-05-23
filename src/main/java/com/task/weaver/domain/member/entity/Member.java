@@ -24,9 +24,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -73,11 +71,11 @@ public class Member extends BaseEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<ChattingRoomMember> chattingRoomMemberList = new ArrayList<>();
+    private Set<ChattingRoomMember> chattingRoomMemberList = new HashSet<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<ProjectMember> projectMemberList = new ArrayList<>();
+    private Set<ProjectMember> projectMemberList = new HashSet<>();
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "main_project_id")
