@@ -29,6 +29,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -115,5 +116,13 @@ public class MemberController {
 		ResponseGetUserForFront responseGetUser = memberService.fetchMemberFromToken(request);
 		return new ResponseEntity<>(DataResponse.of(HttpStatus.OK, "토큰 기반 유저 정보 반환 성공", responseGetUser, true),
 				HttpStatus.OK);
+	}
+
+	@Logger
+	@Operation(summary = "사용자 삭제", description = "사용자 삭제, 사용자는 사용 불가")
+	@DeleteMapping
+	public ResponseEntity<String> deleteUser(@RequestParam("memberId") UUID memberId) {
+		memberService.deleteMember(memberId);
+		return ResponseEntity.status(HttpStatus.OK).body("member deleted");
 	}
 }

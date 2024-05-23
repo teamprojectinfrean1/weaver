@@ -14,10 +14,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(value = {AuditingEntityListener.class})
 public abstract class BaseEntity {
     @CreatedDate
-    @Column(name = "regDate", updatable = false)
+    @Column(name = "regdate", updatable = false)
     private LocalDateTime regDate;
 
     @LastModifiedDate
-    @Column(name = "modDate")
+    @Column(name = "moddate")
     private LocalDateTime modDate;
 }

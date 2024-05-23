@@ -22,5 +22,4 @@ public interface UserService {
             throws IOException, ParseException;
     void updateUser(RequestUpdatePassword requestUpdateUser);
     ResponseSimpleURL updateProfileImage(MultipartFile multipartFile, UUID memberUUID) throws IOException;
-    void deleteUser(UUID userId);
 }

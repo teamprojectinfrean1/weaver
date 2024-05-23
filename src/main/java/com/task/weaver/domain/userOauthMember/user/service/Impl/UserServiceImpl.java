@@ -190,9 +190,4 @@ public class UserServiceImpl implements UserService {
         Member member = getMemberByUuid(uuid);
         member.resolveMemberByLoginType().updatePassword(passwordEncoder.encode(requestUpdatePassword.getPassword()));
     }
-
-    @Override
-    public void deleteUser(UUID userId) {
-        userRepository.deleteById(userId);
-    }
 }
