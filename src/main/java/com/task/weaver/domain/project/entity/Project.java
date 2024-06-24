@@ -1,5 +1,6 @@
 package com.task.weaver.domain.project.entity;
 
+import com.task.weaver.common.model.Permission;
 import com.task.weaver.domain.BaseEntity;
 import com.task.weaver.domain.member.entity.Member;
 import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
@@ -21,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -98,5 +100,12 @@ public class Project extends BaseEntity {
 
     public void updateTag(List<String> projectTags) {
         this.tags = String.join(",", projectTags);
+    }
+
+    public ProjectMember getLeaders() {
+        return this.projectMemberList.stream()
+                .filter(projectMember -> projectMember.getPermission().equals(Permission.fromName("Leader")))
+                .findFirst()
+                .orElseThrow();
     }
 }
