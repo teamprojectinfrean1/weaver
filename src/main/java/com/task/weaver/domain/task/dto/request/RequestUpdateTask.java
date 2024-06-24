@@ -1,5 +1,6 @@
 package com.task.weaver.domain.task.dto.request;
 
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,8 +18,8 @@ public class RequestUpdateTask {
     private UUID updaterUuid;
     private String taskTitle;
     private String taskContent;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private Optional<LocalDate> startDate;
+    private Optional<LocalDate> endDate;
     private List<String> taskTagList;
     private String editDeletePermission;
 }
