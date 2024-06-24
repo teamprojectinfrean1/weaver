@@ -25,6 +25,12 @@ public class ResponsePageResult<DTO, EN> {
         makePageList(result.getPageable());
     }
 
+    public ResponsePageResult(Page<EN> result, Function<EN, DTO> fn, int totalPage) {
+        dataList = result.stream().map(fn).collect(Collectors.toList());
+        this.totalPage = totalPage;
+        makePageList(result.getPageable());
+    }
+
     private void makePageList(final Pageable pageable) {
         this.page = pageable.getPageNumber() + 1;
         this.size = pageable.getPageSize();

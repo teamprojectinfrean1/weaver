@@ -6,6 +6,7 @@ import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.task.dto.request.RequestUpdateTask;
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import lombok.*;
@@ -88,11 +89,17 @@ public class Task extends BaseEntity {
         this.taskTitle = requestUpdateTask.getTaskTitle();
         this.taskContent = requestUpdateTask.getTaskContent();
         this.tags = String.join(",", requestUpdateTask.getTaskTagList());
-        this.startDate = requestUpdateTask.getStartDate().atStartOfDay();
-        this.endDate = requestUpdateTask.getEndDate().atStartOfDay();
+
+        this.startDate = requestUpdateTask.getStartDate()
+                .map(LocalDate::atStartOfDay)
+                .orElse(null);
+        this.endDate = requestUpdateTask.getEndDate()
+                .map(LocalDate::atStartOfDay)
+                .orElse(null);
         this.modifier = updater;
         this.editDeletePermission = requestUpdateTask.getEditDeletePermission();
     }
+
 
     public void addIssue(final Issue issue) {
         this.issueList.add(issue);

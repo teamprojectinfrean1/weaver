@@ -67,9 +67,23 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public ResponsePageResult<ResponseGetTaskList, Task> getTasks(int page, int size, UUID projectId) {
         Pageable pageable = getPageable(Sort.by("taskId").descending(), page, size);
-        Page<Task> taskPage = taskRepository.findByProject(getProjectById(projectId), pageable);
+        Page<Task> taskPage = taskRepository.findByProject(getProjectById(projectId), pageable, getAdjustedPage(page));
         Function<Task, ResponseGetTaskList> fn = ResponseGetTaskList::new;
-        return new ResponsePageResult<>(taskPage, fn);
+        return new ResponsePageResult<>(taskPage, fn, getTotalPages(taskPage));
+    }
+
+    private int getTotalPages(final Page<Task> taskPage) {
+        long totalItems = taskPage.getTotalElements();
+        long totalItemsAfterFirstPage = Math.max(0, totalItems - 7);
+        return 1 + (int) Math.ceil((double) totalItemsAfterFirstPage / 8);
+    }
+
+    private int getAdjustedPage(final int page) {
+        return (page == 1) ? 0 : (page - 1);
+    }
+
+    private Pageable getPageable(Sort sort, int page, int size) {
+        return PageRequest.of(page - 1, size, sort);
     }
 
     @Override
@@ -77,10 +91,6 @@ public class TaskServiceImpl implements TaskService {
         return taskRepository.findByProject(getProjectById(projectId))
                 .stream()
                 .map(ResponseGetTaskList::new).toList();
-    }
-
-    private Pageable getPageable(Sort sort, int page, int size) {
-        return PageRequest.of(page - 1, size, sort);
     }
 
     @Override
@@ -119,9 +129,6 @@ public class TaskServiceImpl implements TaskService {
         return new ResponseGetTask(task, requestIssueForTasks);
     }
 
-    /**TODO: 2024-04-30, 화, 1:41  -JEON
-     *  TASK: 사용 위치, 목적 ?
-     */
     @Override
     public ResponseGetTask updateTask(UUID originalTaskId, Task newTask) {
         Task task = taskRepository.findById(originalTaskId)
