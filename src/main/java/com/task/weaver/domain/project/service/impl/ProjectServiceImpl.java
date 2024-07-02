@@ -14,6 +14,7 @@ import com.task.weaver.domain.project.dto.request.RequestPageProject;
 import com.task.weaver.domain.project.dto.request.RequestUpdateProject;
 import com.task.weaver.domain.project.dto.response.ResponseMainAndOtherProjects;
 import com.task.weaver.domain.project.dto.response.ResponseGetProject;
+import com.task.weaver.domain.project.dto.response.ResponseProjectLeader;
 import com.task.weaver.domain.project.dto.response.ResponseProjects;
 import com.task.weaver.domain.project.dto.response.ResponsePageResult;
 import com.task.weaver.domain.project.entity.Project;
@@ -112,7 +113,7 @@ public class ProjectServiceImpl implements ProjectService {
     public ResponseGetProject fetchProject(final UUID projectId) {
         Project project = getProjectById(projectId);
         UserOauthMember modifier = project.getModifier().resolveMemberByLoginType();
-        return new ResponseGetProject(project, ResponseUpdateDetail.of(modifier, project.getModDate()));
+        return new ResponseGetProject(project, ResponseUpdateDetail.of(modifier, project.getModDate()), ResponseProjectLeader.of(project.getLeaders().getMember()));
     }
 
     @Override
