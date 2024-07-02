@@ -67,13 +67,13 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public ResponseToken weaverLogin(RequestSignIn requestSignIn) {
-        return userRepository.findByUserId(requestSignIn.id())
+        return userRepository.findByUserId(requestSignIn.getId())
                 .flatMap(user -> getResponseToken(requestSignIn, user))
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
     }
 
     private Optional<ResponseToken> getResponseToken(final RequestSignIn requestSignIn, final User user) {
-        hasMatched(user, requestSignIn.password());
+        hasMatched(user, requestSignIn.getPassword());
         return memberRepository.findByUser(user)
                 .map(memberService::getAuthentication);
     }
