@@ -188,9 +188,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void updateUser(final RequestUpdatePassword requestUpdatePassword) {
         UUID uuid = UUID.fromString(requestUpdatePassword.getUuid());
         Member member = getMemberByUuid(uuid);
         member.resolveMemberByLoginType().updatePassword(passwordEncoder.encode(requestUpdatePassword.getPassword()));
+        memberRepository.save(member);
     }
 }
