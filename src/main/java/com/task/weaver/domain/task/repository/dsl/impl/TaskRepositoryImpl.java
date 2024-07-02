@@ -11,30 +11,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
-import java.util.List;
-
 
 @RequiredArgsConstructor
 public class TaskRepositoryImpl implements TaskRepositoryDsl {
     QTask qTask = QTask.task;
     private final JPAQueryFactory jpaQueryFactory;
 
-    //    @Override
-//    public Page<Task> findByProject(Project project, Pageable pageable) {
-//        List<Task> content = jpaQueryFactory.selectFrom(qTask)
-//                .where(qTask.project.eq(project))
-//                .orderBy(qTask.regDate.desc())
-//                .offset(pageable.getOffset())
-//                .limit(pageable.getPageSize())
-//                .fetch();
-//
-//        Long count = jpaQueryFactory.select(qTask.count())
-//                .from(qTask)
-//                .where(qTask.project.eq(project))
-//                .fetchOne();
-//
-//        return PageableExecutionUtils.getPage(content, pageable, () -> count);
-//    }
     @Override
     public Page<Task> findByProject(Project project, Pageable pageable, int adjustedPage) {
         // 첫 페이지 이후의 offset을 조정
