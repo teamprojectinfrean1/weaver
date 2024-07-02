@@ -3,7 +3,6 @@ package com.task.weaver.domain.member.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.task.weaver.domain.BaseEntity;
-import com.task.weaver.domain.chattingRoomMember.ChattingRoomMember;
 import com.task.weaver.domain.issue.entity.Issue;
 import com.task.weaver.domain.project.entity.Project;
 import com.task.weaver.domain.projectmember.entity.ProjectMember;
@@ -68,10 +67,6 @@ public class Member extends BaseEntity {
 
     @Column(name = "is_online")
     private boolean isOnline;
-
-    @Builder.Default
-    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private Set<ChattingRoomMember> chattingRoomMemberList = new HashSet<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
