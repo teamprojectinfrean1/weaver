@@ -114,7 +114,7 @@ public class UserServiceImpl implements UserService {
 
     private User hasImage(final MultipartFile multipartFile, final User user) throws IOException {
         if (multipartFile != null) {
-            updateProfileImage(s3Uploader.upload(multipartFile, DIR_NAME), user);
+            updateProfileImageInStorage(s3Uploader.upload(multipartFile, DIR_NAME), user);
         }
         return userRepository.save(user);
     }
