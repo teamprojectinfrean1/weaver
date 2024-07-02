@@ -100,7 +100,6 @@ public class IssueServiceImpl implements IssueService {
 	@Override
 	@Transactional
 	public IssueResponse updateIssue(UUID issueId, UpdateIssueRequest updateIssueRequest) {
-
 		Issue issue = getIssue(issueId);
 		Task task = getTask(updateIssueRequest.taskId());
 		Member modifier = getMember(updateIssueRequest.modifierId());
