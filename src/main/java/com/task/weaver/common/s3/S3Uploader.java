@@ -87,10 +87,10 @@ public class S3Uploader {
     }
 
     public String updateFile(MultipartFile newFile, String oldFileName, String dirName) throws IOException {
-        // 기존 파일 삭제
-        log.info("S3 oldFileName: " + oldFileName);
-        deleteFile(oldFileName);
-        // 새 파일 업로드
+        if (oldFileName != null) {
+            log.info("S3 oldFileName: " + oldFileName);
+            deleteFile(oldFileName);
+        }
         return upload(newFile, dirName);
     }
 }
