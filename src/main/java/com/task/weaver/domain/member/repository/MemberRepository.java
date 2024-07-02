@@ -30,7 +30,7 @@ public interface MemberRepository extends JpaRepository<Member, UUID>, MemberRep
     @Override
     Optional<Member> findById(UUID uuid);
 
-    @EntityGraph(attributePaths = {"user", "oauthMember", "chattingRoomMemberList", "projectMemberList", "modifierIssueList", "assigneeIssueList"})
+    @EntityGraph(attributePaths = {"user", "oauthMember", "projectMemberList", "modifierIssueList", "assigneeIssueList"})
     @Override
     void deleteById(UUID uuid);
 }
