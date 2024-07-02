@@ -25,6 +25,7 @@ public class ResponseGetProject {
     private URL projectImage;
     private String projectTags;
     private ResponseUpdateDetail lastUpdateDetail;
+    private ResponseProjectLeader projectLeader;
 
     public ResponseGetProject(Project project, ResponseUpdateDetail responseUpdateDetail){
         this.projectId = project.getProjectId();
@@ -35,5 +36,17 @@ public class ResponseGetProject {
         this.projectTags = project.getTags();
         this.projectImage = project.getProjectImage();
         this.lastUpdateDetail = responseUpdateDetail;
+    }
+
+    public ResponseGetProject(Project project, ResponseUpdateDetail responseUpdateDetail, ResponseProjectLeader projectLeader){
+        this.projectId = project.getProjectId();
+        this.projectName = project.getName();
+        this.projectContent = project.getDetail();
+        this.startDate = project.getStartDate();
+        this.endDate = project.getEndDate();
+        this.projectTags = project.getTags();
+        this.projectImage = project.getProjectImage();
+        this.lastUpdateDetail = responseUpdateDetail;
+        this.projectLeader = projectLeader;
     }
 }

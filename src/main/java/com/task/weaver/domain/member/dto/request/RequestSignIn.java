@@ -1,8 +1,9 @@
 package com.task.weaver.domain.member.dto.request;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 
 @Builder
-public record RequestSignIn(String id,
-							String password) {
+public record RequestSignIn(@NotEmpty String id,
+							@NotEmpty String password) {
 }
