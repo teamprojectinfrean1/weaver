@@ -152,8 +152,11 @@ public class UserServiceImpl implements UserService {
     public ResponseSimpleURL updateProfileImage(final MultipartFile multipartFile, final UUID memberUUID) throws IOException {
         Member member = getMemberByUuid(memberUUID);
         UserOauthMember userOauthMember = member.resolveMemberByLoginType();
-        String oldFileUrl = userOauthMember.getProfileImage().getPath().substring(1);
-        updateProfileImage(s3Uploader.updateFile(multipartFile, oldFileUrl, DIR_NAME), userOauthMember);
+        String oldFilename = Optional.ofNullable(userOauthMember.getProfileImage())
+                .map(URL::getPath)
+                .map(path -> path.substring(1))
+                .orElse(null);
+        updateProfileImageInStorage(s3Uploader.updateFile(multipartFile, oldFilename, DIR_NAME), userOauthMember);
         return new ResponseSimpleURL(userOauthMember.getProfileImage());
     }
 
@@ -162,7 +165,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND, USER_NOT_FOUND.getMessage()));
     }
 
-    private void updateProfileImage(final String s3Uploader, final UserOauthMember userOauthMember) throws IOException {
+    private void updateProfileImageInStorage(final String s3Uploader, final UserOauthMember userOauthMember) throws IOException {
         URL updatedImageUrlObject = new URL(s3Uploader);
         userOauthMember.updateProfileImage(updatedImageUrlObject);
         memberStorageHandler.handle(userOauthMember);
