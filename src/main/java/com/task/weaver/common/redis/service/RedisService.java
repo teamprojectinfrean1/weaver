@@ -1,6 +1,6 @@
 package com.task.weaver.common.redis.service;
 
-import static com.task.weaver.common.exception.ErrorCode.REFRESH_JWT_EXPIRED;
+import static com.task.weaver.common.exception.ErrorCode.ACCESS_JWT_EXPIRED;
 
 import com.task.weaver.common.redis.RefreshToken;
 import com.task.weaver.common.redis.RefreshTokenRepository;
@@ -48,7 +48,7 @@ public class RedisService {
     @Transactional(readOnly = true)
     public UUID findMemberByToken(String refreshToken) {
         RefreshToken token = refreshTokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new JwtException(REFRESH_JWT_EXPIRED.getMessage()));
+                .orElseThrow(() -> new JwtException(ACCESS_JWT_EXPIRED.getMessage()));
         return token.getId();
     }
 

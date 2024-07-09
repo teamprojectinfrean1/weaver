@@ -14,8 +14,8 @@ public enum ErrorCode {
     HANDLE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "C005", "접근이 거부 되었습니다."),
     RESOURCE_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "R001", "해당 리소스에 대한 권한이 없습니다."),
     UNSUPPORTED_OAUTH(HttpStatus.NOT_ACCEPTABLE, "C006", "지원하지않는 플랫폼입니다."),
-    REFRESH_JWT_EXPIRED(HttpStatus.UNAUTHORIZED, "J003", "만료된 리프레시 토큰입니다."),
-    REFRESH_TOKEN_RESOLVE(HttpStatus.BAD_REQUEST, "J004", "잘못된 리프레시 토큰 형식입니다."),
+    ACCESS_JWT_EXPIRED(HttpStatus.UNAUTHORIZED, "J003", "만료된 액세스 토큰입니다."),
+    REFRESH_TOKEN_RESOLVE(HttpStatus.BAD_REQUEST, "J004", "잘못된 리프래쉬 토큰입니다."),
     MISSING_REQUEST_PARAMETER(HttpStatus.BAD_REQUEST, "C007", "요청 파라미터를 찾을 수 없습니다."),
 
     // Project

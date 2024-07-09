@@ -94,8 +94,12 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void logout(String refreshToken) {
-        Authentication authentication = jwtTokenProvider.getAuthentication(resolveToken(refreshToken));
-        refreshTokenRepository.deleteById(authentication.getName());
+        if (jwtTokenProvider.validateToken(refreshToken)) {
+            Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
+            refreshTokenRepository.deleteById(authentication.getName());
+            return;
+        }
+        throw new CannotResolveToken(REFRESH_TOKEN_RESOLVE, REFRESH_TOKEN_RESOLVE.getMessage());
     }
 
     @Override
@@ -274,9 +278,10 @@ public class MemberServiceImpl implements MemberService {
         }
     }
 
-    private String resolveToken(String accessToken) {
-        if (accessToken.startsWith(ACCESS_TOKEN_STARTS)) {
-            return accessToken.substring(BEGIN_INDEX);
+    private String resolveToken(String refreshToken) {
+        jwtTokenProvider.validateToken(refreshToken);
+        if (refreshToken.startsWith(ACCESS_TOKEN_STARTS)) {
+            return refreshToken.substring(BEGIN_INDEX);
         }
         throw new CannotResolveToken(REFRESH_TOKEN_RESOLVE, REFRESH_TOKEN_RESOLVE.getMessage());
     }
