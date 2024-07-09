@@ -65,6 +65,7 @@ public class MemberController {
 	public ResponseEntity<MessageResponse> logout(@CookieValue(value = "refresh-token") Cookie cookie, HttpServletResponse res) {
 		memberService.logout(cookie.getValue());
 		cookie.setMaxAge(0);
+		cookie.setPath("/");
 		res.setHeader("Set-Cookie", cookie.toString());
 		return ResponseEntity.ok().body(MessageResponse.of(HttpStatus.OK, "로그아웃 성공", true));
 	}

@@ -15,12 +15,12 @@ public class CookieUtil {
     }
 
     public static void setRefreshCookie(HttpHeaders httpHeaders, String refreshToken) {
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
+        ResponseCookie cookie = ResponseCookie.from("refresh-Token", refreshToken)
                 .httpOnly(true)
                 .secure(true)
                 .maxAge(REFRESH_TOKEN_VALID_TIME)
                 .path("/")
-                .sameSite("None")
+                .sameSite("Strict")
                 .build();
         httpHeaders.add(HttpHeaders.SET_COOKIE, cookie.toString());
     }
